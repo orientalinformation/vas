@@ -1,0 +1,38 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>scripts/branding.js</file>
+        <file>scripts/global.js</file>
+        <file>scripts/setting.js</file>
+        <file>screens/AboutScreen.qml</file>
+        <file>screens/HomeScreen.qml</file>
+        <file>screens/SettingScreen.qml</file>
+        <file>sections/HeaderSection.qml</file>
+        <file>sections/TitleSection.qml</file>
+        <file>navigation/DrawerBottomNavigationBar.qml</file>
+        <file>navigation/DrawerBottomNavigationButton.qml</file>
+        <file>navigation/DrawerDivider.qml</file>
+        <file>navigation/DrawerNavigationBar.qml</file>
+        <file>navigation/DrawerNavigationButton.qml</file>
+        <file>navigation/DrawerNavigationTextButton.qml</file>
+        <file>dialogs/LanguageDialog.qml</file>
+        <file>theme/AppTheme.qml</file>
+        <file>theme/qmldir</file>
+        <file>screens/ScheduleScreen.qml</file>
+        <file>screens/RescheduleScreen.qml</file>
+        <file>screens/LauncherScreen.qml</file>
+        <file>widgets/DFMNavigationButton.qml</file>
+        <file>dialogs/FlightDetail.qml</file>
+        <file>widgets/DFMFlightButton.qml</file>
+        <file>widgets/DFMMessageBox.qml</file>
+        <file>widgets/DFMBanner.qml</file>
+        <file>widgets/DFMButton.qml</file>
+        <file>problems/DayDelay.qml</file>
+        <file>problems/TimeDelay.qml</file>
+        <file>problems/ArrivalLimited.qml</file>
+        <file>problems/TimeLimited.qml</file>
+        <file>widgets/DFMOptionButton.qml</file>
+        <file>widgets/DFMComboBox.qml</file>
+    </qresource>
+</RCC>
