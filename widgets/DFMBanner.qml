@@ -48,7 +48,7 @@ Loader {
     Timer {
         id: timer
 
-        interval: 2500
+        interval: 2000
 
         onTriggered: {
             messages.state = ""

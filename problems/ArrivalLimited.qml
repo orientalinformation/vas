@@ -30,8 +30,10 @@ import "../theme"
 import "../widgets"
 
 Frame {
-    property alias airportModel: airportComboboxModel
-    property alias aircraftArrivalLimitModel: aircraftModel
+    property var airportModel: airportComboboxModel
+    property var aircraftArrivalLimitModel: aircraftModel
+
+    property var  airportSelectedModel: airportSelectedModel
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -409,7 +411,7 @@ Frame {
                             }
                         }
 
-                        airportSelectedModel.append( {  "text": currentText } )
+                        airportSelectedModel.append( {  "name": currentText } )
                     }
 
                     appendModel(currentText)

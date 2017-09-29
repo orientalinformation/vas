@@ -21,17 +21,16 @@ modification, are permitted provided that the following conditions are met:
 #ifndef SCHEDULECALCULATION_H
 #define SCHEDULECALCULATION_H
 
+#include <QFile>
+#include <QTime>
 #include <QObject>
 #include <QtGlobal>
-#include <QtAlgorithms>
 #include <QTextStream>
-#include <QFile>
 #include <QApplication>
-#include <QTime>
+#include <QtAlgorithms>
 
 #include <aircraftobject.h>
 #include <airportobject.h>
-
 
 class ScheduleCalculation : public QObject
 {
@@ -64,11 +63,24 @@ public:
         }
     };
 
+    struct FlightData {
+        QString departure;
+        QString arrival;
+        int flightTime;
+        int frequent;
+        int numFlightCompleted;
+        bool isCompleted;
+        double priorityRatio;
+    };
+
     Q_INVOKABLE int runSchedule(int timeStart, QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData);
 
     void write(QList<FlightCalendar> flightCalendar, QString path);
 
+private:
+    void sortPriorityRatio(QList<FlightData *> &flightData, int sizeFlightData);
 
+    void sortTimeDeparture(QList<FlightCalendar> flightCalendar, int totalFlightSort);
 
 signals:
     void error(const QString& msg);

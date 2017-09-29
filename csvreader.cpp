@@ -44,18 +44,20 @@ QList<QObject *> CSVReader::read()
     }
 
     QFile file(_source);
-    QStringList lineContent;
-    QList<QObject *> flightData;
+
+    QList<QObject *> data;
 
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream in(&file);
         in.readLine();
 
+        QStringList lineContent;
+
         while (!in.atEnd()) {
             lineContent = in.readLine().split(QRegExp("\\,|\\;|\\||\\^"));
 
-            if (lineContent.size() > 0 && lineContent.first() != "") {
-                if (_isFlight) {
+            if (_isFlight) {
+                if (lineContent.size() >= 12 && lineContent.first() != "") {
                     FlightObject *flight = new FlightObject();
 
                     flight->setName(lineContent[0]);
@@ -82,20 +84,35 @@ QList<QObject *> CSVReader::read()
                         flight->setOldAircraft("");
                     }
 
-                    if (!_isGroup) {
-                        flightData.append(flight);
+                    if (lineContent.size() >= 14) {
+                        int status = lineContent[13].toInt();
+
+                        if (status == 1) {
+                            flight->setStatus(FlightObject::OnlyDelayDay);
+                        } else if (status == 2) {
+                            flight->setStatus(FlightObject::OnlyDelayTime);
+                        } else if (status == 3) {
+                            flight->setStatus(FlightObject::DelayDate);
+                        } else {
+                            flight->setStatus(FlightObject::Unchanged);
+                        }
                     } else {
-                        //Modify later
-                        flightData.append(flight);
+                        flight->setStatus(FlightObject::Unchanged);
                     }
-                } else if (_isAircraft) {
+
+                    data.append(flight);
+                }
+            } else if (_isAircraft) {
+                if (lineContent.size() >= 2 && lineContent.first() != "") {
                     AircraftObject *aircraft = new AircraftObject();
 
                     aircraft->setName(lineContent[0]);
                     aircraft->setDeparture(lineContent[1]);
 
-                    flightData.append(aircraft);
-                } else if (_isAirport) {
+                    data.append(aircraft);
+                }
+            } else if (_isAirport) {
+                if (lineContent.size() >= 4 && lineContent.first() != "") {
                     AirportObject *airport = new AirportObject();
 
                     airport->setDeparture(lineContent[0]);
@@ -103,7 +120,7 @@ QList<QObject *> CSVReader::read()
                     airport->setTimeFlight(lineContent[2].toInt());
                     airport->setFrequent(lineContent[3].toInt());
 
-                    flightData.append(airport);
+                    data.append(airport);
                 }
             }
         }
@@ -114,7 +131,7 @@ QList<QObject *> CSVReader::read()
         return QList<QObject *>();
     }
 
-    return flightData;
+    return data;
 }
 
 QString CSVReader::write(QList<FlightObject *> data, QString path)
@@ -217,19 +234,5 @@ void CSVReader::setAirport(bool isAirport)
         _isAirport = isAirport;
 
         emit isAirportChanged();
-    }
-}
-
-bool CSVReader::isGroup() const
-{
-    return _isGroup;
-}
-
-void CSVReader::setGroup(bool isGroup)
-{
-    if (isGroup != _isGroup) {
-        _isGroup = isGroup;
-
-        emit isGroupChanged();
     }
 }

@@ -26,7 +26,7 @@ import "../theme"
 
 Frame {
 
-    property alias timeDelayModel: timeDelayModel
+    property var timeDelayModel: timeDelayModel
 
     Layout.fillHeight: true
     Layout.fillWidth: true
@@ -120,7 +120,6 @@ Frame {
 
                         anchors.verticalCenter: parent.verticalCenter
 
-                        //width: timeDelay.headerItem.itemAt(0).width
                         width: AppTheme.hscale(305)
 
                         MouseArea {
@@ -144,6 +143,9 @@ Frame {
 
                         validator: IntValidator { bottom:0; top: 2359}
 
+                        text: ""
+
+
                         MouseArea {
                             id: mouseArea
                             anchors.fill: parent
@@ -154,10 +156,9 @@ Frame {
                                 txtTimeDelay.forceActiveFocus()
                             }
                         }
-                        onEditingFinished: {
-                            timeDelayModel.set(row, { "time": txtTimeDelay.text} )
-                            console.log(timeDelayModel.get(row).time)
-                            console.log(timeDelayModel.get(row).name)
+
+                        onTextChanged: {
+                            timeDelayModel.set(row, { "time": txtTimeDelay.text })
                         }
 
                     }

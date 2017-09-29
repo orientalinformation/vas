@@ -26,7 +26,7 @@ import "../theme"
 
 Frame {
 
-    property alias timeLimitedModel: timeLimitedModel
+    property var timeLimitedModel: timeLimitedModel
 
     id: timeLimitedFrame
     Layout.fillHeight: true
@@ -126,7 +126,7 @@ Frame {
 
                     TextField {
                         id: txtTimeLimited
-                        text: ""
+                        text: "0"
                         Layout.fillWidth: true
                         font.pointSize: AppTheme.textSizeText
                         width: AppTheme.hscale(305)
@@ -144,10 +144,8 @@ Frame {
                             }
                         }
 
-                        onEditingFinished: {
+                        onTextChanged: {
                             timeLimitedModel.set(row, { "time": txtTimeLimited.text} )
-                            console.log(timeLimitedModel.get(row).time)
-                            console.log(timeLimitedModel.get(row).name)
                         }
                     }
                 }

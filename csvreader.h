@@ -36,8 +36,6 @@ class CSVReader : public QObject
     Q_PROPERTY(bool aircraft READ isAircraft WRITE setAircraft NOTIFY isAircraftChanged)
     Q_PROPERTY(bool airport READ isAirport WRITE setAirport NOTIFY isAirportChanged)
 
-    Q_PROPERTY(bool group READ isGroup WRITE setGroup NOTIFY isGroupChanged)
-
 public:
     explicit CSVReader(QObject *parent = 0);
 
@@ -57,9 +55,6 @@ public:
     bool isAirport() const;
     void setAirport(bool isAirport);
 
-    bool isGroup() const;
-    void setGroup(bool isGroup);
-
 signals:
     void error(const QString& msg);
     void finished(bool success);
@@ -70,16 +65,12 @@ signals:
     void isAircraftChanged();
     void isAirportChanged();
 
-    void isGroupChanged();
-
 private:
     QString _source;
 
     bool _isFlight;
     bool _isAircraft;
     bool _isAirport;
-
-    bool _isGroup;
 
 };
 

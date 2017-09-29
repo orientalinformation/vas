@@ -53,6 +53,8 @@ Dialog {
     property alias cabinAgent2: txtCA2.text
     property alias cabinAgent3: txtCA3.text
 
+    signal updated
+
     focus: true
     modal: true
 
@@ -108,29 +110,6 @@ Dialog {
                 RowLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-
-//                    ToolButton {
-//                        id: previousFlight
-
-//                        contentItem: Image {
-//                            fillMode: Image.Pad
-//                            horizontalAlignment: Image.AlignHCenter
-//                            verticalAlignment: Image.AlignVCenter
-
-//                            source: "qrc:/das/images/previous.png"
-//                        }
-
-//                        MouseArea {
-//                            anchors.fill: parent
-//                            anchors.margins: 0
-//                            hoverEnabled: true
-//                            cursorShape: Qt.PointingHandCursor
-
-//                            onClicked: {
-
-//                            }
-//                        }
-//                    }
 
                     SwipeView {
                         id: flightSwipeView
@@ -448,68 +427,7 @@ Dialog {
                             }
                         }
                     }
-
-//                    ToolButton {
-//                        id: nextFlight
-
-//                        contentItem: Image {
-//                            fillMode: Image.Pad
-//                            horizontalAlignment: Image.AlignHCenter
-//                            verticalAlignment: Image.AlignVCenter
-
-//                            source: "qrc:/das/images/next.png"
-//                        }
-
-//                        MouseArea {
-//                            anchors.fill: parent
-//                            anchors.margins: 0
-//                            hoverEnabled: true
-//                            cursorShape: Qt.PointingHandCursor
-
-//                            onClicked: {
-
-//                            }
-//                        }
-//                    }
                 }
-
-//                PageIndicator {
-//                    id: pageIndicator
-
-//                    currentIndex: flightSwipeView.currentIndex
-//                    count: flightSwipeView.count
-//                    interactive: true
-
-//                    anchors.horizontalCenter: parent.horizontalCenter
-//                    anchors.bottom: parent.bottom
-
-//                    delegate: Rectangle {
-//                        implicitWidth: AppTheme.tscale(15)
-//                        implicitHeight: AppTheme.tscale(15)
-
-//                        radius: width / 2
-//                        color: index === pageIndicator.currentIndex ? "#00aaff"  : pressed ? "#00aaff" : "#00aaff"
-
-//                        opacity: index === pageIndicator.currentIndex ? 0.95 : pressed ? 0.7 : 0.35
-
-//                        Behavior on opacity {
-//                            OpacityAnimator {
-//                                duration: 100
-//                            }
-//                        }
-
-//                        MouseArea {
-//                            anchors.fill: parent
-//                            cursorShape: Qt.PointingHandCursor
-
-//                            onClicked: {
-//                                if (index !== flightSwipeView.currentIndex) {
-//                                    flightSwipeView.setCurrentIndex(index)
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
             }
         }
     }
@@ -527,9 +445,6 @@ Dialog {
         ToolTip.visible: hoverButton
         ToolTip.text: qsTr("Update values") + translator.emptyString
 
-        //width: AppTheme.tscale(44)
-        //height: AppTheme.tscale(44)
-
         contentItem: Image {
             id: updateIcon
 
@@ -540,8 +455,6 @@ Dialog {
             source: "qrc:/das/images/actions/update.png"
         }
 
-        scale: hovered ? 1 : 0.95
-
         highlighted: true
 
         ColorOverlay {
@@ -551,8 +464,6 @@ Dialog {
         }
 
         MouseArea {
-            id: mouseAreaChat
-
             anchors.fill: parent
             anchors.margins: 0
             hoverEnabled: true
@@ -564,7 +475,9 @@ Dialog {
             onExited: parent.hoverButton = false
 
             onClicked: {
-                //
+                close();
+
+                flightDialog.updated()
             }
         }
     }

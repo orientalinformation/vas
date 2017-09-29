@@ -46,12 +46,24 @@ class FlightObject : public DataObject
     Q_PROPERTY(QString AC READ newAircraft WRITE setNewAircraft NOTIFY newAircraftChanged)
     Q_PROPERTY(QString ACO READ oldAircraft WRITE setOldAircraft NOTIFY oldAircraftChanged)
 
+    Q_PROPERTY(FlightStatus status READ status WRITE setStatus NOTIFY statusChanged
+               )
+
+    Q_ENUMS(FlightStatus)
+
 public:
+    enum FlightStatus {
+        Unchanged = 0x0000,
+        OnlyDelayDay = 0x0001,
+        OnlyDelayTime = 0x0002,
+        DelayDate = 0x0003
+    };
+
     FlightObject(DataObject *parent = 0);
     FlightObject(const QString &name, const QString &captain, const QString &coPilot, const QString &cabinManager,
                  const QString &cabinAgent1, const QString &cabinAgent2, const QString &cabinAgent3, const QString &departure,
                  const QString &arrival, const int &etd, const int &eta, const QString &newAircraft,
-                 const QString &oldAircraft, DataObject *parent = 0);
+                 const QString &oldAircraft, const FlightStatus &status, DataObject *parent = 0);
 
     QString captain() const;
     void setCaptain(const QString &captain);
@@ -89,6 +101,9 @@ public:
     QString oldAircraft() const;
     void setOldAircraft(const QString &aircraft);
 
+    FlightStatus status() const;
+    void setStatus(const FlightStatus &status);
+
 signals:
     void nameChanged();
 
@@ -109,6 +124,8 @@ signals:
     void newAircraftChanged();
     void oldAircraftChanged();
 
+    void statusChanged();
+
 private:
     QString _captain;
     QString _coPilot;
@@ -126,6 +143,9 @@ private:
 
     QString _newAircraft;
     QString _oldAircraft;
+
+    FlightStatus _status;
+
 };
 
 #endif // FLIGHTOBJECT_H

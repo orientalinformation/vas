@@ -38,6 +38,8 @@ Item {
 
     signal clicked
 
+    signal rightClicked
+
     width: AppTheme.tscale(200)
     height: AppTheme.tscale(45)
 
@@ -75,18 +77,27 @@ Item {
                 bottomMargin: 0
             }
 
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+
             hoverEnabled: true
+
+            cursorShape: Qt.PointingHandCursor
 
             onEntered: hovered = true
             onExited: hovered = false
 
-            onClicked: container.clicked()
-            cursorShape: Qt.PointingHandCursor
+            onClicked: {
+                if (mouse.button == Qt.LeftButton) {
+                    container.clicked()
+                } else if (mouse.button == Qt.RightButton) {
+                    container.rightClicked()
+                }
+            }
         }
 
         background: Rectangle {
             anchors.fill: flightNumber
-            color: container.color
+            color: flightNumber.text === "" ? "transparent" : container.color
             opacity: 0.7
         }
     }

@@ -24,18 +24,18 @@ FlightObject::FlightObject(DataObject *parent) :
     DataObject(parent), _captain(""), _coPilot(""),
     _cabinManager(""), _cabinAgent1(""), _cabinAgent2(""), _cabinAgent3(""),
     _departure(""), _arrival(""), _timeDeparture(0), _timeArrival(0),
-    _newAircraft(""), _oldAircraft("")
+    _newAircraft(""), _oldAircraft(""), _status(FlightStatus::Unchanged)
 {
 }
 
 FlightObject::FlightObject(const QString &name, const QString &captain, const QString &coPilot,
                            const QString &cabinManager, const QString &cabinAgent1, const QString &cabinAgent2, const QString &cabinAgent3,
                            const QString &departure, const QString &arrival,const int &etd, const int &eta,
-                           const QString &newAircraft, const QString &oldAircraft, DataObject *parent) :
+                           const QString &newAircraft, const QString &oldAircraft, const FlightStatus &status, DataObject *parent) :
     DataObject(parent), _captain(captain), _coPilot(coPilot),
     _cabinManager(cabinManager), _cabinAgent1(cabinAgent1), _cabinAgent2(cabinAgent2), _cabinAgent3(cabinAgent3),
     _departure(departure), _arrival(arrival), _timeDeparture(etd), _timeArrival(eta),
-    _newAircraft(newAircraft), _oldAircraft(oldAircraft)
+    _newAircraft(newAircraft), _oldAircraft(oldAircraft), _status(status)
 {
     _name = name;
 }
@@ -193,5 +193,19 @@ void FlightObject::setOldAircraft(const QString &aircraft)
     if (aircraft != _oldAircraft) {
         _oldAircraft = aircraft;
         emit oldAircraftChanged();
+    }
+}
+
+FlightObject::FlightStatus FlightObject::status() const
+{
+    return _status;
+}
+
+void FlightObject::setStatus(const FlightStatus &status)
+{
+    if (status != _status) {
+        _status = status;
+
+        emit statusChanged();
     }
 }

@@ -20,7 +20,8 @@ HEADERS += \
                 printer/pagesize.h \
                 printer/printer.h \
                 printer/quickitempainter.h \
-                printer/styledtext.h
+                printer/styledtext.h \
+    problem.h
 
 SOURCES +=      main.cpp \
                 translation.cpp \
@@ -36,7 +37,8 @@ SOURCES +=      main.cpp \
                 printer/pagesize.cpp \
                 printer/printer.cpp \
                 printer/quickitempainter.cpp \
-                printer/styledtext.cpp
+                printer/styledtext.cpp \
+    problem.cpp
 
 RESOURCES +=    qml.qrc \
                 das_res.qrc
@@ -62,6 +64,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # Default rules for deployment.
 include(das_qml.pri)
 
+TRANSLATIONS =  translation/qml_vi.ts
+
 win32:RC_FILE = $$PWD/das_qml.rc
 
 DISTFILES += \
@@ -76,5 +80,21 @@ OTHER_FILES +=  version.h \
                 images/LICENSE \
                 LICENSE \
                 *.md
+
+win32 {
+    SOURCEPATH = $$PWD/data
+    DESTPATH = $$OUT_PWD/bin/data
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH,/,\\) $$replace(DESTPATH,/,\\)"
+}
+
+unix {
+    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/bin/"
+}
+
+first.depends = $(first) copydata
+export(first.depends)
+export(copydata.commands)
+
+QMAKE_EXTRA_TARGETS += first copydata
 
 #QMAKE_POST_LINK = cd $$PWD && lupdate das_qml.pro && lrelease das_qml.pro

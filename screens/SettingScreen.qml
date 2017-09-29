@@ -47,6 +47,10 @@ Item {
         id: languageDialog
     }
 
+    StatusColorDialog {
+        id: statusColorDialog
+    }
+
     ColumnLayout {
         id: columnLayout
 
@@ -451,12 +455,6 @@ Item {
                                 Image {
                                     id: iconLanguage
                                     source: "qrc:/das/images/settings/translate.png"
-
-                                    ColorOverlay {
-                                        anchors.fill: parent
-                                        source: parent
-                                        color: "#00aaff"
-                                    }
                                 }
 
                                 Label {
@@ -495,12 +493,6 @@ Item {
 
                                 Image {
                                     source: "qrc:/das/images/settings/guide.png"
-
-                                    ColorOverlay {
-                                        anchors.fill: parent
-                                        source: parent
-                                        color: "#00aaff"
-                                    }
                                 }
 
                                 Label {
@@ -530,13 +522,37 @@ Item {
                                 spacing: AppTheme.screenPadding
 
                                 Image {
-                                    source: "qrc:/das/images/settings/telephone.png"
+                                    source: "qrc:/das/images/settings/palette.png"
+                                }
 
-                                    ColorOverlay {
+                                Label {
+                                    id: lblStatusColor
+                                    text: qsTr("Flight Status Color") + translator.emptyString
+                                    font.pointSize: AppTheme.textSizeText
+                                    Layout.fillWidth: true
+                                    verticalAlignment: Text.AlignVCenter
+
+                                    MouseArea {
+                                        id: mouseAreaStatusColor
                                         anchors.fill: parent
-                                        source: parent
-                                        color: "#00aaff"
+                                        anchors.margins: 0
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+
+                                        onClicked: {
+                                            statusColorDialog.open()
+                                        }
                                     }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+
+                                spacing: AppTheme.screenPadding
+
+                                Image {
+                                    source: "qrc:/das/images/settings/telephone.png"
                                 }
 
                                 Label {
@@ -568,12 +584,6 @@ Item {
 
                                 Image {
                                     source: "qrc:/das/images/settings/update.png"
-
-                                    ColorOverlay {
-                                        anchors.fill: parent
-                                        source: parent
-                                        color: "#00aaff"
-                                    }
                                 }
 
                                 Label {
@@ -622,12 +632,6 @@ Item {
 
                                 Image {
                                     source: "qrc:/das/images/settings/about.png"
-
-                                    ColorOverlay {
-                                        anchors.fill: parent
-                                        source: parent
-                                        color: "#00aaff"
-                                    }
                                 }
 
                                 Label {

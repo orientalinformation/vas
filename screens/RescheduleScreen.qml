@@ -32,6 +32,7 @@ import "../theme"
 
 import "../scripts/global.js" as Global
 import "../scripts/branding.js" as Branding
+import "../scripts/setting.js" as Settings
 
 import "../sections"
 import "../widgets"
@@ -54,11 +55,19 @@ Item {
 
     property alias aircraftArrivalLimitModel: arrivalLimitedProblem.aircraftArrivalLimitModel
 
+    property alias airportSelectedModel: arrivalLimitedProblem.airportSelectedModel
+
     property alias dayDelayModel: dayDelayProblem.dayDelayModel
 
     property alias timeDelayModel: timeDelayProblem.timeDelayModel
 
     property alias timeLimitedModel: timeLimitedProblem.timeLimitedModel
+
+    property var dayDelayList: []
+    property var timeDelayList: []
+    property var timeLimitedList: []
+    property var airportList: []
+    property var aircraftArrivalLimitedList: []
 
     property var actionModel: [
         { "name": qsTr("Airline Day Delay") + translator.emptyString, "title": qsTr("Day Delay") + translator.emptyString, "image": "day.png", "index": 0 },
@@ -100,8 +109,31 @@ Item {
 
                 onBuilt: {
                     //Write code calculate here
-                    rescheduleCalculation.runReschedule(dayDelayModel.modelData, timeDelayModel, aircraftArrivalLimitModel, airportModel, timeLimitedModel,10, 10, 10, csvFlightModel, "/home/thiennt/Desktop/log.txt")
-                    //
+
+                    for (var i = 0 ; i < dayDelayModel.count ; i++) {
+                       dayDelayList.push(dayDelayModel.get(i).name)
+                    }
+
+                    for (var i = 0; i < timeDelayModel.count; i++) {
+                        timeDelayList.push(timeDelayModel.get(i))
+                    }
+
+                    for (var i = 0; i < timeLimitedModel.count; i++) {
+                        timeLimitedList.push(timeLimitedModel.get(i))
+                    }
+
+                    for (var i = 0; i < aircraftArrivalLimitModel.count; i++) {
+                        aircraftArrivalLimitedList.push(aircraftArrivalLimitModel.get(i).name)
+                    }
+
+                    for (var i = 0; i < airportSelectedModel.count; i++) {
+                        airportList.push(airportSelectedModel.get(i).name)
+                    }
+                    var path = CSVReader.source
+
+                    rescheduleCalculation.runReschedule(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
+                                                        timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightModel)
+
                     isSplitScheduleView = true
 
                     swipeView.setCurrentIndex(0)
@@ -534,7 +566,6 @@ Item {
             flightReader.source = fileUrl
             csvFlightModel = flightReader.read()
             listAircraft.currentIndex = -1
-
 
             for (var i = 0; i < csvFlightModel.length; i++) {
                 appendModel(airportModel, csvFlightModel[i].ARR)

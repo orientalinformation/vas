@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
 
     Translation translator;
 
+    qmlRegisterType<FlightObject, 1>("FlightObject", 1, 0, "FlightObject");
+
     qmlRegisterType<FileProcessing, 1>("FileProcessing", 1, 0, "FileProcessing");
     qmlRegisterType<CSVReader, 1>("CSVReader", 1, 0, "CSVReader");
 

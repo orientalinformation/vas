@@ -64,5 +64,6 @@
         <file>images/tools/add.png</file>
         <file>images/tools/remove.png</file>
         <file>images/social/share.png</file>
+        <file>images/settings/palette.png</file>
     </qresource>
 </RCC>

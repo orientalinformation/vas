@@ -28,7 +28,7 @@ import "../theme"
 
 Frame {
 
-    property alias dayDelayModel: dayDelayModel
+    property var dayDelayModel: dayDelayModel
 
     Layout.fillWidth: true
     Layout.fillHeight: true

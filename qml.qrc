@@ -34,5 +34,7 @@
         <file>problems/TimeLimited.qml</file>
         <file>widgets/DFMOptionButton.qml</file>
         <file>widgets/DFMComboBox.qml</file>
+        <file>widgets/DFMPressAndHoldButton.qml</file>
+        <file>dialogs/StatusColorDialog.qml</file>
     </qresource>
 </RCC>

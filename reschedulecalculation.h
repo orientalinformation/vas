@@ -22,20 +22,11 @@ modification, are permitted provided that the following conditions are met:
 #define RESCHEDULECALCULATION_H
 
 #include <QObject>
+#include <QApplication>
+#include <QDateTime>
 #include "flightobject.h"
 #include "aircraftobject.h"
-
-
-class Problems : public QObject {
-public:
-    QString name();
-    void setName(const QString &name);
-    QString time();
-    void setTime(const QString &time);
-private:
-    QString _name;
-    QString _time;
-};
+#include "problem.h"
 
 struct Crew {
     QString pre;
@@ -95,21 +86,20 @@ public:
 
     int countAircraft(QList <Aircraft> aircraft);
     QList <Flight> sortF(QList<Flight> F);
-    QList <FlightSchedule *> sortFS(QList<FlightSchedule *> FS);
+    QList <FlightSchedule *> sortflightSchedule(QList<FlightSchedule *> flightSchedule);
 
-    bool sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
-    bool inArray(const QString value, QList <QString> array);
-    Q_INVOKABLE void runReschedule(QList<QString> br1, QList<QObject *> br2, QList<QString> br3, QList<QString> AP,
-                                                       QList<QObject *> br4, int GT, int TL, int TrL, QList <QObject *> data, QString outputpath);
     int nameToIndex(QList <Aircraft> array, QString name);
 
+    bool sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
+    bool inArray(const QString value, QStringList array);
 
+    Q_INVOKABLE void runReschedule(QStringList br1, QList<QObject *> br2, QStringList br3, QStringList AP,
+                                                       QList<QObject *> br4, int groudTime, int sector, int dutyTime, QList <QObject *> data);
 
 signals:
-
-public slots:
-
+    void error(const QString& msg);
 private:
+    void writeFlightSchedule(QString outputPath, QList <FlightSchedule *> flightSchedule);
 
 };
 
