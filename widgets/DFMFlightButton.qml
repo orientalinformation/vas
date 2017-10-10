@@ -32,6 +32,8 @@ Item {
     property alias depAirport: depAirport.text
     property alias arrAirport: arrAirport.text
 
+    property alias flightLenght: container.width
+
     property color color: "#444444"
     property int fontSize: AppTheme.textSizeText
     property bool hovered: false
@@ -40,7 +42,6 @@ Item {
 
     signal rightClicked
 
-    width: AppTheme.tscale(200)
     height: AppTheme.tscale(45)
 
     opacity: hovered ? 1 : 0.95
@@ -65,6 +66,9 @@ Item {
         font.pointSize: AppTheme.textSizeText
         anchors.centerIn: parent
         padding: AppTheme.tscale(3)
+        horizontalAlignment: Text.AlignHCenter
+
+        width: container.width - depAirport.width - arrAirport.width - padding
 
         color: "#ffffff"
 

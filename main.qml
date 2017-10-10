@@ -1,7 +1,7 @@
 import QtQuick 2.9
 import QtQuick.Controls 2.2
 import QtQuick.Layouts 1.3
-import QtQuick.Window 2.0
+import QtQuick.Window 2.3
 import QtGraphicalEffects 1.0
 import QtQuick.Controls.Material 2.2
 
@@ -11,6 +11,7 @@ import "scripts/branding.js" as Branding
 import "theme"
 import "screens"
 import "navigation"
+import "sections"
 
 ApplicationWindow {
     id: _mainWindow
@@ -31,6 +32,9 @@ ApplicationWindow {
     width: AppTheme.screenWidthSize
     height: AppTheme.screenHeightSize
 
+    minimumWidth: AppTheme.screenWidthSize
+    minimumHeight: AppTheme.screenHeightSize
+
     property var bottomMenuModel: [
         { "name": qsTr("Home") + translator.emptyString, "icon": "home.png" },
         { "name": qsTr("Schedules") + translator.emptyString, "icon": "schedule.png" },
@@ -46,6 +50,28 @@ ApplicationWindow {
     onBottomMenuIndexChanged: {
         if (bottomMenuIndex !== swipeView.currentIndex) {
             swipeView.setCurrentIndex(bottomMenuIndex)
+        }
+    }
+
+    header: HeaderSection {
+        id: headerSection
+
+        onCaseOpened: {
+            homePage.open(path)
+        }
+
+        onCaseSaved: {
+            homePage.save(path)
+            schedulePage.save(path)
+            reschedulePage.save(path)
+            settingPage.save(path)
+        }
+
+        onCaseSavedAs: {
+            homePage.saveAs(path)
+            schedulePage.saveAs(path)
+            reschedulePage.saveAs(path)
+            settingPage.saveAs(path)
         }
     }
 
@@ -69,10 +95,18 @@ ApplicationWindow {
 
             ScheduleScreen {
                 id: schedulePage
+
+                onBuilt: {
+                    homePage.reload(localDataPath + "/data/flight_schedule.csv", "", true)
+                }
             }
 
             RescheduleScreen {
                 id: reschedulePage
+
+                onBuilt: {
+                    homePage.reload(localDataPath + "/data/flight_reschedule.csv", inputPath, false)
+                }
             }
 
             SettingScreen {
@@ -175,6 +209,8 @@ ApplicationWindow {
     }
 
     Timer {
+        id: timer
+
         interval: 1000;
         running: true;
         repeat: true

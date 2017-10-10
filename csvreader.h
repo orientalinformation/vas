@@ -39,9 +39,9 @@ class CSVReader : public QObject
 public:
     explicit CSVReader(QObject *parent = 0);
 
-    Q_INVOKABLE QList <QObject *> read();
+    Q_INVOKABLE QList <QObject *> read(bool isSingle = false);
 
-    Q_INVOKABLE QString write(QList <FlightObject *> data, QString path = "");
+    Q_INVOKABLE QString write(QList<QObject *> data, QString path = "");
 
     QString source() const;
     void setSource(QString &source);

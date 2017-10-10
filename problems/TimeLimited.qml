@@ -126,7 +126,6 @@ Frame {
 
                     TextField {
                         id: txtTimeLimited
-                        text: "0"
                         Layout.fillWidth: true
                         font.pointSize: AppTheme.textSizeText
                         width: AppTheme.hscale(305)

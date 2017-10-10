@@ -36,7 +36,7 @@ Dialog {
     focus: true
     modal: true
 
-    width: _mainWindow.width / 4 * 0.7
+    width: _mainWindow.width / 4
     height: _mainWindow.height / 5 * 1.3
 
     x: (_mainWindow.width - width) / 2
@@ -45,10 +45,10 @@ Dialog {
     padding: AppTheme.screenPadding
 
     property var colorModel: [
-        { "type": qsTr("Unchanged") + translator.emptyString, "color": "#444444" },
-        { "type": qsTr("Only Delay Day") + translator.emptyString, "color": "#4f51d8" },
-        { "type": qsTr("Only Delay Time") + translator.emptyString, "color": "#eab71a" },
-        { "type": qsTr("Delay Date") + translator.emptyString, "color": "#df522e" },
+        { "type": qsTr("Unchanged") + translator.emptyString, "color": Settings.colorUnchanged },
+        { "type": qsTr("Only Changed Airplane") + translator.emptyString, "color": Settings.colorChangedAirplane },
+        { "type": qsTr("Only Changed Time") + translator.emptyString, "color": Settings.colorChangedTime },
+        { "type": qsTr("Changed Airplane and Time") + translator.emptyString, "color": Settings.colorChangedAirplaneAndTime },
     ]
 
     ColumnLayout {

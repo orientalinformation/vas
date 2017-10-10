@@ -21,8 +21,11 @@ modification, are permitted provided that the following conditions are met:
 #include "reschedulecalculation.h"
 
 #include <QtAlgorithms>
+
 #include <QFile>
 #include <QTextStream>
+#include <QStandardPaths>
+
 #include <QDebug>
 
 RescheduleCalculation::RescheduleCalculation(QObject *parent) :
@@ -43,7 +46,7 @@ int RescheduleCalculation::countAircraft(QList<Aircraft> aircraft) {
     return count;
 }
 
-QList <Flight> RescheduleCalculation::sortF(QList<Flight> flight) {
+QList <Flight> RescheduleCalculation::sortFlightIncrease(QList<Flight> &flight) {
     for (int i = 0; i < (flight.size() - 1); i++) {
          for (int j = i + 1; j < flight.size(); j++) {
              if (flight[i].timeDeparture > flight[j].timeDeparture) {
@@ -78,7 +81,7 @@ bool RescheduleCalculation::sortByTimeDeparture(FlightSchedule *lhs, FlightSched
     return true;
 }
 
-QList<FlightSchedule *> RescheduleCalculation::sortflightSchedule(QList <FlightSchedule *> flightSchedule)
+QList<FlightSchedule *> RescheduleCalculation::sortFlightSchedule(QList <FlightSchedule *> &flightSchedule)
 {
     int sizeflightSchedule = flightSchedule.size();
      for (int i = 0; i < sizeflightSchedule - 1; i++) {
@@ -99,19 +102,16 @@ void RescheduleCalculation::writeFlightSchedule(QString outputPath, QList <Fligh
     if (file.open(QIODevice::WriteOnly | QIODevice::Text |  QIODevice::Truncate)) {
         QTextStream out(&file);
 
-        if (file.pos() == 0) {
-            out << "FN," << "CREW1," << "CREW2," << "CREW3," << "CREW4," << "CREW5," << "CREW6," << "DEP," << "ARR,"
-                << "TD," << "TA," << "AC," << "ACo," << endl;
-        }
+        out << "FN,CREW1,CREW2,CREW3,CREW4,CREW5,CREW6,DEP,ARR,TD,TA,AC,ACo,STATUS" << endl;
 
         for (int i = 0; i < flightSchedule.size(); i++) {
             out << flightSchedule.at(i)->flightNumber << "," << flightSchedule.at(i)->crew1 << "," << flightSchedule.at(i)->crew2 << "," << flightSchedule.at(i)->crew3
                 << "," << flightSchedule.at(i)->crew4 << "," << flightSchedule.at(i)->crew5 << "," << flightSchedule.at(i)->crew6 << "," << flightSchedule.at(i)->departure
                 << "," << flightSchedule.at(i)->arrive <<  "," << flightSchedule.at(i)->timeDeparture << "," << flightSchedule.at(i)->timeArrive
-                << "," << flightSchedule.at(i)->aircraft << "," << flightSchedule.at(i)->aircraftOld << endl;
+                << "," << flightSchedule.at(i)->aircraft << "," << flightSchedule.at(i)->aircraftOld << "," << flightSchedule.at(i)->status << endl;
         }
     } else {
-        emit error(tr("Unable open file!"));
+        emit error(tr("Can not write result file!"));
     }
 
 }
@@ -154,13 +154,13 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
     //Exchange time
     for (int i = 0; i < numberOfFlight; i++) {
-        int timeDep, timeArr;
-        timeDep = static_cast<FlightObject *>(flightObject.at(i))->timeDeparture();
-        timeArr = static_cast<FlightObject *>(flightObject.at(i))->timeArrival();
-        timeDep = timeDep / 100 * 60 + timeDep % 100;
-        timeArr = (timeArr - timeArr % 100) / 100 * 60 + timeArr % 100;
-        static_cast<FlightObject *>(flightObject.at(i))->setTimeDeparture(timeDep);
-        static_cast<FlightObject *>(flightObject.at(i))->setTimeArrival(timeArr);
+        int timeDeparture, timeArrival;
+        timeDeparture = static_cast<FlightObject *>(flightObject.at(i))->timeDeparture();
+        timeArrival = static_cast<FlightObject *>(flightObject.at(i))->timeArrival();
+        timeDeparture = timeDeparture / 100 * 60 + timeDeparture % 100;
+        timeArrival = timeArrival / 100 * 60 + timeArrival % 100;
+        static_cast<FlightObject *>(flightObject.at(i))->setTimeDeparture(timeDeparture);
+        static_cast<FlightObject *>(flightObject.at(i))->setTimeArrival(timeArrival);
     }
 
     // Filter get information of flight
@@ -353,12 +353,13 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
     // add data aircraft
     for (int i = 0; i < indexDuplicateFlight.size() - 1; i++) {
-        Aircraft arr;
-        arr.aircraftNumber = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->newAircraft();
-        arr.timeDeparture = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->timeDeparture();
-        arr.flagInProcess = false;
-        arr.departure = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->departure();
-        aircraft.push_back(arr);
+        Aircraft aircraft1;
+        aircraft1.aircraftNumber = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->newAircraft();
+        aircraft1.timeDeparture = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->timeDeparture();
+        aircraft1.flagInProcess = false;
+        aircraft1.status = 0;
+        aircraft1.departure = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->departure();
+        aircraft.push_back(aircraft1);
     }
 
     // add data flight
@@ -395,7 +396,10 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     // write information flight crash
     for (int i = 0; i < problem1.size(); i++) {
         int idx = nameToIndex(aircraft, problem1.at(i));
-        aircraft[idx].flagInProcess = true;
+        if (idx >= 0) {
+            aircraft[idx].flagInProcess = true;
+            aircraft[idx].status = 1;
+        }
     }
 
     for (int i = 0; i < problem2.size(); i++) {
@@ -416,29 +420,41 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
         int idx = nameToIndex(aircraft, name);
         if (idx >= 0) {
             aircraft[idx].timeDeparture = problem2.at(i)->property("time").toInt();
+            aircraft[idx].status = 2;
         }
     }
 
     QStringList acProblem3;
 
     for (int i = 0; i < problem3.size(); i++) {
-        acProblem3.push_back(aircraft[nameToIndex(aircraft, problem3.at(i))].aircraftNumber);
+        int idx = nameToIndex(aircraft, problem3.at(i));
+        if (idx >= 0) {
+            acProblem3.push_back(aircraft[idx].aircraftNumber);
+            aircraft[idx].status = 3;
+        }
     }
 
     QStringList acProblem4;
 
     for (int i = 0; i < problem4.size(); i++) {
-        acProblem4.push_back(aircraft[nameToIndex(aircraft, problem4.at(i)->property("name").toString())].aircraftNumber);
+        int idx = nameToIndex(aircraft, problem4.at(i)->property("name").toString());
+        if (idx >= 0) {
+            acProblem4.push_back(aircraft[idx].aircraftNumber);
+            aircraft[idx].status = 2;
+        }
     }
 
     QList<Problem4> AC4;
 
     for (int i = 0; i < problem4.size(); i++) {
         Problem4 ac4;
-        ac4.aircraftNumber = aircraft[nameToIndex(aircraft, problem4.at(i)->property("name").toString())].aircraftNumber;
-        ac4.flag = 0;
-        ac4.time = problem2.at(i)->property("time").toInt();
-        AC4.push_back(ac4);
+        int idx = nameToIndex(aircraft, problem4.at(i)->property("name").toString());
+        if (idx >= 0) {
+            ac4.aircraftNumber = aircraft[idx].aircraftNumber;
+            ac4.flag = 0;
+            ac4.time = problem4.at(i)->property("time").toInt();
+            AC4.push_back(ac4);
+        }
     }
 
     // Handling
@@ -474,7 +490,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
         if (flight1.size() > 0) {
             QList<Flight> flight2;
-            flight1 = sortF(flight1);
+            flight1 = sortFlightIncrease(flight1);
 
             for (int i = 0; i < flight1.size(); i++) {
                 if (flight1[i].aircraft == aircraft[m].aircraftNumber) {
@@ -542,6 +558,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                 flightSchedule1->timeArrive = aircraft[m].timeDeparture + flight1[k].timeFly - groundTime;
                 flightSchedule1->timeDeparture = aircraft[m].timeDeparture;
                 flightSchedule1->timeDelay = aircraft[m].timeDeparture - flight1[k].timeDeparture;
+                flightSchedule1->status = aircraft[m].status;
                 flightSchedule.push_back(flightSchedule1);
                 aircraft[m].timeDeparture = aircraft[m].timeDeparture + flight1[k].timeFly;
                 aircraft[m].departure = flight1[k].arrive;
@@ -555,6 +572,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
             } else {
                 FlightSchedule *flightSchedule1 = new FlightSchedule();
                 flightSchedule1->aircraft = aircraft[m].aircraftNumber;
+                flightSchedule1->status = aircraft[m].status;
                 flightSchedule1->aircraftOld = flight1[k].aircraft;
                 flightSchedule1->arrive = flight1[k].arrive;
                 flightSchedule1->departure = flight1[k].departure;
@@ -643,7 +661,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
         stimeDelay = stimeDelay + flightSchedule[i]->timeDelay;
     }
 
-    //flightSchedule = sortflightSchedule(flightSchedule);
+    flightSchedule = sortFlightSchedule(flightSchedule);
     // Crew
     QStringList ACC2;
     indexDuplicateFlight.clear();
@@ -656,27 +674,6 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     }
 
     indexDuplicateFlight.push_back(flightSchedule.size());
-
-    for (int i = 0; i < 100; i++) {
-        P1SGN.push_back("to bay them SGN " + QString::number(i + 1));
-        P1HAN.push_back("to bay them HAN " + QString::number(i + 1));
-        P1CXR.push_back("to bay them CXR " + QString::number(i + 1));
-        P2SGN.push_back("to bay them SGN " + QString::number(i + 1));
-        P2HAN.push_back("to bay them HAN " + QString::number(i + 1));
-        P2CXR.push_back("to bay them CXR " + QString::number(i + 1));
-        P3SGN.push_back("to bay them SGN " + QString::number(i + 1));
-        P3HAN.push_back("to bay them HAN " + QString::number(i + 1));
-        P3CXR.push_back("to bay them CXR " + QString::number(i + 1));
-        P4SGN.push_back("to bay them SGN " + QString::number(i + 1));
-        P4HAN.push_back("to bay them HAN " + QString::number(i + 1));
-        P4CXR.push_back("to bay them CXR " + QString::number(i + 1));
-        P5SGN.push_back("to bay them SGN " + QString::number(i + 1));
-        P5HAN.push_back("to bay them HAN " + QString::number(i + 1));
-        P5CXR.push_back("to bay them CXR " + QString::number(i + 1));
-        P6SGN.push_back("to bay them SGN " + QString::number(i + 1));
-        P6HAN.push_back("to bay them HAN " + QString::number(i + 1));
-        P6CXR.push_back("to bay them CXR " + QString::number(i + 1));
-    }
 
     //Sort crew
     int crSGNused = 0, crHANused = 0, crCXRused = 0;
@@ -720,28 +717,10 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
                     if (flightSchedule[mark1]->departure == "SGN") {
                         crSGNused++;
-                        P1SGN.erase(P1SGN.begin());
-                        P2SGN.erase(P2SGN.begin());
-                        P3SGN.erase(P3SGN.begin());
-                        P4SGN.erase(P4SGN.begin());
-                        P5SGN.erase(P5SGN.begin());
-                        P6SGN.erase(P6SGN.begin());
                     } else if (flightSchedule[mark1]->departure == "HAN") {
                         crHANused++;
-                        P1HAN.erase(P1HAN.begin());
-                        P2HAN.erase(P2HAN.begin());
-                        P3HAN.erase(P3HAN.begin());
-                        P4HAN.erase(P4HAN.begin());
-                        P5HAN.erase(P5HAN.begin());
-                        P6HAN.erase(P6HAN.begin());
                     } else if (flightSchedule[mark1]->departure == "CXR") {
                         crCXRused++;
-                        P1CXR.erase(P1CXR.begin());
-                        P2CXR.erase(P2CXR.begin());
-                        P3CXR.erase(P3CXR.begin());
-                        P4CXR.erase(P4CXR.begin());
-                        P5CXR.erase(P5CXR.begin());
-                        P6CXR.erase(P6CXR.begin());
                     }
 
                     mark1 = mark;
@@ -776,28 +755,10 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
                 if (flightSchedule[mark1]->departure == "SGN") {
                     crSGNused++;
-                    P1SGN.erase(P1SGN.begin());
-                    P2SGN.erase(P2SGN.begin());
-                    P3SGN.erase(P3SGN.begin());
-                    P4SGN.erase(P4SGN.begin());
-                    P5SGN.erase(P5SGN.begin());
-                    P6SGN.erase(P6SGN.begin());
                 } else if (flightSchedule[mark1]->departure == "HAN") {
                     crHANused++;
-                    P1HAN.erase(P1HAN.begin());
-                    P2HAN.erase(P2HAN.begin());
-                    P3HAN.erase(P3HAN.begin());
-                    P4HAN.erase(P4HAN.begin());
-                    P5HAN.erase(P5HAN.begin());
-                    P6HAN.erase(P6HAN.begin());
                 } else if (flightSchedule[mark1]->departure == "CXR") {
                     crCXRused++;
-                    P1CXR.erase(P1CXR.begin());
-                    P2CXR.erase(P2CXR.begin());
-                    P3CXR.erase(P3CXR.begin());
-                    P4CXR.erase(P4CXR.begin());
-                    P5CXR.erase(P5CXR.begin());
-                    P6CXR.erase(P6CXR.begin());
                 }
             }
         }
@@ -834,13 +795,15 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
             flightCancel++;
         }
     }
-    QString  path = QApplication::applicationDirPath();
-    path += QString("/data/FlightSchedule %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QString("/data/flight_reschedule.csv");
+
     // Write file output
     writeFlightSchedule(path, flightSchedule);
 
     // Write file log
-     path = QApplication::applicationDirPath() + QString("/data/Log %1.txt").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+    path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QString("/data/reschedule_log_%1.txt").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+
     QFile logFile(path);
 
     if (logFile.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {

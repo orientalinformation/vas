@@ -21,7 +21,8 @@ HEADERS += \
                 printer/printer.h \
                 printer/quickitempainter.h \
                 printer/styledtext.h \
-    problem.h
+    problem.h \
+    iostreams.h
 
 SOURCES +=      main.cpp \
                 translation.cpp \
@@ -38,7 +39,8 @@ SOURCES +=      main.cpp \
                 printer/printer.cpp \
                 printer/quickitempainter.cpp \
                 printer/styledtext.cpp \
-    problem.cpp
+    problem.cpp \
+    iostreams.cpp
 
 RESOURCES +=    qml.qrc \
                 das_res.qrc
@@ -63,6 +65,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 # Default rules for deployment.
 include(das_qml.pri)
+include(SortFilterProxyModel/SortFilterProxyModel.pri)
 
 TRANSLATIONS =  translation/qml_vi.ts
 

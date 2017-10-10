@@ -34,7 +34,15 @@ import "../widgets"
 Dialog {
     id: flightDialog
 
+    property bool isInserted: false
+
+    property var aFlightInserted
+
     property string flightCode: ""
+
+    property bool isReadOnly: false
+
+    property alias flightNumber: txtFN.text
 
     property alias aircraft: txtAC.text
     property alias aircraftOld: txtACOld.text
@@ -53,13 +61,13 @@ Dialog {
     property alias cabinAgent2: txtCA2.text
     property alias cabinAgent3: txtCA3.text
 
-    signal updated
+    signal updated(var isUpdated)
 
     focus: true
     modal: true
 
     width: AppTheme.hscale(400)
-    height: AppTheme.vscale(600)
+    height: AppTheme.vscale(570)
 
     x: (_mainWindow.width - width) / 2
     y: (_mainWindow.height - height) / 2
@@ -75,7 +83,7 @@ Dialog {
         Layout.fillHeight: true
 
         TitleSection {
-            title: flightCode
+            title: isInserted ? flightCode : flightNumber
 
             backVisible: false
             homeVisible: false
@@ -145,14 +153,42 @@ Dialog {
                                     Layout.column: 0
                                 }
 
-                                TextField  {
+                                TextField {
                                     id: txtAC
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    readOnly: isReadOnly
+
                                     Layout.row: 0
                                     Layout.column: 1
+                                }
+
+                                Label {
+                                    id: lblFN
+                                    text: qsTr("FN") + translator.emptyString
+                                    font.pointSize: AppTheme.textSizeText
+                                    verticalAlignment: Text.AlignVCenter
+
+                                    Layout.row: 1
+                                    Layout.column: 0
+
+                                    visible: isInserted
+                                }
+
+                                TextField  {
+                                    id: txtFN
+                                    Layout.fillWidth: true
+
+                                    font.pointSize: AppTheme.textSizeText
+
+                                    readOnly: isReadOnly
+
+                                    Layout.row: 1
+                                    Layout.column: 1
+
+                                    visible: isInserted
                                 }
 
                                 Label {
@@ -162,8 +198,10 @@ Dialog {
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
 
-                                    Layout.row: 1
+                                    Layout.row: 2
                                     Layout.column: 0
+
+                                    visible: !isInserted
                                 }
 
                                 TextField  {
@@ -172,8 +210,12 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    Layout.row: 1
+                                    readOnly: isReadOnly
+
+                                    Layout.row: 2
                                     Layout.column: 1
+
+                                    visible: !isInserted
                                 }
 
                                 Label {
@@ -183,7 +225,7 @@ Dialog {
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
 
-                                    Layout.row: 2
+                                    Layout.row: 3
                                     Layout.column: 0
                                 }
 
@@ -193,7 +235,9 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    Layout.row: 2
+                                    readOnly: isReadOnly
+
+                                    Layout.row: 3
                                     Layout.column: 1
                                 }
 
@@ -204,7 +248,7 @@ Dialog {
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
 
-                                    Layout.row: 3
+                                    Layout.row: 4
                                     Layout.column: 0
                                 }
 
@@ -214,7 +258,9 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    Layout.row: 3
+                                    readOnly: isReadOnly
+
+                                    Layout.row: 4
                                     Layout.column: 1
                                 }
 
@@ -225,7 +271,7 @@ Dialog {
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
 
-                                    Layout.row: 4
+                                    Layout.row: 5
                                     Layout.column: 0
                                 }
 
@@ -235,7 +281,9 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    Layout.row: 4
+                                    readOnly: isReadOnly
+
+                                    Layout.row: 5
                                     Layout.column: 1
                                 }
 
@@ -246,7 +294,7 @@ Dialog {
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
 
-                                    Layout.row: 5
+                                    Layout.row: 6
                                     Layout.column: 0
                                 }
 
@@ -256,7 +304,9 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    Layout.row: 5
+                                    readOnly: isReadOnly
+
+                                    Layout.row: 6
                                     Layout.column: 1
                                 }
 
@@ -303,6 +353,8 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    readOnly: isReadOnly
+
                                     Layout.row: 0
                                     Layout.column: 1
                                 }
@@ -323,6 +375,8 @@ Dialog {
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
+
+                                    readOnly: isReadOnly
 
                                     Layout.row: 1
                                     Layout.column: 1
@@ -345,6 +399,8 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    readOnly: isReadOnly
+
                                     Layout.row: 2
                                     Layout.column: 1
                                 }
@@ -365,6 +421,8 @@ Dialog {
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
+
+                                    readOnly: isReadOnly
 
                                     Layout.row: 3
                                     Layout.column: 1
@@ -387,6 +445,8 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    readOnly: isReadOnly
+
                                     Layout.row: 4
                                     Layout.column: 1
                                 }
@@ -408,9 +468,11 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    readOnly: isReadOnly
+
                                     Layout.row: 5
                                     Layout.column: 1
-                                }
+                                } 
 
                                 Item {
                                     // vertical spacer item
@@ -443,7 +505,7 @@ Dialog {
         anchors.rightMargin: AppTheme.hscale(15)
 
         ToolTip.visible: hoverButton
-        ToolTip.text: qsTr("Update values") + translator.emptyString
+        ToolTip.text: isInserted ? qsTr("Save values") + translator.emptyString : qsTr("Update values") + translator.emptyString
 
         contentItem: Image {
             id: updateIcon
@@ -452,7 +514,7 @@ Dialog {
             horizontalAlignment: Image.AlignHCenter
             verticalAlignment: Image.AlignVCenter
 
-            source: "qrc:/das/images/actions/update.png"
+            source: isInserted ? "qrc:/das/images/actions/save.png" : "qrc:/das/images/actions/update.png"
         }
 
         highlighted: true
@@ -477,7 +539,11 @@ Dialog {
             onClicked: {
                 close();
 
-                flightDialog.updated()
+                aFlightInserted = {  "name": flightNumber, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
+                                     "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
+                                     "ACO": "", "TED": Number(timeDeparture), "TEA": Number(timeArrival), "status": 0 }
+
+                flightDialog.updated(isInserted)
             }
         }
     }

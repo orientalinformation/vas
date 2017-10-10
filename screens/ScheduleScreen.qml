@@ -27,6 +27,7 @@ import QtQuick.Window 2.2
 
 import CSVReader 1.0
 import ScheduleCalculation 1.0
+import IOStreams 1.0
 
 import "../theme"
 
@@ -50,10 +51,22 @@ Item {
 
     property var csvAirportModel
 
+    signal built
+
+    signal open(var path)
+
+    signal save(var path)
+
+    signal saveAs(var path)
+
     ScheduleCalculation {
         id: scheduleCalculation
 
         onError: messages.displayMessage(msg)
+    }
+
+    IOStreams {
+        id: scheduleIostream
     }
 
     ColumnLayout {
@@ -70,10 +83,6 @@ Item {
             Layout.fillWidth: true
             anchors.fill: parent
 
-            HeaderSection {
-                id: header
-            }
-
             TitleSection {
                 id: titleSection
 
@@ -86,9 +95,13 @@ Item {
                 buildVisible: true
                 settingVisible: true
 
+                buildEnable: txtInputAircraftData.text !== "" && txtInputAirportData.text != ""
+
                 onBuilt: {
                     //Write code calculate here
-                    scheduleCalculation.runSchedule(Number(txtStartTime.text), csvAirportModel, csvAircraftModel);
+                    scheduleCalculation.runSchedule(csvAirportModel, csvAircraftModel, Number(txtStartTime.text));
+
+                    scheduleDialog.built()
 
                     isSplitScheduleView = false
 
@@ -304,7 +317,6 @@ Item {
 
         onAccepted: {
             txtInputAircraftData.text = fileUrl
-
             aircraftReader.source = fileUrl
             csvAircraftModel = aircraftReader.read()
         }
@@ -322,7 +334,6 @@ Item {
 
         onAccepted: {
             txtInputAirportData.text = fileUrl
-
             airportReader.source = fileUrl
             csvAirportModel = airportReader.read()
         }
@@ -330,5 +341,21 @@ Item {
 
     DFMBanner {
         id: messages
+    }
+
+    onOpen: {
+        //open
+    }
+
+    onSave: {
+        scheduleIostream.write("", "airport", aircraftReader.source, "schedules", path)
+        scheduleIostream.write("", "aircraft", aircraftReader.source, "schedules", path)
+        scheduleIostream.write("", "startTime", txtStartTime.text, "schedules", path)
+    }
+
+    onSaveAs: {
+        scheduleIostream.write("", "airport", aircraftReader.source, "schedules", path)
+        scheduleIostream.write("", "aircraft", aircraftReader.source, "schedules", path)
+        scheduleIostream.write("", "startTime", txtStartTime.text, "schedules", path)
     }
 }

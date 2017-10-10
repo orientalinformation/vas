@@ -28,11 +28,6 @@ modification, are permitted provided that the following conditions are met:
 #include "aircraftobject.h"
 #include "problem.h"
 
-struct Crew {
-    QString pre;
-    QString aft;
-};
-
 struct FlightSchedule {
     int timeDeparture;
     int timeArrive;
@@ -51,6 +46,8 @@ struct FlightSchedule {
     QString crew4;
     QString crew5;
     QString crew6;
+
+    int status;
 };
 
 struct Problem4 {
@@ -64,6 +61,8 @@ struct Aircraft {
     int timeDeparture;
     QString departure;
     bool flagInProcess; // Check aircraft is in process: 0: yes, 1: no
+
+    int status;
 };
 
 struct Flight {
@@ -85,17 +84,16 @@ public:
     explicit RescheduleCalculation(QObject *parent = 0);
 
     int countAircraft(QList <Aircraft> aircraft);
-    QList <Flight> sortF(QList<Flight> F);
-    QList <FlightSchedule *> sortflightSchedule(QList<FlightSchedule *> flightSchedule);
+    QList <Flight> sortFlightIncrease(QList<Flight> &F);
+    QList <FlightSchedule *> sortFlightSchedule(QList<FlightSchedule *> &flightSchedule);
 
     int nameToIndex(QList <Aircraft> array, QString name);
 
     bool sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
     bool inArray(const QString value, QStringList array);
 
-    Q_INVOKABLE void runReschedule(QStringList br1, QList<QObject *> br2, QStringList br3, QStringList AP,
-                                                       QList<QObject *> br4, int groudTime, int sector, int dutyTime, QList <QObject *> data);
-
+    Q_INVOKABLE void runReschedule(QStringList problem1, QList<QObject *> problem2, QStringList problem3, QStringList airports,
+                                                       QList<QObject *> problem4, int groudTime, int sector, int dutyTime, QList <QObject *> flightObject);
 signals:
     void error(const QString& msg);
 private:

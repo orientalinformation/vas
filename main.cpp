@@ -5,12 +5,16 @@
 #include <QQmlContext>
 #include <QQmlApplicationEngine>
 
+#include <QDir>
+#include <QStandardPaths>
+
 #include "csvreader.h"
 #include "translation.h"
 #include "fileprocessing.h"
 
 #include "schedulecalculation.h"
 #include "reschedulecalculation.h"
+#include "iostreams.h"
 
 #include "printer/printer.h"
 #include "printer/minipage.h"
@@ -35,6 +39,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<Printer>("DFMPrinter", 1, 0, "Printer");
     qmlRegisterType<PageSize>("DFMPrinter", 1, 0, "PageSize");
 
+    qmlRegisterType<IOStreams, 1>("IOStreams", 1, 0, "IOStreams");
+
     QScreen *screen = QGuiApplication::screens().at(0);
 
     qreal dpi;
@@ -52,11 +58,24 @@ int main(int argc, char *argv[])
 
     QString applicationDirPath = QApplication::applicationDirPath();
 
+    QString applicationLocalPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+
+    QDir dir(applicationLocalPath);
+
+    if (!dir.exists()) {
+        dir.mkpath(applicationLocalPath);
+    }
+
+    if (!dir.exists("data")) {
+        dir.mkdir("data");
+    }
+
     QQmlApplicationEngine engine;
 
     QQmlContext *context = engine.rootContext();
 
     context->setContextProperty("applicationDir", applicationDirPath);
+    context->setContextProperty("localDataPath", applicationLocalPath);
 
     context->setContextProperty("screenDpi", dpi);
     context->setContextProperty("screenPixelWidth", rec.width());

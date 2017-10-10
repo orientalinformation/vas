@@ -21,7 +21,6 @@
         <file>theme/qmldir</file>
         <file>screens/ScheduleScreen.qml</file>
         <file>screens/RescheduleScreen.qml</file>
-        <file>screens/LauncherScreen.qml</file>
         <file>widgets/DFMNavigationButton.qml</file>
         <file>dialogs/FlightDetail.qml</file>
         <file>widgets/DFMFlightButton.qml</file>

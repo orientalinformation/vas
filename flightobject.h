@@ -54,9 +54,9 @@ class FlightObject : public DataObject
 public:
     enum FlightStatus {
         Unchanged = 0x0000,
-        OnlyDelayDay = 0x0001,
-        OnlyDelayTime = 0x0002,
-        DelayDate = 0x0003
+        OnlyChangedAirplane = 0x0001,
+        OnlyChangedTime = 0x0002,
+        BothChangedAirplaneAndTime = 0x0003
     };
 
     FlightObject(DataObject *parent = 0);

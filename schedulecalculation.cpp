@@ -19,16 +19,19 @@ modification, are permitted provided that the following conditions are met:
 ****************************************************************************/
 
 #include "schedulecalculation.h"
+
 #include <time.h>
+
+#include <QStandardPaths>
+
 #include <QDebug>
 
 ScheduleCalculation::ScheduleCalculation(QObject *parent) :
     QObject(parent)
 {
-
 }
 
-void ScheduleCalculation::sortPriorityRatio(QList<FlightData*> &flightData, int sizeFlightData)
+void ScheduleCalculation::sortPriorityRatio(QList<FlightData *> &flightData, int sizeFlightData)
 {
     for (int u = 0; u < sizeFlightData - 1; u++) {
         for (int j = u; j < sizeFlightData; j++) {
@@ -39,7 +42,7 @@ void ScheduleCalculation::sortPriorityRatio(QList<FlightData*> &flightData, int 
     }
 }
 
-void ScheduleCalculation::sortTimeDeparture(QList<FlightCalendar> flightCalendar, int totalFlightSort)
+void ScheduleCalculation::sortTimeDeparture(QList<FlightCalendar> &flightCalendar, int totalFlightSort)
 {
     for (int i = 0; i < totalFlightSort - 1; i++) {
         for (int j = i; j < totalFlightSort; j++) {
@@ -50,24 +53,20 @@ void ScheduleCalculation::sortTimeDeparture(QList<FlightCalendar> flightCalendar
     }
 }
 
-int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData)
+int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart)
 {
     int sizeFlightData =  qmlAirportData.size();
     int sizeAircraftData = qmlAircraftData.size();
     int timeDifferenceOneAircraft = 5;
     int timeDifferenceTwoAircraft = 35;
     int totalFlightSort = 0;
-
-    QList<FlightData*> flightData;
-
+    QList<FlightData *> flightData;
     struct AircraftData {
         QString aircraftName;
         QString departure;
     };
     QList<AircraftData> aircraftData;
-
     QList<FlightCalendar> flightCalendar, aircraft;
-
     struct FlightCrew {
         int crewID;
         QString aircraftName;
@@ -84,20 +83,21 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
     // add flight data
     for (int i = 0; i < sizeFlightData; i++) {
         FlightData *data = new FlightData();
-        data->arrival = static_cast<AirportObject*>(qmlAirportData.at(i))->arrival();
-        data->departure = static_cast<AirportObject*>(qmlAirportData.at(i))->departure();
-        data->flightTime = static_cast<AirportObject*>(qmlAirportData.at(i))->timeFlight();
-        data->frequent = static_cast<AirportObject*>(qmlAirportData.at(i))->frequent();
+        data->arrival = static_cast<AirportObject *>(qmlAirportData.at(i))->arrival();
+        data->departure = static_cast<AirportObject *>(qmlAirportData.at(i))->departure();
+        data->flightTime = static_cast<AirportObject *>(qmlAirportData.at(i))->timeFlight();
+        data->frequent = static_cast<AirportObject *>(qmlAirportData.at(i))->frequent();
         data->isCompleted = true;
         data->numFlightCompleted = 0;
         data->priorityRatio = 0.0;
         flightData.push_back(data);
     }
+
     // add aircraft data
     for (int i = 0; i < sizeAircraftData; i++) {
         AircraftData data;
-        data.aircraftName = static_cast<AircraftObject*>(qmlAircraftData.at(i))->name();
-        data.departure = static_cast<AircraftObject*>(qmlAircraftData.at(i))->departure();
+        data.aircraftName = static_cast<AircraftObject *>(qmlAircraftData.at(i))->name();
+        data.departure = static_cast<AircraftObject *>(qmlAircraftData.at(i))->departure();
         aircraftData.push_back(data);
     }
 
@@ -127,8 +127,7 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
         }
     }
 
-    // Select radio
-    srand(time(NULL));
+    // Select ratio
 
     for (int i = 0; i < sizeFlightData; i++) {
         if (flightData[i]->frequent == 2) {
@@ -193,10 +192,8 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
 
                 flightData[j]->numFlightCompleted = 1;
                 flightData[j]->priorityRatio = 1 / flightData[j]->frequent;
-
                 FlightCalendar data(aircraft[i]);
                 flightCalendar.push_back(data);
-
                 aircraft[i].timeArrival = aircraft[i].timeArrival + timeDifferenceTwoAircraft;
                 break;
             } else {
@@ -290,6 +287,7 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
         // Implement arrangememt flight calendar
         for (int i = 0; i < sizeAircraftData; i++) {
             bool isAircraft = false;
+
             for (int j = 0; j < sizeFlightData; j++) {
                 if (flightData[j]->priorityRatio == 1) {
                     break;
@@ -317,6 +315,7 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
                 aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
                 aircraft[i].departure = flightData[j]->departure;
                 aircraft[i].arrival = flightData[j]->arrival;
+
                 // Check on the same runway, one or multi aircraft can't use takeoff avoid collisions
                 for (int k = 0; k < flightCalendar.size(); k++) {
                     if (aircraft[i].departure == flightCalendar[k].departure && abs(aircraft[i].timeDeparture - flightCalendar[k].timeDeparture) < timeDifferenceOneAircraft) {
@@ -333,13 +332,12 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
 
                 FlightCalendar data(aircraft[i]);
                 flightCalendar.push_back(data);
-
                 aircraft[i].timeArrival = aircraft[i].timeArrival + timeDifferenceTwoAircraft;
                 z = z + 1;
-
                 isAircraft = true;
                 break;
             }
+
             if (isAircraft) {
                 break;
             }
@@ -352,7 +350,6 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
 
     // Arrangement flight calendar to timeDeparture
     sortTimeDeparture(flightCalendar, totalFlightSort);
-
     // Arrangement flight crew
     int countFlightCrew = 0; //countFlightCrew+1: is number flight crew used
     int flag_1 = 0;
@@ -414,7 +411,6 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
                 flightCrew[countFlightCrew].frequent = flag_2 - flag_1;
                 flightCrew[countFlightCrew].isCompleted = 1;
                 countFlightCrew = countFlightCrew + 1;
-
                 FlightCrew dataCrew;
                 dataCrew.crewID = countFlightCrew + 1;
                 dataCrew.aircraftName = aircraft[i].aircraftName;
@@ -459,8 +455,7 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
 
     // Arrangement aircraft name random
     for (int i = 0; i < totalFlightSort; i++) {
-        flightCalendar[i].flightNumber = "BL";
-        flightCalendar[i].flightNumber.insert(2, QString::number(100 + i));
+        flightCalendar[i].flightNumber = "BL" + QString::number(101 + i);
     }
 
     // sort flightCalendar: to name flight, hour timeDeparture.
@@ -475,7 +470,7 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
     }
 
     // Write new data to file csv
-    write(flightCalendar, "");
+    write(flightCalendar);
 
     return 0;
 }
@@ -483,7 +478,7 @@ int ScheduleCalculation::runSchedule(int timeStart, QList<QObject *> qmlAirportD
 void ScheduleCalculation::write(QList<FlightCalendar> flightCalendar, QString path)
 {
     if (path.isEmpty()) {
-            path = QApplication::applicationDirPath() + QString("/data/flight_calendar %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+        path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QString("/data/flight_schedule.csv");
     } else {
         if (path.startsWith("file:///", Qt::CaseInsensitive)) {
 #ifdef Q_OS_WIN
@@ -495,22 +490,18 @@ void ScheduleCalculation::write(QList<FlightCalendar> flightCalendar, QString pa
     }
 
     QFile file(path);
+
     if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
         QTextStream out(&file);
 
-        if (!flightCalendar.isEmpty()) {
-            if (file.pos() == 0) {
-                out << "FN," << "AC," << "DEP," << "ARR," << "TD," << "TA," << "TEAM\n";
-            }
+        out << "FN,AC,DEP,ARR,TD,TA,TEAM,Status" << endl;
 
-            for (int i = 0; i < flightCalendar.size(); i++) {
-                out << flightCalendar[i].flightNumber << "," << flightCalendar[i].aircraftName<< "," << flightCalendar[i].departure << ","
-                    << flightCalendar[i].arrival << "," << flightCalendar[i].timeDeparture << "," << flightCalendar[i].timeArrival << ","
-                    << flightCalendar[i].crewID << "\n";
-            }
-
-        } else {
-            emit error(tr("Unable open file!"));
+        for (int i = 0; i < flightCalendar.size(); i++) {
+            out << flightCalendar[i].flightNumber << "," << flightCalendar[i].aircraftName << "," << flightCalendar[i].departure << ","
+                << flightCalendar[i].arrival << "," << flightCalendar[i].timeDeparture << "," << flightCalendar[i].timeArrival << ","
+                << flightCalendar[i].crewID << ",0" << endl;
         }
+    } else {
+        emit error(tr("Can not write result file!"));
     }
 }

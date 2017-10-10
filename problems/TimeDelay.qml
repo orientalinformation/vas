@@ -143,8 +143,7 @@ Frame {
 
                         validator: IntValidator { bottom:0; top: 2359}
 
-                        text: ""
-
+                        // placeholderText: qsTr("Input time...")
 
                         MouseArea {
                             id: mouseArea
@@ -160,7 +159,6 @@ Frame {
                         onTextChanged: {
                             timeDelayModel.set(row, { "time": txtTimeDelay.text })
                         }
-
                     }
                 }
 

@@ -73,14 +73,14 @@ public:
         double priorityRatio;
     };
 
-    Q_INVOKABLE int runSchedule(int timeStart, QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData);
+    Q_INVOKABLE int runSchedule(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart);
 
-    void write(QList<FlightCalendar> flightCalendar, QString path);
+    void write(QList<FlightCalendar> flightCalendar, QString path = "");
 
 private:
     void sortPriorityRatio(QList<FlightData *> &flightData, int sizeFlightData);
 
-    void sortTimeDeparture(QList<FlightCalendar> flightCalendar, int totalFlightSort);
+    void sortTimeDeparture(QList<FlightCalendar> &flightCalendar, int totalFlightSort);
 
 signals:
     void error(const QString& msg);

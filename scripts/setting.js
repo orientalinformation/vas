@@ -21,7 +21,12 @@ modification, are permitted provided that the following conditions are met:
 .pragma library
 
 var language = "en_US"
-var groundTime = 45
-var sector = 5
+var groundTime = 35
+var sector = 4
 var isDutyTime = true
-var dutyTime = 0
+var dutyTime = 660
+
+var colorUnchanged = "#444444"
+var colorChangedTime = "#eab71a"
+var colorChangedAirplane = "#4f51d8"
+var colorChangedAirplaneAndTime = "#df522e"

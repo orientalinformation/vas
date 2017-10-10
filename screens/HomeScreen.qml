@@ -40,6 +40,7 @@ import "../widgets"
 import CSVReader 1.0
 import DFMPrinter 1.0
 import FlightObject 1.0
+import IOStreams 1.0
 
 Item {
     id: root
@@ -55,14 +56,20 @@ Item {
     property double optimizedTimeLinePosition
     property double listViewOptimizedX
 
-    property var currentInputDatas
-    property var optimizedInputDatas
+    property var currentInputDatas: []
+    property var optimizedInputDatas: []
 
     property alias currentDataModels: currentDataModels
     property alias optimizedDataModels: optimizedDataModels
 
     property int indexRow: 0
     property int indexColumn: 0
+
+    signal reload(var path, var inputPath, var isSingleView)
+
+    signal open (var path)
+    signal save(var path)
+    signal saveAs(var path)
 
     function pad(num, size) {
         var s = num + "";
@@ -74,11 +81,49 @@ Item {
         return s;
     }
 
+    IOStreams {
+        id: homeIostreams
+    }
+
     FlightDetail {
         id: flightDialog
 
         onUpdated: {
+            for (var i = 0; i < optimizedDataModels.count; i++) {
+                if (optimizedDataModels.get(i).aircraft === aircraft)
+                for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                    if (flightDialog.flightNumber === optimizedDataModels.get(i).flights.get(j).name) {
+                        optimizedDataModels.get(i).flights.set(j, { "captain": captain,
+                                                                    "coPilot": coPilot,
+
+                                                                    "cabinManager": cabinManager,
+                                                                    "cabinAgent1": cabinAgent1,
+                                                                    "cabinAgent2": cabinAgent2,
+                                                                    "cabinAgent3": cabinAgent3,
+
+                                                                    "departure": departure,
+                                                                    "arrival": arrival,
+
+                                                                    "timeDeparture": Number(timeDeparture),
+                                                                    "timeArrival": Number(timeArrival),
+
+                                                                    "newAircraft": aircraft,
+                                                                    "oldAircraft": aircraftOld } )
+                        break
+                    }
+                }
+            }
+
             messages.displayMessage(qsTr("Flight updated") + translator.emptyString)
+        }
+    }
+
+    FlightDetail {
+        id: insertFlight
+
+        onUpdated: {
+            appendModel(optimizedDataModels, aFlightInserted, aFlightInserted.AC)
+            messages.displayMessage(qsTr("Flight inserted") + translator.emptyString)
         }
     }
 
@@ -103,8 +148,6 @@ Item {
     CSVReader {
         id: resultReader
 
-        source: "file:///" + applicationDir + "/data/input.csv"
-
         flight: true
         aircraft: false
         airport: false
@@ -112,8 +155,6 @@ Item {
 
     CSVReader {
         id: inputReader
-
-        source: "file:///" + applicationDir + "/data/input.csv"
 
         flight: true
         aircraft: false
@@ -147,16 +188,40 @@ Item {
 
         currentTimeLinePosition = timeLineCurrentPosition
         optimizedTimeLinePosition = timeLineOptimizedPosition
+    }
 
-        currentInputDatas = inputReader.read()
-        optimizedInputDatas = resultReader.read()
+    onOpen: {
+        //open case
+    }
+
+    onSave: {
+        homeIostreams.write("", "urlinput", inputReader.source, "homepage", path)
+        homeIostreams.write("", "urlresult", resultReader.source, "homepage", path)
+    }
+
+    onSaveAs: {
+        homeIostreams.write("", "urlinput", inputReader.source, "homepage", path)
+        homeIostreams.write("", "urlresult", resultReader.source, "homepage", path)
+    }
+
+    onReload: {
+        if (isSingleView === false) {
+            inputReader.source = inputPath
+            currentInputDatas = inputReader.read()
+        } else {
+            inputReader.source = ""
+        }
+
+        resultReader.source = path
+
+        optimizedInputDatas = resultReader.read(isSingleView)
 
         currentDataModels.clear()
 
         indexRow = 0;
         indexColumn = 0;
 
-        for (var i = 0; i < optimizedInputDatas.length; i++) {
+        for (var i = 0; i < currentInputDatas.length; i++) {
             appendModel(currentDataModels, currentInputDatas[i], currentInputDatas[i].AC)
         }
 
@@ -366,10 +431,6 @@ Item {
         Layout.fillWidth: true
         Layout.fillHeight: true
 
-        HeaderSection {
-            id: header
-        }
-
         TitleSection {
             id: titleSection
 
@@ -388,10 +449,6 @@ Item {
                 printer.beginPrinting();
                 printer.printWindow();
                 printer.endPrinting();
-            }
-
-            onBuilt: { //This is a temporary function
-                //
             }
         }
 
@@ -574,12 +631,16 @@ Item {
 
                                             color: "#444444"
 
-                                            width: name === "" ? listViewData.headerItem.itemAt(column).width : listViewData.headerItem.itemAt(column).width *
+                                            flightLenght: name === "" ? listViewData.headerItem.itemAt(column).width : listViewData.headerItem.itemAt(column).width *
                                                    (timeArrival / 100 > timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 :
                                                                                               (timeArrival / 100 < timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 + 24 : 1))
 
                                             onClicked: {
-                                                flightDialog.flightCode = flightNumber
+                                                flightDialog.isInserted = false
+
+                                                flightDialog.isReadOnly = true
+
+                                                flightDialog.flightNumber = flightNumber
 
                                                 flightDialog.aircraft = newAircraft
                                                 flightDialog.aircraftOld = oldAircraft
@@ -721,7 +782,7 @@ Item {
 
                                     Label {
                                         text: modelData
-                                        font.pointSize: AppTheme.textSizeSmall
+                                        font.pointSize: AppTheme.textSizeMenu
                                         padding: AppTheme.screenPadding
 
                                         background: Rectangle {
@@ -790,14 +851,18 @@ Item {
                                             depAirport: departure
                                             arrAirport: arrival
 
-                                            color: status === FlightObject.OnlyDelayDay ? "#4f51d8" : status === FlightObject.OnlyDelayTime ? "#eab71a" : status === FlightObject.DelayDate ? "#df522e" : "#444444"
+                                            color: status === FlightObject.OnlyChangedAirplane ? Settings.colorChangedAirplane :
+                                                                                          status === FlightObject.OnlyChangedTime ? Settings.colorChangedTime :
+                                                                                          status === FlightObject.BothChangedAirplaneAndTime ? Settings.colorChangedAirplaneAndTime : Settings.colorUnchanged
 
-                                            width: name === "" ? listViewDataOptimized.headerItem.itemAt(column).width : listViewDataOptimized.headerItem.itemAt(column).width *
+                                            flightLenght: name === "" ? listViewDataOptimized.headerItem.itemAt(column).width : listViewDataOptimized.headerItem.itemAt(column).width *
                                                    (timeArrival / 100 > timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 :
                                                                                               (timeArrival / 100 < timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 + 24 : 1))
 
                                             onClicked: {
-                                                flightDialog.flightCode = flightNumber
+                                                flightDialog.isInserted = false
+
+                                                flightDialog.flightNumber = flightNumber
 
                                                 flightDialog.aircraft = newAircraft
                                                 flightDialog.aircraftOld = oldAircraft
@@ -821,7 +886,8 @@ Item {
 
                                             onRightClicked: {
                                                 contextMenu.flightCode = flightNumber
-
+                                                contextMenu.row = delegateOptimized.row
+                                                contextMenu.column = column
                                                 contextMenu.open()
                                             }
                                         }
@@ -897,7 +963,9 @@ Item {
             onExited: parent.hoverButton = false
 
             onClicked: {
-                //
+                insertFlight.isInserted = true
+                insertFlight.flightCode = qsTr("Add new flight")
+                insertFlight.open();
             }
         }
     }
@@ -906,6 +974,10 @@ Item {
         id: contextMenu
 
         property alias flightCode: txtFlightCode.text
+
+        property int row
+
+        property int  column
 
         x: parent.width / 2 - width / 2
         y: parent.height / 2 - height / 2
@@ -940,13 +1012,35 @@ Item {
 
         MenuItem {
             id: itemDelete
-            text: qsTr("Delete block")
+            text: qsTr("Delete block") + translator.emptyString
             font.pointSize: AppTheme.textSizeMenu
 
             enabled: optimizedDataModels.count > 0
 
             onTriggered: {
-                //
+                optimizedDataModels.get(contextMenu.row).flights.set(contextMenu.column, {   "name": "",
+
+                                                                                             "captain": "",
+                                                                                             "coPilot": "",
+
+                                                                                             "cabinManager": "",
+                                                                                             "cabinAgent1": "",
+                                                                                             "cabinAgent2": "",
+                                                                                             "cabinAgent3": "",
+
+                                                                                             "departure": "",
+                                                                                             "arrival": "",
+
+                                                                                             "timeDeparture": 0,
+                                                                                             "timeArrival": 0,
+
+                                                                                             "newAircraft": "",
+                                                                                             "oldAircraft": "",
+
+                                                                                             "status": FlightObject.Unchanged
+                                                                     })
+
+                messages.displayMessage(contextMenu.flightCode + qsTr(" was deleted.") + translator.emptyString)
             }
         }
     }

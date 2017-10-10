@@ -26,6 +26,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Controls.Material 2.1
+import FlightObject 1.0
 
 import "../theme"
 import "../navigation"
@@ -33,13 +34,15 @@ import "../navigation"
 import "../scripts/branding.js" as Branding
 
 Frame {
+    id: header
+
     property bool lineSection: false
 
     property bool drawerVisible: true
 
     property bool topSpacing: true
 
-    bottomPadding: 0
+    bottomPadding: AppTheme.vscale(10)
     rightPadding: 0
     leftPadding: 0
 
@@ -54,32 +57,39 @@ Frame {
 
     property int navigationIndex: 0
 
+    property var optimizedModels: []
+
+    signal caseSaved(var path)
+    signal caseOpened(var path)
+    signal caseSavedAs(var path)
+
     onNavigationIndexChanged: {
         switch (navigationIndex) {
-            case 0: // Open
-                fileOpenDialog.open()
-                break;
-            case 1: // Save
-                fileSaveDialog.open()
-                break;
-            case 2: // Save as
-                fileSaveDialog.open()
-                break;
-            case 4: // Export
-                break;
-            case 6: // Quit
-                quitMessageDialog.visible = true
-                break;
-            case 8: //Feedback
-                break;
-            case 9: // About this app
-                swipeView.setCurrentIndex(4)
-                break;
-            case 3: // Devider
-            case 5: // Devider
-            case 7: // Devider
-            default:
-                break;
+        case 0: // Open
+            fileOpenDialog.open()
+            break;
+        case 1: // Save
+            fileSaveDialog.open()
+            break;
+        case 2: // Save as
+            fileSaveAsDialog.open()
+            break;
+        case 4: // Export
+            fileExportDialog.open()
+            break;
+        case 6: // Quit
+            quitMessageDialog.visible = true
+            break;
+        case 8: //Feedback
+            break;
+        case 9: // About this app
+            swipeView.setCurrentIndex(4)
+            break;
+        case 3: // Devider
+        case 5: // Devider
+        case 7: // Devider
+        default:
+            break;
         }
     }
 
@@ -138,7 +148,7 @@ Frame {
 
                         onClicked: {
                             navigationBar.open()
-                       }
+                        }
                     }
                 }
 
@@ -211,6 +221,7 @@ Frame {
 
         onAccepted: {
             console.log("Open file: " + fileUrl)
+            header.caseOpened(fileUrl)
         }
     }
 
@@ -225,6 +236,48 @@ Frame {
         nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
 
         onAccepted: {
+            console.log("Save file: " + fileUrl)
+            header.caseSaved(fileUrl)
+        }
+    }
+
+    FileDialog {
+        id: fileSaveAsDialog
+        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+
+        folder: shortcuts.documents
+        selectExisting: false
+        selectMultiple: false
+
+        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
+
+        onAccepted: {
+            console.log("Save as file: " + fileUrl)
+            header.caseSavedAs(fileUrl)
+        }
+    }
+
+    FileDialog {
+        id: fileExportDialog
+        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+
+        folder: shortcuts.documents
+        selectExisting: false
+        selectMultiple: false
+
+        nameFilters: [qsTr("%1 File (*.csv)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
+
+        onAccepted: {
+            for (var i = 0; i < optimizedDataModels.count; i++) {
+
+                for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                    if (optimizedDataModels.get(i).flights.get(j).name !== "") {
+                        optimizedModels.push(optimizedDataModels.get(i).flights.get(j))
+                    }
+                }
+            }
+
+            resultReader.write(optimizedModels, fileUrl);
             console.log("Save file: " + fileUrl)
         }
     }

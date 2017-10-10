@@ -56,10 +56,6 @@ Item {
             Layout.fillWidth: true
             anchors.fill: parent
 
-            HeaderSection {
-                id: header
-            }
-
             TitleSection {
                 id: titleSection
 

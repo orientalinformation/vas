@@ -28,6 +28,8 @@ import QtGraphicalEffects 1.0
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Controls.Material 2.1
 
+import IOStreams 1.0
+
 import "../theme"
 
 import "../scripts/global.js" as Global
@@ -43,12 +45,22 @@ Item {
 
     property int parentIndex: Global.parentSettingIndex
 
+    signal open(var path)
+
+    signal save(var path)
+
+    signal saveAs(var path)
+
     LanguageDialog {
         id: languageDialog
     }
 
     StatusColorDialog {
         id: statusColorDialog
+    }
+
+    IOStreams {
+        id: settingsIostream
     }
 
     ColumnLayout {
@@ -64,10 +76,6 @@ Item {
             id: columnLayoutTitle
             Layout.fillWidth: true
             anchors.fill: parent
-
-            HeaderSection {
-                id: header
-            }
 
             TitleSection {
                 id: titleSection
@@ -177,7 +185,7 @@ Item {
 
                                 Layout.fillWidth: true
 
-                                text: "45"
+                                text: "35"
                                 font.pointSize: AppTheme.textSizeText
                                 placeholderText: qsTr("Enter ground time") + translator.emptyString
 
@@ -237,9 +245,6 @@ Item {
 
                                 onMoved: {
                                     value = Math.round(value)
-                                }
-
-                                onValueChanged: {
                                     Settings.sector = value
                                 }
 
@@ -673,5 +678,19 @@ Item {
                 }
             }
         }
+    }
+
+    onOpen: {
+        //open
+    }
+
+    onSave: {
+        settingsIostream.write("", "groundTime", txtGroundTime.text, "Settings", path)
+        settingsIostream.write("", "dutyTime", txtDutyTime.text, "Settings", path)
+    }
+
+    onSaveAs: {
+        settingsIostream.write("", "groundTime", txtGroundTime.text, "Settings", path)
+        settingsIostream.write("", "dutyTime", txtDutyTime.text, "Settings", path)
     }
 }

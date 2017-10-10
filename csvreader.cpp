@@ -36,7 +36,7 @@ CSVReader::CSVReader(QObject *parent) : QObject(parent)
     _isAirport = false;
 }
 
-QList<QObject *> CSVReader::read()
+QList<QObject *> CSVReader::read(bool isSingle)
 {
     if (_source.isEmpty()) {
         emit error(tr("Source is empty"));
@@ -57,50 +57,94 @@ QList<QObject *> CSVReader::read()
             lineContent = in.readLine().split(QRegExp("\\,|\\;|\\||\\^"));
 
             if (_isFlight) {
-                if (lineContent.size() >= 12 && lineContent.first() != "") {
-                    FlightObject *flight = new FlightObject();
+                if (!isSingle) {
+                    if (lineContent.size() >= 12 && lineContent.first() != "") {
+                        FlightObject *flight = new FlightObject();
 
-                    flight->setName(lineContent[0]);
+                        flight->setName(lineContent[0]);
 
-                    flight->setCaptain(lineContent[1]);
-                    flight->setCoPilot(lineContent[2]);
+                        flight->setCaptain(lineContent[1]);
+                        flight->setCoPilot(lineContent[2]);
 
-                    flight->setCabinManager(lineContent[3]);
-                    flight->setCabinAgent1(lineContent[4]);
-                    flight->setCabinAgent2(lineContent[5]);
-                    flight->setCabinAgent3(lineContent[6]);
+                        flight->setCabinManager(lineContent[3]);
+                        flight->setCabinAgent1(lineContent[4]);
+                        flight->setCabinAgent2(lineContent[5]);
+                        flight->setCabinAgent3(lineContent[6]);
 
-                    flight->setDeparture(lineContent[7]);
-                    flight->setArrival(lineContent[8]);
+                        flight->setDeparture(lineContent[7]);
+                        flight->setArrival(lineContent[8]);
 
-                    flight->setTimeDeparture(lineContent[9].toInt());
-                    flight->setTimeArrival(lineContent[10].toInt());
+                        flight->setTimeDeparture(lineContent[9].toInt());
+                        flight->setTimeArrival(lineContent[10].toInt());
 
-                    flight->setNewAircraft(lineContent[11]);
+                        flight->setNewAircraft(lineContent[11]);
 
-                    if (lineContent.size() >= 13) {
-                        flight->setOldAircraft(lineContent[12]);
-                    } else {
-                        flight->setOldAircraft("");
-                    }
+                        if (lineContent.size() >= 13) {
+                            flight->setOldAircraft(lineContent[12]);
+                        } else {
+                            flight->setOldAircraft("");
+                        }
 
-                    if (lineContent.size() >= 14) {
-                        int status = lineContent[13].toInt();
+                        if (lineContent.size() >= 14) {
+                            int status = lineContent[13].toInt();
 
-                        if (status == 1) {
-                            flight->setStatus(FlightObject::OnlyDelayDay);
-                        } else if (status == 2) {
-                            flight->setStatus(FlightObject::OnlyDelayTime);
-                        } else if (status == 3) {
-                            flight->setStatus(FlightObject::DelayDate);
+                            if (status == 1) {
+                                flight->setStatus(FlightObject::OnlyChangedAirplane);
+                            } else if (status == 2) {
+                                flight->setStatus(FlightObject::OnlyChangedTime);
+                            } else if (status == 3) {
+                                flight->setStatus(FlightObject::BothChangedAirplaneAndTime);
+                            } else {
+                                flight->setStatus(FlightObject::Unchanged);
+                            }
                         } else {
                             flight->setStatus(FlightObject::Unchanged);
                         }
-                    } else {
-                        flight->setStatus(FlightObject::Unchanged);
-                    }
 
-                    data.append(flight);
+                        data.append(flight);
+                    }
+                } else {
+                    if (lineContent.size() >= 7 && lineContent.first() != "") {
+                        FlightObject *flight = new FlightObject();
+
+                        flight->setName(lineContent[0]);
+
+                        flight->setCaptain("");
+                        flight->setCoPilot("");
+
+                        flight->setCabinManager("");
+                        flight->setCabinAgent1("");
+                        flight->setCabinAgent2("");
+                        flight->setCabinAgent3("");
+
+                        flight->setDeparture(lineContent[2]);
+                        flight->setArrival(lineContent[3]);
+
+                        flight->setTimeDeparture(lineContent[4].toInt());
+                        flight->setTimeArrival(lineContent[5].toInt());
+
+                        flight->setNewAircraft(lineContent[1]);
+
+                        flight->setOldAircraft("");
+
+                        if (lineContent.size() >= 8) {
+                            int status = lineContent[7].toInt();
+
+                            if (status == 1) {
+                                flight->setStatus(FlightObject::OnlyChangedAirplane);
+                            } else if (status == 2) {
+                                flight->setStatus(FlightObject::OnlyChangedTime);
+                            } else if (status == 3) {
+                                flight->setStatus(FlightObject::BothChangedAirplaneAndTime);
+                            } else {
+                                flight->setStatus(FlightObject::Unchanged);
+                            }
+                        } else {
+                            flight->setStatus(FlightObject::Unchanged);
+                        }
+
+                        data.append(flight);
+                    }
                 }
             } else if (_isAircraft) {
                 if (lineContent.size() >= 2 && lineContent.first() != "") {
@@ -134,13 +178,13 @@ QList<QObject *> CSVReader::read()
     return data;
 }
 
-QString CSVReader::write(QList<FlightObject *> data, QString path)
+QString CSVReader::write(QList<QObject *> data, QString path)
 {
     if (path.isEmpty()) {
         if (!_source.isEmpty()) {
-            path = _source.mid(0, (_source.lastIndexOf('/') + 1)) + QString("_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+            path = _source.mid(0, (_source.lastIndexOf("/data/") + 1)) + QString("_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
         } else {
-            path = QApplication::applicationDirPath() + QString("/schedules_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+            path = QApplication::applicationDirPath() + QString("/data/schedules_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
         }
     } else {
         if (path.startsWith("file:///", Qt::CaseInsensitive)) {
@@ -152,21 +196,24 @@ QString CSVReader::write(QList<FlightObject *> data, QString path)
         }
     }
 
+    if (!path.endsWith(".csv", Qt::CaseInsensitive)) {
+        path += ".csv";
+    }
+
     QFile file(path);
 
     if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
         QTextStream out(&file);
 
-        while (!data.isEmpty()) {
-            FlightObject *flight = data.takeFirst();
+        out << "Fligt number, Full name captain, Full name FO, Full name CM, Full name CA, Full name CA, Full name CA,DEP,ARR,TD,TA,AC,ACo,STATUS" << endl;
 
-            out << flight->name() << "," << flight->captain() << "," << flight->coPilot() << "," << flight->cabinManager() << "," << flight->cabinAgent1()  << ","
-                << flight->cabinAgent2() << "," << flight->cabinAgent3() << "," << flight->departure() << "," << flight->arrival() << ","
-                << flight->timeDeparture() << "," << flight->timeArrival() << "," << flight->newAircraft() << "," << flight->oldAircraft() << endl;
+        for (int i = 0; i < data.size(); i++) {
+            out << data[i]->property("name").toString() << "," << data[i]->property("captain").toString() << "," << data[i]->property("coPilot").toString() << ","
+                << data[i]->property("cabinManager").toString() << "," << data[i]->property("cabinAgent1").toString() << "," << data[i]->property("cabinAgent2").toString() << ","
+                << data[i]->property("cabinAgent3").toString() << "," << data[i]->property("departure").toString() << "," << data[i]->property("arrival").toString() << ","
+                << data[i]->property("timeDeparture").toString() << "," << data[i]->property("timeArrival").toString() << "," << data[i]->property("newAircraft").toString() << ","
+                << data[i]->property("oldAircraft").toString() << "," << data[i]->property("status").toString() << endl;
         }
-
-        file.flush();
-        file.close();
     } else {
         emit error(tr("Unable open file!"));
         return QString();
@@ -185,11 +232,15 @@ void CSVReader::setSource(QString &source)
     if (_source != source) {
         const QString value = "";
 
+        if (source.startsWith("file:///")) {
 #ifdef Q_OS_WIN
-        _source = source.replace(0, 8, value);
+            _source = source.replace(0, 8, value);
 #else
-        _source = source.replace(0, 7, value);
+            _source = source.replace(0, 7, value);
 #endif
+        } else {
+            _source = source;
+        }
 
         emit sourceChanged();
     }

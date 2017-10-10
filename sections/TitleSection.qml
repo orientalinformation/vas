@@ -62,6 +62,8 @@ Frame {
 
     property bool titleInCenter: false
 
+    property bool buildEnable: false
+
     signal built
     signal printed
 
@@ -242,6 +244,8 @@ Frame {
             id: btnBuild
 
             visible: buildVisible
+
+            enabled: buildEnable
 
             property bool hoverButton: false
 

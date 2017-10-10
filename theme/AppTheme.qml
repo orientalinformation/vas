@@ -116,7 +116,7 @@ QtObject
     readonly property real rowSpacing: vscale(16)
     readonly property real columnSpacing: hscale(20)
 
-    readonly property real listItemWidth: hscale(200)
+    readonly property real listItemWidth: hscale(130)
 
     // Color Scheme
     // Green

@@ -27,6 +27,7 @@ import QtQuick.Window 2.2
 
 import CSVReader 1.0
 import RescheduleCalculation 1.0
+import IOStreams 1.0
 
 import "../theme"
 
@@ -49,7 +50,7 @@ Item {
 
     property alias titleReScheduleSection: titleSection
 
-    property var csvFlightModel
+    property var csvFlightModel: []
 
     property alias airportModel: arrivalLimitedProblem.airportModel
 
@@ -69,12 +70,24 @@ Item {
     property var airportList: []
     property var aircraftArrivalLimitedList: []
 
+    signal built(var inputPath)
+
+    signal open(var path)
+
+    signal save(var path)
+
+    signal saveAs(var path)
+
     property var actionModel: [
         { "name": qsTr("Airline Day Delay") + translator.emptyString, "title": qsTr("Day Delay") + translator.emptyString, "image": "day.png", "index": 0 },
         { "name": qsTr("Airline Time Delay") + translator.emptyString, "title": qsTr("Time Delay") + translator.emptyString, "image": "time.png", "index": 1 },
         { "name": qsTr("Airline Arrival Limited") + translator.emptyString, "title": qsTr("Arrival Limited") + translator.emptyString, "image": "arrival.png", "index": 2 },
         { "name": qsTr("Airline Time Limited") + translator.emptyString, "title": qsTr("Time Limited") + translator.emptyString, "image": "itinerary.png", "index": 3 },
     ]
+
+    IOStreams {
+       id: rescheduleIostream
+    }
 
     ColumnLayout {
         id: columnLayout
@@ -91,10 +104,6 @@ Item {
             Layout.fillWidth: true
             anchors.fill: parent
 
-            HeaderSection {
-                id: header
-            }
-
             TitleSection {
                 id: titleSection
 
@@ -106,6 +115,8 @@ Item {
 
                 buildVisible: true
                 settingVisible: true
+
+                buildEnable: txtInputData.text !== ""
 
                 onBuilt: {
                     //Write code calculate here
@@ -129,10 +140,11 @@ Item {
                     for (var i = 0; i < airportSelectedModel.count; i++) {
                         airportList.push(airportSelectedModel.get(i).name)
                     }
-                    var path = CSVReader.source
 
                     rescheduleCalculation.runReschedule(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
                                                         timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightModel)
+
+                    rescheduleDialog.built(flightReader.source)
 
                     isSplitScheduleView = true
 
@@ -562,7 +574,6 @@ Item {
 
         onAccepted: {
             txtInputData.text = fileUrl
-
             flightReader.source = fileUrl
             csvFlightModel = flightReader.read()
             listAircraft.currentIndex = -1
@@ -571,12 +582,22 @@ Item {
                 appendModel(airportModel, csvFlightModel[i].ARR)
                 appendModel(rescheduleModel, csvFlightModel[i].AC)
             }
-
-
         }
     }
 
     DFMBanner {
         id: messages
+    }
+
+    onSave: {
+        rescheduleIostream.write("", "inputdata", flightReader.source, "reschedules", path)
+    }
+
+    onSaveAs: {
+        rescheduleIostream.write("", "inputdata", flightReader.source, "reschedules", path)
+    }
+
+    onOpen: {
+        //code
     }
 }

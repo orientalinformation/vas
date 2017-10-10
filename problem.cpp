@@ -1,14 +1,13 @@
 #include "problem.h"
 
-Problem::Problem(QObject *parent) : QObject(parent), _name(""), _time(0)
+Problem::Problem(QObject *parent) :
+    QObject(parent), _name(""), _time(0)
 {
-
 }
 
 Problem::Problem(const QString &name, const int &time, QObject *parent) :
-                                        QObject(parent), _name(name), _time(time)
+    QObject(parent), _name(name), _time(time)
 {
-
 }
 
 QString Problem::name() const
