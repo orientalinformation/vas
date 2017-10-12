@@ -61,8 +61,6 @@ struct Aircraft {
     int timeDeparture;
     QString departure;
     bool flagInProcess; // Check aircraft is in process: 0: yes, 1: no
-
-    int status;
 };
 
 struct Flight {
@@ -84,13 +82,14 @@ public:
     explicit RescheduleCalculation(QObject *parent = 0);
 
     int countAircraft(QList <Aircraft> aircraft);
-    QList <Flight> sortFlightIncrease(QList<Flight> &F);
-    QList <FlightSchedule *> sortFlightSchedule(QList<FlightSchedule *> &flightSchedule);
+    QList <Flight> sortFlightIncrease(QList<Flight> F);
+    QList <FlightSchedule *> sortFlightSchedule(QList<FlightSchedule *> flightSchedule);
 
-    int nameToIndex(QList <Aircraft> array, QString name);
+    int getIndexInArrayByName(QList <Aircraft> array, QString name);
+    int getIndexInArrayByName(QStringList array, QString name);
 
     bool sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
-    bool inArray(const QString value, QStringList array);
+    bool isArrayContains(const QString value, QStringList array);
 
     Q_INVOKABLE void runReschedule(QStringList problem1, QList<QObject *> problem2, QStringList problem3, QStringList airports,
                                                        QList<QObject *> problem4, int groudTime, int sector, int dutyTime, QList <QObject *> flightObject);

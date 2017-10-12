@@ -35,5 +35,6 @@
         <file>widgets/DFMComboBox.qml</file>
         <file>widgets/DFMPressAndHoldButton.qml</file>
         <file>dialogs/StatusColorDialog.qml</file>
+        <file>scripts/unitconvert.js</file>
     </qresource>
 </RCC>

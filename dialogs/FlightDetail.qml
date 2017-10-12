@@ -36,8 +36,6 @@ Dialog {
 
     property bool isInserted: false
 
-    property var aFlightInserted
-
     property string flightCode: ""
 
     property bool isReadOnly: false
@@ -61,7 +59,7 @@ Dialog {
     property alias cabinAgent2: txtCA2.text
     property alias cabinAgent3: txtCA3.text
 
-    signal updated(var isUpdated)
+    signal updated(var flightData, var isUpdated)
 
     focus: true
     modal: true
@@ -539,11 +537,13 @@ Dialog {
             onClicked: {
                 close();
 
-                aFlightInserted = {  "name": flightNumber, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
-                                     "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
-                                     "ACO": "", "TED": Number(timeDeparture), "TEA": Number(timeArrival), "status": 0 }
+                var flightData = []
 
-                flightDialog.updated(isInserted)
+                flightData = { "name": isInserted ? flightNumber : flightCode, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
+                               "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
+                               "ACO": "", "TED": Number(timeDeparture), "TEA": Number(timeArrival) }
+
+                flightDialog.updated(flightData, isInserted)
             }
         }
     }

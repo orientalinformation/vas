@@ -32,7 +32,7 @@ Item {
     property alias depAirport: depAirport.text
     property alias arrAirport: arrAirport.text
 
-    property alias flightLenght: container.width
+    property real flightLenght
 
     property color color: "#444444"
     property int fontSize: AppTheme.textSizeText
@@ -42,11 +42,14 @@ Item {
 
     signal rightClicked
 
+    width: Math.max(flightLenght, 100)
     height: AppTheme.tscale(45)
 
     opacity: hovered ? 1 : 0.95
 
     scale: hovered ? 1.1 : 1
+
+    enabled: flightNumber.text !== ""
 
     Label {
         id: depAirport
@@ -63,7 +66,7 @@ Item {
 
     Label {
         id: flightNumber
-        font.pointSize: AppTheme.textSizeText
+        font.pointSize: AppTheme.textSizeSmall
         anchors.centerIn: parent
         padding: AppTheme.tscale(3)
         horizontalAlignment: Text.AlignHCenter

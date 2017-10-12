@@ -21,6 +21,7 @@ modification, are permitted provided that the following conditions are met:
 .pragma library
 
 var language = "en_US"
+
 var groundTime = 35
 var sector = 4
 var isDutyTime = true

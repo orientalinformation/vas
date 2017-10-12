@@ -589,15 +589,27 @@ Item {
         id: messages
     }
 
+    onOpen: {
+        //code
+    }
+
     onSave: {
         rescheduleIostream.write("", "inputdata", flightReader.source, "reschedules", path)
+        rescheduleIostream.write(dayDelayList, "daydelay", "", "reschedules", path)
+        rescheduleIostream.write(aircraftArrivalLimitedList, "arrivalLimitedAC", "", "reschedules", path)
+        rescheduleIostream.write(airportList, "arrivalLimitedAP", "", "reschedules", path)
+
+        rescheduleIostream.writeObject(timeDelayList, "timeDelay", "reschedules", path)
+        rescheduleIostream.writeObject(timeLimitedList, "timeLimited", "reschedules", path)
     }
 
     onSaveAs: {
         rescheduleIostream.write("", "inputdata", flightReader.source, "reschedules", path)
-    }
+        rescheduleIostream.write(dayDelayList, "daydelay", "", "reschedules", path)
+        rescheduleIostream.write(aircraftArrivalLimitedList, "arrivalLimitedAC", "", "reschedules", path)
+        rescheduleIostream.write(airportList, "arrivalLimitedAP", "", "reschedules", path)
 
-    onOpen: {
-        //code
+        rescheduleIostream.writeObject(timeDelayList, "timeDelay", "reschedules", path)
+        rescheduleIostream.writeObject(timeDelayList, "timeLimited", "reschedules", path)
     }
 }

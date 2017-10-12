@@ -39,21 +39,18 @@ int RescheduleCalculation::countAircraft(QList<Aircraft> aircraft) {
 
     for (int i = 0; i < aircraft.size(); i++) {
         if (aircraft[i].flagInProcess == false) {
-            count = count + 1;
+            count++;
         }
     }
 
     return count;
 }
 
-QList <Flight> RescheduleCalculation::sortFlightIncrease(QList<Flight> &flight) {
+QList <Flight> RescheduleCalculation::sortFlightIncrease(QList<Flight> flight) {
     for (int i = 0; i < (flight.size() - 1); i++) {
          for (int j = i + 1; j < flight.size(); j++) {
              if (flight[i].timeDeparture > flight[j].timeDeparture) {
-                 Flight tempFlight;
-                 tempFlight = flight[i];
-                 flight[i] = flight[j];
-                 flight[j] = tempFlight;
+                 qSwap(flight[i], flight[j]);
              }
          }
      }
@@ -61,9 +58,9 @@ QList <Flight> RescheduleCalculation::sortFlightIncrease(QList<Flight> &flight) 
      return flight;
 }
 
-bool RescheduleCalculation::inArray(const QString value, QStringList array)
+bool RescheduleCalculation::isArrayContains(const QString value, QStringList array)
 {
-    return std::find(array.begin(), array.end(), value) != array.end();
+    return array.contains(value, Qt::CaseInsensitive);
 }
 
 bool RescheduleCalculation::sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs)
@@ -81,7 +78,7 @@ bool RescheduleCalculation::sortByTimeDeparture(FlightSchedule *lhs, FlightSched
     return true;
 }
 
-QList<FlightSchedule *> RescheduleCalculation::sortFlightSchedule(QList <FlightSchedule *> &flightSchedule)
+QList<FlightSchedule *> RescheduleCalculation::sortFlightSchedule(QList <FlightSchedule *> flightSchedule)
 {
     int sizeflightSchedule = flightSchedule.size();
      for (int i = 0; i < sizeflightSchedule - 1; i++) {
@@ -148,7 +145,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     int cP1CXR = 0, cP2CXR = 0, cP3CXR = 0, cP4CXR = 0, cP5CXR = 0, cP6CXR = 0; //Number crew to CXR
     int numberOfFlight = 0, n = 0;
 
-    QList<int> indexDuplicateFlight;
+    QList<int> indexUniqueFlight;
 
     numberOfFlight = flightObject.length();
 
@@ -157,37 +154,39 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
         int timeDeparture, timeArrival;
         timeDeparture = static_cast<FlightObject *>(flightObject.at(i))->timeDeparture();
         timeArrival = static_cast<FlightObject *>(flightObject.at(i))->timeArrival();
+
         timeDeparture = timeDeparture / 100 * 60 + timeDeparture % 100;
         timeArrival = timeArrival / 100 * 60 + timeArrival % 100;
+
         static_cast<FlightObject *>(flightObject.at(i))->setTimeDeparture(timeDeparture);
         static_cast<FlightObject *>(flightObject.at(i))->setTimeArrival(timeArrival);
     }
 
     // Filter get information of flight
-    QStringList ACC;
+    QStringList uniqueAircrafts;
 
     for (int i = 0; i < numberOfFlight; i++) {
-        QString kt = static_cast<FlightObject *>(flightObject.at(i))->newAircraft();
+        QString name = static_cast<FlightObject *>(flightObject.at(i))->newAircraft();
 
-        if (inArray(kt, ACC) == false) {
-            indexDuplicateFlight.push_back(i);
-            ACC.append(kt);
+        if (isArrayContains(name, uniqueAircrafts) == false) {
+            indexUniqueFlight.push_back(i);
+            uniqueAircrafts.append(name);
             n++;
         }
     }
 
-    indexDuplicateFlight.push_back(numberOfFlight);
+    indexUniqueFlight.push_back(numberOfFlight);
 
     // Time synchronous TD with default time Oh
-    for (int j = 0; j < (indexDuplicateFlight.size() - 1); j++) {
-        for (int i = indexDuplicateFlight[j]; i <= indexDuplicateFlight[j + 1] - 2; i++) {
+    for (int j = 0; j < (indexUniqueFlight.size() - 1); j++) {
+        for (int i = indexUniqueFlight[j]; i <= indexUniqueFlight[j + 1] - 2; i++) {
             if (static_cast<FlightObject *>(flightObject.at(i))->timeDeparture() > static_cast<FlightObject *>(flightObject.at(i + 1))->timeDeparture()) {
-                if (i < ((indexDuplicateFlight[j + 1] + indexDuplicateFlight[j] - 1) / 2)) {
-                    for (int k = indexDuplicateFlight[j]; k <= i; k++) {
+                if (i < ((indexUniqueFlight[j + 1] + indexUniqueFlight[j] - 1) / 2)) {
+                    for (int k = indexUniqueFlight[j]; k <= i; k++) {
                         static_cast<FlightObject *>(flightObject.at(k))->setTimeDeparture((static_cast<FlightObject *>(flightObject.at(k))->timeDeparture() - 24 * 60));
                     }
                 } else {
-                    for (int k = i + 1; k <= indexDuplicateFlight[j + 1] - 1; k++) {
+                    for (int k = i + 1; k <= indexUniqueFlight[j + 1] - 1; k++) {
                         static_cast<FlightObject *>(flightObject.at(k))->setTimeDeparture((static_cast<FlightObject *>(flightObject.at(k))->timeDeparture() + 24 * 60));
                     }
                 }
@@ -202,7 +201,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int j = 0; j < numberOfFlight; j++) {
         QString captain = static_cast<FlightObject *>(flightObject.at(j))->captain();
 
-        if (inArray(captain, crew) == false) {
+        if (isArrayContains(captain, crew) == false) {
             QString departure = static_cast<FlightObject *>(flightObject.at(j))->departure();
 
             if (departure == "SGN") {
@@ -225,7 +224,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int j = 0; j < numberOfFlight; j++) {
         QString coPilot = static_cast<FlightObject *>(flightObject.at(j))->coPilot();
 
-        if (inArray(coPilot, crew) == false) {
+        if (isArrayContains(coPilot, crew) == false) {
             QString departure = static_cast<FlightObject *>(flightObject.at(j))->departure();
 
             if (departure == "SGN") {
@@ -248,7 +247,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int j = 0; j < numberOfFlight; j++) {
         QString cabinManager = static_cast<FlightObject *>(flightObject.at(j))->cabinManager();
 
-        if (inArray(cabinManager, crew) == false) {
+        if (isArrayContains(cabinManager, crew) == false) {
             QString departure = static_cast<FlightObject *>(flightObject.at(j))->departure();
 
             if (departure == "SGN") {
@@ -271,7 +270,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int j = 0; j < numberOfFlight; j++) {
         QString cabinAgent = static_cast<FlightObject *>(flightObject.at(j))->cabinAgent1();
 
-        if (inArray(cabinAgent, crew) == false) {
+        if (isArrayContains(cabinAgent, crew) == false) {
             QString departure = static_cast<FlightObject *>(flightObject.at(j))->departure();
 
             if (departure == "SGN") {
@@ -294,7 +293,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int j = 0; j < numberOfFlight; j++) {
         QString cabinAgent = static_cast<FlightObject *>(flightObject.at(j))->cabinAgent2();
 
-        if (inArray(cabinAgent, crew) == false) {
+        if (isArrayContains(cabinAgent, crew) == false) {
             QString departure = static_cast<FlightObject *>(flightObject.at(j))->departure();
 
             if (departure == "SGN") {
@@ -317,7 +316,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int j = 0; j < numberOfFlight; j++) {
         QString cabinAgent = static_cast<FlightObject *>(flightObject.at(j))->cabinAgent3();
 
-        if (inArray(cabinAgent, crew) == false) {
+        if (isArrayContains(cabinAgent, crew) == false) {
             QString departure = static_cast<FlightObject *>(flightObject.at(j))->departure();
 
             if (departure == "SGN") {
@@ -335,15 +334,15 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     }
 
     // Time synchronous TA with default time Oh
-    for (int j = 0; j < indexDuplicateFlight.size() - 1; j++) {
-        for (int i = indexDuplicateFlight[j]; i <= indexDuplicateFlight[j + 1] - 2; i++) {
-            if (static_cast<FlightObject *>(flightObject.at(i))->timeArrival() >static_cast<FlightObject *>(flightObject.at(i + 1))->timeArrival()) {
-                if (i < ((indexDuplicateFlight[j + 1] + indexDuplicateFlight[j] - 1) / 2)) {
-                    for (int k = indexDuplicateFlight[j]; k <= i; k++) {
+    for (int j = 0; j < indexUniqueFlight.size() - 1; j++) {
+        for (int i = indexUniqueFlight[j]; i <= indexUniqueFlight[j + 1] - 2; i++) {
+            if (static_cast<FlightObject *>(flightObject.at(i))->timeArrival() > static_cast<FlightObject *>(flightObject.at(i + 1))->timeArrival()) {
+                if (i < ((indexUniqueFlight[j + 1] + indexUniqueFlight[j] - 1) / 2)) {
+                    for (int k = indexUniqueFlight[j]; k <= i; k++) {
                         static_cast<FlightObject *>(flightObject.at(k))->setTimeArrival(static_cast<FlightObject *>(flightObject.at(k))->timeArrival() - 24 * 60);
                     }
                 } else {
-                    for (int k = i + 1; k <= indexDuplicateFlight[j + 1] - 1; k++) {
+                    for (int k = i + 1; k <= indexUniqueFlight[j + 1] - 1; k++) {
                        static_cast<FlightObject *>(flightObject.at(k))->setTimeArrival(static_cast<FlightObject *>(flightObject.at(k))->timeArrival() + 24 * 60);
                     }
                 }
@@ -352,13 +351,12 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     }
 
     // add data aircraft
-    for (int i = 0; i < indexDuplicateFlight.size() - 1; i++) {
+    for (int i = 0; i < indexUniqueFlight.size() - 1; i++) {
         Aircraft aircraft1;
-        aircraft1.aircraftNumber = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->newAircraft();
-        aircraft1.timeDeparture = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->timeDeparture();
+        aircraft1.aircraftNumber = static_cast<FlightObject *>(flightObject.at(indexUniqueFlight[i]))->newAircraft();
+        aircraft1.timeDeparture = static_cast<FlightObject *>(flightObject.at(indexUniqueFlight[i]))->timeDeparture();
         aircraft1.flagInProcess = false;
-        aircraft1.status = 0;
-        aircraft1.departure = static_cast<FlightObject *>(flightObject.at(indexDuplicateFlight[i]))->departure();
+        aircraft1.departure = static_cast<FlightObject *>(flightObject.at(indexUniqueFlight[i]))->departure();
         aircraft.push_back(aircraft1);
     }
 
@@ -376,80 +374,70 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     }
 
     for (int i = 0; i < problem1.size(); i++) {
-        int maxAC = -2000, mAC, tg;
-        int idx = nameToIndex(aircraft, problem1.at(i));
-        for (int j = 0; j < aircraft.size(); j++) {
+        int maximumTime = INT_MIN;
+        int indexMaximum = 0;
+        int tg = 0;
 
-            if (aircraft[idx].departure == aircraft[j].departure && idx != -1) {
-                if (aircraft[j].timeDeparture > maxAC) {
-                    maxAC = aircraft[j].timeDeparture;
-                    mAC = j;
+        int idx = getIndexInArrayByName(uniqueAircrafts, problem1.at(i));
+
+        for (int j = 0; j < aircraft.size(); j++) {
+            if (idx != -1 && aircraft[idx].departure == aircraft[j].departure) {
+                if (aircraft[j].timeDeparture > maximumTime) {
+                    maximumTime = aircraft[j].timeDeparture;
+                    indexMaximum = j;
                 }
             }
         }
 
         tg = aircraft[idx].timeDeparture;
-        aircraft[idx].timeDeparture = aircraft[mAC].timeDeparture;
-        aircraft[mAC].timeDeparture = tg;
+        aircraft[idx].timeDeparture = aircraft[indexMaximum].timeDeparture;
+        aircraft[indexMaximum].timeDeparture = tg;
     }
 
     // write information flight crash
     for (int i = 0; i < problem1.size(); i++) {
-        int idx = nameToIndex(aircraft, problem1.at(i));
-        if (idx >= 0) {
+        int idx = getIndexInArrayByName(uniqueAircrafts, problem1.at(i));
+
+        if (idx != -1) {
             aircraft[idx].flagInProcess = true;
-            aircraft[idx].status = 1;
         }
     }
 
     for (int i = 0; i < problem2.size(); i++) {
-        problem2.at(i)->property("time").setValue(((
-                     problem2.at(i)->property("time").toInt() - problem2.at(i)->property("time").toInt() % 100)
-                                              / 100 * 60 + problem2.at(i)->property("time").toInt()));
-    }
+        problem2.at(i)->setProperty("time", problem2.at(i)->property("time").toInt() / 100 * 60 + problem2.at(i)->property("time").toInt() % 100);
 
-    for (int i = 0; i < problem4.size(); i++) {
-        problem4.at(i)->property("time").setValue(((
-                     problem4.at(i)->property("time").toInt() - problem4.at(i)->property("time").toInt() % 100)
-                                              / 100 * 60 + problem4.at(i)->property("time").toInt()));
-    }
-
-    for (int i = 0; i < problem2.size(); i++) {
         QString name = problem2.at(i)->property("name").toString();
 
-        int idx = nameToIndex(aircraft, name);
-        if (idx >= 0) {
+        int idx = getIndexInArrayByName(uniqueAircrafts, name);
+
+        if (idx != -1) {
             aircraft[idx].timeDeparture = problem2.at(i)->property("time").toInt();
-            aircraft[idx].status = 2;
         }
     }
 
     QStringList acProblem3;
 
     for (int i = 0; i < problem3.size(); i++) {
-        int idx = nameToIndex(aircraft, problem3.at(i));
-        if (idx >= 0) {
+        int idx = getIndexInArrayByName(uniqueAircrafts, problem3.at(i));
+
+        if (idx != -1) {
             acProblem3.push_back(aircraft[idx].aircraftNumber);
-            aircraft[idx].status = 3;
         }
     }
 
     QStringList acProblem4;
-
-    for (int i = 0; i < problem4.size(); i++) {
-        int idx = nameToIndex(aircraft, problem4.at(i)->property("name").toString());
-        if (idx >= 0) {
-            acProblem4.push_back(aircraft[idx].aircraftNumber);
-            aircraft[idx].status = 2;
-        }
-    }
-
     QList<Problem4> AC4;
 
     for (int i = 0; i < problem4.size(); i++) {
-        Problem4 ac4;
-        int idx = nameToIndex(aircraft, problem4.at(i)->property("name").toString());
-        if (idx >= 0) {
+        problem4.at(i)->setProperty("time", problem4.at(i)->property("time").toInt() / 100 * 60 + problem4.at(i)->property("time").toInt() % 100);
+
+        int idx = getIndexInArrayByName(uniqueAircrafts, problem4.at(i)->property("name").toString());
+
+        if (idx != -1) {
+            acProblem4.push_back(aircraft[idx].aircraftNumber);
+
+            Problem4 ac4;
+
             ac4.aircraftNumber = aircraft[idx].aircraftNumber;
             ac4.flag = 0;
             ac4.time = problem4.at(i)->property("time").toInt();
@@ -457,32 +445,32 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
         }
     }
 
-    // Handling
+    // Processing
     do {
-        int minimumTime = 10000;
-        int m = 1;
+        int minimumTime = INT_MAX;
+        int indexMinimum = 0;
 
         for (int i = 0; i < aircraft.size(); i++) {
-            if ((aircraft[i].timeDeparture < minimumTime) && (aircraft[i].flagInProcess == false)) {
+            if ((aircraft[i].timeDeparture < minimumTime) && !aircraft[i].flagInProcess) {
                 minimumTime = aircraft[i].timeDeparture;
-                m = i;
+                indexMinimum = i;
             }
         }
 
         // Find a flight fit
         QList<Flight> flight1;
 
-        if (inArray(aircraft[m].aircraftNumber, acProblem3) == true) {
+        if (isArrayContains(aircraft[indexMinimum].aircraftNumber, acProblem3)) {
             for (int i = 0; i < flight.size(); i++) {
-                if ((flight[i].departure == aircraft[m].departure) && (flight[i].check == false)) {
-                    if (inArray(flight[i].arrive, airports) == true) {
+                if (flight[i].departure == aircraft[indexMinimum].departure && !flight[i].check) {
+                    if (isArrayContains(flight[i].arrive, airports)) {
                         flight1.push_back(flight[i]);
                     }
                 }
             }
         } else {
             for (int i = 0; i < flight.size(); i++) {
-                if ((flight[i].departure.compare(aircraft[m].departure) == 0) && (flight[i].check == false)) {
+                if (flight[i].departure == aircraft[indexMinimum].departure && !flight[i].check) {
                     flight1.push_back(flight[i]);
                 }
             }
@@ -493,7 +481,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
             flight1 = sortFlightIncrease(flight1);
 
             for (int i = 0; i < flight1.size(); i++) {
-                if (flight1[i].aircraft == aircraft[m].aircraftNumber) {
+                if (flight1[i].aircraft == aircraft[indexMinimum].aircraftNumber) {
                     flight2.push_back(flight1[i]);
                 }
             }
@@ -548,20 +536,20 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                 }
             }
 
-            if (flight1[k].timeDeparture < aircraft[m].timeDeparture) {
+            if (flight1[k].timeDeparture < aircraft[indexMinimum].timeDeparture) {
                 FlightSchedule  *flightSchedule1 = new FlightSchedule();
-                flightSchedule1->aircraft = aircraft[m].aircraftNumber;
-                flightSchedule1->arrive = flight1[k].arrive;
+                flightSchedule1->aircraft = aircraft[indexMinimum].aircraftNumber;
                 flightSchedule1->aircraftOld = flight1[k].aircraft;
+                flightSchedule1->arrive = flight1[k].arrive;
                 flightSchedule1->departure = flight1[k].departure;
                 flightSchedule1->flightNumber = flight1[k].flightNumber;
-                flightSchedule1->timeArrive = aircraft[m].timeDeparture + flight1[k].timeFly - groundTime;
-                flightSchedule1->timeDeparture = aircraft[m].timeDeparture;
-                flightSchedule1->timeDelay = aircraft[m].timeDeparture - flight1[k].timeDeparture;
-                flightSchedule1->status = aircraft[m].status;
+                flightSchedule1->timeArrive = aircraft[indexMinimum].timeDeparture + flight1[k].timeFly - groundTime;
+                flightSchedule1->timeDeparture = aircraft[indexMinimum].timeDeparture;
+                flightSchedule1->timeDelay = aircraft[indexMinimum].timeDeparture - flight1[k].timeDeparture;
                 flightSchedule.push_back(flightSchedule1);
-                aircraft[m].timeDeparture = aircraft[m].timeDeparture + flight1[k].timeFly;
-                aircraft[m].departure = flight1[k].arrive;
+
+                aircraft[indexMinimum].timeDeparture = aircraft[indexMinimum].timeDeparture + flight1[k].timeFly;
+                aircraft[indexMinimum].departure = flight1[k].arrive;
 
                 for (int i = 0; i < flight.size(); i++) {
                     if (flight1[k].flightNumber == flight[i].flightNumber) {
@@ -571,8 +559,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                 }
             } else {
                 FlightSchedule *flightSchedule1 = new FlightSchedule();
-                flightSchedule1->aircraft = aircraft[m].aircraftNumber;
-                flightSchedule1->status = aircraft[m].status;
+                flightSchedule1->aircraft = aircraft[indexMinimum].aircraftNumber;
                 flightSchedule1->aircraftOld = flight1[k].aircraft;
                 flightSchedule1->arrive = flight1[k].arrive;
                 flightSchedule1->departure = flight1[k].departure;
@@ -581,8 +568,9 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                 flightSchedule1->timeDeparture = flight1[k].timeDeparture;
                 flightSchedule1->timeDelay = 0;
                 flightSchedule.push_back(flightSchedule1);
-                aircraft[m].timeDeparture = flight1[k].timeDeparture + flight1[k].timeFly;
-                aircraft[m].departure = flight1[k].arrive;
+
+                aircraft[indexMinimum].timeDeparture = flight1[k].timeDeparture + flight1[k].timeFly;
+                aircraft[indexMinimum].departure = flight1[k].arrive;
 
                 for (int i = 0; i < flight.size(); i++) {
                     if (flight1[k].flightNumber == flight[i].flightNumber) {
@@ -592,27 +580,29 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                 }
             }
         } else {
-            aircraft[m].flagInProcess = true;
+            aircraft[indexMinimum].flagInProcess = true;
         }
 
         // Handle problem 4
-        if (inArray(aircraft[m].aircraftNumber, acProblem4) == true) {
-            if (aircraft[m].departure.compare(QString("SGN")) == 0 || aircraft[m].departure.compare(QString("HAN")) == 0 || aircraft[m].departure.compare(QString("CXR")) == 0) {
+        if (isArrayContains(aircraft[indexMinimum].aircraftNumber, acProblem4) == true) {
+            if (aircraft[indexMinimum].departure == "SGN" ||
+                    aircraft[indexMinimum].departure == "HAN" ||
+                    aircraft[indexMinimum].departure == "CXR") {
                 int loc;
 
                 for (int i = 0; i < AC4.size(); i++) {
-                    if (aircraft[m].aircraftNumber.compare(AC4[i].aircraftNumber) == 0) {
+                    if (aircraft[indexMinimum].aircraftNumber == AC4[i].aircraftNumber) {
                         loc = i;
                         break;
                     }
                 }
 
-                if (aircraft[m].timeDeparture <= AC4[loc].time) {
+                if (aircraft[indexMinimum].timeDeparture <= AC4[loc].time) {
                     AC4[loc].flag = flightSchedule.size() - 1;
                 } else {
-                    for (int i = flightSchedule.size() - 1; i > AC4[loc].flag; i--) { //tra chuyen bay chua thuc hien
+                    for (int i = flightSchedule.size() - 1; i > AC4[loc].flag; i--) { //test flights not fly
                         for (int j = 0; j < flight.size(); j++) {
-                            if (flightSchedule[i]->flightNumber.compare(flight[j].flightNumber) == 0) {
+                            if (flightSchedule[i]->flightNumber == flight[j].flightNumber) {
                                 flight[j].check = false;
                                 break;
                             }
@@ -621,7 +611,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
                     for (int i = 0; i < aircraft.size(); i++) {
                         for (int j = AC4[loc].flag; j >= 0; j--) {
-                            if (flightSchedule[j]->aircraft.compare((aircraft[i].aircraftNumber)) == 0) {
+                            if (flightSchedule[j]->aircraft == aircraft[i].aircraftNumber) {
                                 aircraft[i].departure = flightSchedule[j]->arrive;
                                 aircraft[i].timeDeparture = flightSchedule[j]->timeArrive + groundTime;
                                 break;
@@ -630,19 +620,22 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                     }
 
                     flightSchedule.erase(flightSchedule.begin() + AC4[loc].flag + 1, flightSchedule.end());
-                    aircraft[m].flagInProcess = true;
+
+                    aircraft[indexMinimum].flagInProcess = true;
 
                     for (int i = 0; i < AC4.size(); i++) {
                         if (AC4[i].flag > AC4[loc].flag) {
                             for (int j = 0; j < aircraft.size(); j++) {
-                                if (aircraft[j].aircraftNumber.compare(AC4[i].aircraftNumber) == 0) {
+                                if (aircraft[j].aircraftNumber == AC4[i].aircraftNumber) {
                                     aircraft[j].flagInProcess = false;
                                 }
                             }
 
                             for (int j = AC4[loc].flag; j >= 0; j--) {
-                                if (flightSchedule[j]->aircraft.compare(AC4[i].aircraftNumber) == 0) {
-                                    if (flightSchedule[j]->arrive.compare(QString("SGN")) == 0 || flightSchedule[j]->arrive.compare(QString("HAN")) == 0 || flightSchedule[j]->arrive.compare(QString("CXR")) == 0) {
+                                if (flightSchedule[j]->aircraft == AC4[i].aircraftNumber) {
+                                    if (flightSchedule[j]->arrive == "SGN" ||
+                                            flightSchedule[j]->arrive == "HAN" ||
+                                            flightSchedule[j]->arrive == "CXR") {
                                         AC4[i].flag = j;
                                         break;
                                     }
@@ -664,27 +657,29 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     flightSchedule = sortFlightSchedule(flightSchedule);
     // Crew
     QStringList ACC2;
-    indexDuplicateFlight.clear();
+    indexUniqueFlight.clear();
 
     for (int i = 0; i < flightSchedule.size(); i++) {
-        if (inArray(flightSchedule[i]->aircraft, ACC2) == false) {
+        if (isArrayContains(flightSchedule[i]->aircraft, ACC2) == false) {
             ACC2.push_back(flightSchedule[i]->aircraft);
-            indexDuplicateFlight.push_back(i);
+            indexUniqueFlight.push_back(i);
         }
     }
 
-    indexDuplicateFlight.push_back(flightSchedule.size());
+    indexUniqueFlight.push_back(flightSchedule.size());
 
     //Sort crew
     int crSGNused = 0, crHANused = 0, crCXRused = 0;
 
-    for (int i = 0; i < indexDuplicateFlight.size() - 1; i++) {
-        int mark = indexDuplicateFlight[i];
+    for (int i = 0; i < indexUniqueFlight.size() - 1; i++) {
+        int mark = indexUniqueFlight[i];
         int mark1 = mark;
 
-        for (int j = indexDuplicateFlight[i]; j < indexDuplicateFlight[i + 1]; j++) {
-            if (flightSchedule[j]->arrive == "HAN" || flightSchedule[j]->arrive == "SGN" || flightSchedule[j]->arrive == "CXR") {
-                if (((flightSchedule[j]->timeArrive - flightSchedule[mark1]->timeDeparture) <= sector) && ((j - mark1 + 1) <= dutyTime)) {
+        for (int j = indexUniqueFlight[i]; j < indexUniqueFlight[i + 1]; j++) {
+            if (flightSchedule[j]->arrive == "HAN" ||
+                    flightSchedule[j]->arrive == "SGN" ||
+                    flightSchedule[j]->arrive == "CXR") {
+                if (((flightSchedule[j]->timeArrive - flightSchedule[mark1]->timeDeparture) <= dutyTime) && ((j - mark1 + 1) <= sector)) {
                     mark = j + 1;
                 } else {
                     for (int k = mark1; k < mark; k++) {
@@ -727,8 +722,8 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
                 }
             }
 
-            if (j == indexDuplicateFlight[i + 1] - 1) {
-                for (int k = mark1; k < indexDuplicateFlight[i + 1]; k++) {
+            if (j == indexUniqueFlight[i + 1] - 1) {
+                for (int k = mark1; k < indexUniqueFlight[i + 1]; k++) {
                     if (flightSchedule[mark1]->departure == "SGN") {
                         flightSchedule[k]->crew1 = P1SGN[0];
                         flightSchedule[k]->crew2 = P2SGN[0];
@@ -770,15 +765,18 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
         flightSchedule[i]->timeArrive = ((flightSchedule[i]->timeArrive % (24 * 60)) - (flightSchedule[i]->timeArrive % (24 * 60)) % 60) / 60 * 100 + (flightSchedule[i]->timeArrive % (24 * 60)) % 60;
     }
 
-    int countChangedAircraftAndTime = 0, countChangedAircraft = 0, maxx = flightSchedule[1]->timeDelay, convert = 0, flightCancel = 0;
+    int countUnchangedAircraftAndTime = 0;
+    int countUnchangedAircraft = 0;
+    int maxx = flightSchedule[1]->timeDelay;
+    int convert = 0, flightCancel = 0;
 
     for (int i = 0; i < flightSchedule.size(); i++) {
         if (flightSchedule[i]->aircraft == flightSchedule[i]->aircraftOld) {
-            countChangedAircraft++;
+            countUnchangedAircraft++;
         }
 
-        if ((flightSchedule[i]->timeDelay == 0) && flightSchedule[i]->aircraft != flightSchedule[i]->aircraftOld) {
-            countChangedAircraftAndTime++;
+        if ((flightSchedule[i]->timeDelay == 0) && flightSchedule[i]->aircraft == flightSchedule[i]->aircraftOld) {
+            countUnchangedAircraftAndTime++;
         }
 
         if (flightSchedule[i]->timeDelay > maxx) {
@@ -793,6 +791,38 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     for (int i = 0; i < flight.size(); i++) {
         if (flight[i].check == true) {
             flightCancel++;
+        }
+    }
+
+    // Write status
+    for (int i = 0; i < flightSchedule.size(); i++) {
+        QString flightNameOut = flightSchedule[i]->flightNumber;
+        QString aircraftNameOut = flightSchedule[i]->aircraft;
+        int timeDepartureOut = flightSchedule[i]->timeDeparture;
+        int timeArrivalOut = flightSchedule[i]->timeArrive;
+
+        for (int j = 0; j < flightObject.size(); j++) {
+            if (flightNameOut == static_cast<FlightObject *>(flightObject.at(j))->name()) {
+                QString aircraftNameIn = static_cast<FlightObject *>(flightObject.at(j))->newAircraft();
+                int timeDepartureIn = static_cast<FlightObject *>(flightObject.at(j))->timeDeparture();
+                int timeArrivalIn = static_cast<FlightObject *>(flightObject.at(j))->timeArrival();
+
+                timeDepartureIn = ((timeDepartureIn % (24 * 60)) - (timeDepartureIn % (24 * 60)) % 60) / 60 * 100 + (timeDepartureIn % (24 * 60)) % 60;
+                timeArrivalIn = ((timeArrivalIn % (24 * 60)) - (timeArrivalIn % (24 * 60)) % 60) / 60 * 100 + (timeArrivalIn % (24 * 60)) % 60;
+
+                if (aircraftNameIn != aircraftNameOut && (timeArrivalIn != timeArrivalOut || timeDepartureIn != timeDepartureOut)) {
+                    flightSchedule[i]->status = 3;
+                    break;
+                } else if (aircraftNameIn != aircraftNameOut) {
+                    flightSchedule[i]->status = 1;
+                    break;
+                } else if (timeArrivalIn != timeArrivalOut || timeDepartureIn != timeDepartureOut) {
+                    flightSchedule[i]->status = 2;
+                    break;
+                } else {
+                    flightSchedule[i]->status = 0;
+                }
+            }
         }
     }
 
@@ -811,8 +841,8 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
 
         out << "             OPTIMAL AIRLINE SCHEDULE          " << endl;
         out << "*****************__FLIGHT__*********************" << endl;
-        out << "Number of unchanged (aircraft and time) flights is " << countChangedAircraftAndTime << endl;
-        out << "Number of unchanged (only aircraft) flights is " << countChangedAircraft << endl;
+        out << "Number of unchanged (aircraft and time) flights is " << countUnchangedAircraftAndTime << endl;
+        out << "Number of unchanged (only aircraft) flights is " << countUnchangedAircraft << endl;
         out << "Number of canceled flights is " << flightCancel << endl;
         out << "Total delayed time is " << stimeDelay << endl;
         out << "Number of delayed flights is " << convert << endl;
@@ -880,7 +910,7 @@ void RescheduleCalculation::runReschedule(QStringList problem1,
     }
 }
 
-int RescheduleCalculation::nameToIndex(QList<Aircraft> array, QString name)
+int RescheduleCalculation::getIndexInArrayByName(QList<Aircraft> array, QString name)
 {
     for (int i = 0; i < array.length(); i++) {
         if (array[i].aircraftNumber == name) {
@@ -888,5 +918,10 @@ int RescheduleCalculation::nameToIndex(QList<Aircraft> array, QString name)
         }
     }
     return -1;
+}
+
+int RescheduleCalculation::getIndexInArrayByName(QStringList array, QString name)
+{
+    return array.indexOf(name);
 }
 

@@ -232,7 +232,7 @@ Item {
 
                                 from: 1
                                 to: 50
-                                value: 5
+                                value: 4
                                 stepSize: 1
 
                                 hoverEnabled: true
@@ -307,7 +307,7 @@ Item {
                             Switch {
                                 id: btnDutyTime
 
-                                checked: false
+                                checked: true
 
                                 onCheckedChanged: {
                                     Settings.isDutyTime = checked
@@ -352,7 +352,7 @@ Item {
 
                                 Layout.fillWidth: true
 
-                                text: ""
+                                text: "660"
                                 font.pointSize: AppTheme.textSizeText
                                 placeholderText: qsTr("Enter duty time") + translator.emptyString
 
