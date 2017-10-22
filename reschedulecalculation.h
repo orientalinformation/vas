@@ -73,7 +73,6 @@ struct Flight {
     QString aircraft;
 };
 
-
 class RescheduleCalculation : public QObject
 {
     Q_OBJECT
@@ -91,10 +90,12 @@ public:
     bool sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
     bool isArrayContains(const QString value, QStringList array);
 
-    Q_INVOKABLE void runReschedule(QStringList problem1, QList<QObject *> problem2, QStringList problem3, QStringList airports,
+    Q_INVOKABLE void execute(QStringList problem1, QList<QObject *> problem2, QStringList problem3, QStringList airports,
                                                        QList<QObject *> problem4, int groudTime, int sector, int dutyTime, QList <QObject *> flightObject);
 signals:
     void error(const QString& msg);
+
+    void successfull(int numberUnchanged, int numberAircarft, int numberCancel, int totalTime, int numberDelay, int maximumTime);
 private:
     void writeFlightSchedule(QString outputPath, QList <FlightSchedule *> flightSchedule);
 

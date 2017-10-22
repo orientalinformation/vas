@@ -55,42 +55,54 @@ Frame {
         radius: 0
     }
 
-    property int navigationIndex: 0
-
-    property var optimizedModels: []
+    property int navigationIndex: -1
 
     signal caseSaved(var path)
     signal caseOpened(var path)
     signal caseSavedAs(var path)
+    signal caseExport(var path)
 
     onNavigationIndexChanged: {
         switch (navigationIndex) {
         case 0: // Open
             fileOpenDialog.open()
             break;
+
         case 1: // Save
-            fileSaveDialog.open()
+            if (currentCaseName !== "") {
+                header.caseSaved(currentCaseName)
+            } else {
+                fileSaveDialog.open()
+            }
             break;
+
         case 2: // Save as
             fileSaveAsDialog.open()
             break;
+
         case 4: // Export
             fileExportDialog.open()
             break;
+
         case 6: // Quit
             quitMessageDialog.visible = true
             break;
+
         case 8: //Feedback
             break;
+
         case 9: // About this app
             swipeView.setCurrentIndex(4)
             break;
+
         case 3: // Devider
         case 5: // Devider
         case 7: // Devider
         default:
             break;
         }
+
+        navigationIndex = -1
     }
 
     ColumnLayout {
@@ -154,7 +166,7 @@ Frame {
 
                 Label {
                     id: lblTitle
-                    text: qsTr("%1").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+                    text: qsTr(Branding.VER_APPNAME_STR) + translator.tr
                     color: "#00aaff"
                     font.capitalization: Font.AllUppercase
                     font.weight: Font.Bold
@@ -190,18 +202,17 @@ Frame {
     }
 
     property var navigationModel: [
-        //{"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("New") + translator.emptyString, "icon": "plus.png" },
-        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Open") + translator.emptyString, "icon": "open_file.png" },
-        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Save") + translator.emptyString, "icon": "save.png" },
-        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Save As") + translator.emptyString, "icon": "save_as.png" },
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Open") + translator.tr, "icon": "open_file.png" },
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Save") + translator.tr, "icon": "save.png" },
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Save As") + translator.tr, "icon": "save_as.png" },
         {"type": "../navigation/DrawerDivider.qml", "name": "", "icon": "" },
-        //{"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Import") + translator.emptyString, "icon": "import.png" },
-        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Export") + translator.emptyString, "icon": "export.png" },
+        //{"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Import") + translator.tr, "icon": "import.png" },
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Export") + translator.tr, "icon": "export.png" },
         {"type": "../navigation/DrawerDivider.qml", "name": "", "icon": "" },
-        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Quit") + translator.emptyString, "icon": "logout.png" },
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Quit") + translator.tr, "icon": "logout.png" },
         {"type": "../navigation/DrawerDivider.qml", "name": "", "icon": "" },
-        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Feedback") + translator.emptyString, "icon": "feedback.png" },
-        {"type": "../navigation/DrawerNavigationTextButton.qml", "name": qsTr("About this App") + translator.emptyString, "icon": "" }
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Feedback") + translator.tr, "icon": "feedback.png" },
+        {"type": "../navigation/DrawerNavigationTextButton.qml", "name": qsTr("About this App") + translator.tr, "icon": "" }
     ]
 
     // The sliding Drawer
@@ -211,81 +222,70 @@ Frame {
 
     FileDialog {
         id: fileOpenDialog
-        title: qsTr("Open %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+        title: qsTr("Open %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.tr
 
         folder: shortcuts.documents
         selectExisting: true
         selectMultiple: false
 
-        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
+        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr]
 
         onAccepted: {
-            console.log("Open file: " + fileUrl)
+            currentCaseName = fileUrl
+
             header.caseOpened(fileUrl)
         }
     }
 
     FileDialog {
         id: fileSaveDialog
-        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.tr
 
         folder: shortcuts.documents
         selectExisting: false
         selectMultiple: false
 
-        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
+        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr]
 
         onAccepted: {
-            console.log("Save file: " + fileUrl)
             header.caseSaved(fileUrl)
         }
     }
 
     FileDialog {
         id: fileSaveAsDialog
-        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.tr
 
         folder: shortcuts.documents
         selectExisting: false
         selectMultiple: false
 
-        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
+        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr]
 
         onAccepted: {
-            console.log("Save as file: " + fileUrl)
             header.caseSavedAs(fileUrl)
         }
     }
 
     FileDialog {
         id: fileExportDialog
-        title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.emptyString
+        title: qsTr("Export CSV data") + translator.tr
 
         folder: shortcuts.documents
         selectExisting: false
         selectMultiple: false
 
-        nameFilters: [qsTr("%1 File (*.csv)").arg(Branding.VER_APPNAME_STR)] + translator.emptyString
+        nameFilters: [qsTr("CSV File (*.csv)") + translator.tr]
 
         onAccepted: {
-            for (var i = 0; i < optimizedDataModels.count; i++) {
-
-                for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
-                    if (optimizedDataModels.get(i).flights.get(j).name !== "") {
-                        optimizedModels.push(optimizedDataModels.get(i).flights.get(j))
-                    }
-                }
-            }
-
-            resultReader.write(optimizedModels, fileUrl);
-            console.log("Save file: " + fileUrl)
+            header.caseExport(fileUrl)
         }
     }
 
     MessageDialog {
         id: quitMessageDialog
-        title: qsTr("%1").arg(Branding.VER_PRODUCTNAME_STR) + translator.emptyString
-        text: qsTr("Are you sure you want to quit this application?") + translator.emptyString
+        title: qsTr("%1").arg(Branding.VER_PRODUCTNAME_STR) + translator.tr
+        text: qsTr("Are you sure you want to quit this application?") + translator.tr
         icon: StandardIcon.Warning
         standardButtons: StandardButton.No | StandardButton.Ok
 

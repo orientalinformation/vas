@@ -91,7 +91,7 @@ Frame {
 
                     Repeater {
                         id: repeater
-                        model: [qsTr("Aircraft name") + translator.emptyString ]
+                        model: [qsTr("Aircraft name") + translator.tr ]
 
                         Label {
                             text: modelData
@@ -102,7 +102,7 @@ Frame {
                                 color: "silver"
                             }
 
-                            width: AppTheme.hscale(350)
+                            width: AppTheme.hscale(300)
 
                             horizontalAlignment: Text.AlignHCenter
                         }
@@ -184,7 +184,7 @@ Frame {
                     scale: hoverButton ? 1.25 : 1
 
                     ToolTip.visible: hoverButton
-                    ToolTip.text: qsTr("Add") + translator.emptyString
+                    ToolTip.text: qsTr("Add") + translator.tr
 
                     Layout.preferredWidth: AppTheme.tscale(40)
                     Layout.preferredHeight: AppTheme.tscale(40)
@@ -211,15 +211,16 @@ Frame {
                             function appendModel(aircraft) {
                                 for (var i = 0; i < aircraftModel.count; i++) {
                                     if (aircraftModel.get(i).name === aircraft ) {
-                                        messages.displayMessage(qsTr("The aircraft already exists.") + translator.emptyString)
+                                        messages.displayMessage(qsTr("The aircraft already exists.") + translator.tr)
                                         return
                                     }
                                 }
+
                                 aircraftModel.append( { name: aircraft } )
                             }
 
                             if (currentAircraft == "") {
-                                messages.displayMessage(qsTr("Please select an aircraft.") + translator.emptyString)
+                                messages.displayMessage(qsTr("Please select an aircraft.") + translator.tr)
                                 return
                             }
 
@@ -238,7 +239,7 @@ Frame {
                     enabled: aircraftModel.count > 0
 
                     ToolTip.visible: hoverButton
-                    ToolTip.text: qsTr("Remove") + translator.emptyString
+                    ToolTip.text: qsTr("Remove") + translator.tr
 
                     Layout.preferredWidth: AppTheme.tscale(40)
                     Layout.preferredHeight: AppTheme.tscale(40)
@@ -283,12 +284,59 @@ Frame {
             Layout.fillWidth: true
             Layout.fillHeight: true
 
+            Component {
+                id: airportDelegate
+
+                Item {
+                    id: delegateItem
+
+                    width: listARR.width
+                    height: AppTheme.vscale(40)
+
+                    clip: true
+
+                    Row {
+                        anchors.centerIn: parent
+
+                        Label {
+                            text: name
+                            font.pointSize: AppTheme.textSizeText
+
+                            Layout.fillWidth: true
+                            width: AppTheme.hscale(280)
+
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignHCenter
+
+                            padding: AppTheme.tscale(5)
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            background: Rectangle {
+                                color: "white"
+                            }
+                        }
+
+                        Image {
+                            source: "qrc:/das/images/actions/list-delete.png"
+
+                            anchors.verticalCenter: parent.verticalCenter
+
+                            MouseArea {
+                                anchors.fill: parent;
+                                onClicked: airportSelectedModel.remove(index)
+                            }
+                        }
+                    }
+                }
+            }
+
             ListView {
                 id: listARR
 
                 Layout.fillHeight: true
 
-                width: AppTheme.hscale(305)
+                width: AppTheme.hscale(300)
 
                 anchors.horizontalCenter: parent.horizontalCenter
 
@@ -309,7 +357,7 @@ Frame {
 
                     Repeater {
                         id: repeaterArr
-                        model: [qsTr("Airport code") + translator.emptyString ]
+                        model: [qsTr("Airport code") + translator.tr ]
 
                         Label {
                             text: modelData
@@ -320,7 +368,7 @@ Frame {
                                 color: "silver"
                             }
 
-                            width: AppTheme.hscale(305)
+                            width: AppTheme.hscale(300)
 
                             horizontalAlignment: Text.AlignHCenter
                         }
@@ -333,92 +381,75 @@ Frame {
                     id: airportSelectedModel
                 }
 
-                delegate: Column {
-                    id: delegatearr
-
-                    property int row: index
-
-                    Row {
-                        spacing: 1
-
-                        Label {
-                            text: modelData
-                            font.pointSize: AppTheme.textSizeText
-
-                            Layout.fillWidth: true
-                             width: AppTheme.hscale(305)
-
-                            verticalAlignment: Text.AlignVCenter
-                            horizontalAlignment: Text.AlignHCenter
-
-                            padding: AppTheme.tscale(5)
-
-                            anchors.verticalCenter: parent.verticalCenter
-
-                            background: Rectangle  {
-                                color: "white"
-                            }
-
-
-                        }
-                    }
-                }
+                delegate: airportDelegate
 
                 ScrollIndicator.horizontal: ScrollIndicator { }
                 ScrollIndicator.vertical: ScrollIndicator { }
             }
 
-            ComboBox {
-                id: cboAirport
-
+            RowLayout {
                 Layout.fillWidth: true
 
-                font.pointSize: AppTheme.textSizeSmall
+                Label {
+                    text: qsTr("Airport list") + translator.tr
 
-                model: ListModel {
-                    id: airportComboboxModel
+                    font.pointSize: AppTheme.textSizeText
+                    horizontalAlignment: Text.AlignLeft
+                    verticalAlignment: Text.AlignVCenter
                 }
 
-                delegate: ItemDelegate {
-                    width: cboAirport.width
+                ComboBox {
+                    id: cboAirport
 
-                    contentItem: Text {
-                        text: modelData
-                        color: "#000000"
-                        font: cboAirport.font
-                        elide: Text.ElideRight
-                        verticalAlignment: Text.AlignVCenter
+                    Layout.fillWidth: true
+
+                    font.pointSize: AppTheme.textSizeSmall
+
+                    model: ListModel {
+                        id: airportComboboxModel
                     }
 
-                    highlighted: cboAirport.highlightedIndex === index
-                }
+                    delegate: ItemDelegate {
+                        width: cboAirport.width
 
-                background: Rectangle {
-                    implicitWidth: AppTheme.comboBoxImplicitWidth
-                    implicitHeight: AppTheme.comboBoxImplicitHeight
-                    border.color: cboAirport.pressed ? "#00aaff" : "#000000"
-                    color: cboAirport.pressed ? "#00aaff" : "#ffffff"
-                    border.width: cboAirport.visualFocus ? 2 : 1
-                    radius: AppTheme.comboBoxRadius
-                }
-
-                onCurrentTextChanged: {
-                    function appendModel(airport) {
-                        for (var i = 0; i < airportSelectedModel.count; i++) {
-                            if (airportSelectedModel.get(i).name === airport ) {
-                                messages.displayMessage(qsTr("The airport already exists.") + translator.emptyString)
-                                return
-                            }
+                        contentItem: Text {
+                            text: modelData
+                            color: "#000000"
+                            font: cboAirport.font
+                            elide: Text.ElideRight
+                            verticalAlignment: Text.AlignVCenter
                         }
 
-                        airportSelectedModel.append( {  "name": currentText } )
+                        highlighted: cboAirport.highlightedIndex === index
                     }
 
-                    appendModel(currentText)
-                }
+                    background: Rectangle {
+                        implicitWidth: AppTheme.comboBoxImplicitWidth
+                        implicitHeight: AppTheme.comboBoxImplicitHeight
+                        border.color: cboAirport.pressed ? "#00aaff" : "#000000"
+                        color: cboAirport.pressed ? "#00aaff" : "#ffffff"
+                        border.width: cboAirport.visualFocus ? 2 : 1
+                        radius: AppTheme.comboBoxRadius
+                    }
 
-                onModelChanged: {
-                    cboAirport.currentIndex = 0
+                    onCurrentTextChanged: {
+                        function appendModel(airport) {
+                            for (var i = 0; i < airportSelectedModel.count; i++) {
+                                if (airportSelectedModel.get(i).name === airport ) {
+                                    messages.displayMessage(qsTr("The airport already exists.") + translator.tr)
+                                    return
+                                }
+                            }
+
+                            airportSelectedModel.append( { "name": currentText } )
+                        }
+
+                        appendModel(currentText)
+                    }
+
+                    onModelChanged: {
+                        cboAirport.currentIndex = 0
+                    }
                 }
             }
         }

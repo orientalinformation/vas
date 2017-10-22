@@ -142,7 +142,7 @@ Dialog {
 
                                 Label {
                                     id: lblAC
-                                    text: qsTr("A/C") + translator.emptyString
+                                    text: qsTr("A/C") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -156,6 +156,7 @@ Dialog {
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
+                                    font.capitalization: Font.AllUppercase
 
                                     readOnly: isReadOnly
 
@@ -165,7 +166,7 @@ Dialog {
 
                                 Label {
                                     id: lblFN
-                                    text: qsTr("FN") + translator.emptyString
+                                    text: qsTr("FN") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
 
@@ -180,6 +181,7 @@ Dialog {
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
+                                    font.capitalization: Font.AllUppercase
 
                                     readOnly: isReadOnly
 
@@ -191,7 +193,7 @@ Dialog {
 
                                 Label {
                                     id: lblACOld
-                                    text: qsTr("A/C old") + translator.emptyString
+                                    text: qsTr("A/C old") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -208,7 +210,7 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    readOnly: isReadOnly
+                                    readOnly: true
 
                                     Layout.row: 2
                                     Layout.column: 1
@@ -218,7 +220,7 @@ Dialog {
 
                                 Label {
                                     id: lblDEP
-                                    text: qsTr("DEP") + translator.emptyString
+                                    text: qsTr("DEP") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -232,6 +234,7 @@ Dialog {
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
+                                    font.capitalization: Font.AllUppercase
 
                                     readOnly: isReadOnly
 
@@ -241,7 +244,7 @@ Dialog {
 
                                 Label {
                                     id: lblARR
-                                    text: qsTr("ARR") + translator.emptyString
+                                    text: qsTr("ARR") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -255,6 +258,7 @@ Dialog {
                                     Layout.fillWidth: true
 
                                     font.pointSize: AppTheme.textSizeText
+                                    font.capitalization: Font.AllUppercase
 
                                     readOnly: isReadOnly
 
@@ -264,7 +268,7 @@ Dialog {
 
                                 Label {
                                     id: lblETD
-                                    text: qsTr("ETD") + translator.emptyString
+                                    text: qsTr("ETD") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -279,15 +283,20 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    validator: IntValidator { bottom:0; top: 2359}
+
                                     readOnly: isReadOnly
 
                                     Layout.row: 5
                                     Layout.column: 1
+
+                                    onEditingFinished: {
+                                    }
                                 }
 
                                 Label {
                                     id: lblETA
-                                    text: qsTr("ETA") + translator.emptyString
+                                    text: qsTr("ETA") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -302,7 +311,12 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
+                                    validator: IntValidator { bottom:0; top: 2359}
+
                                     readOnly: isReadOnly
+
+                                    onEditingFinished: {
+                                    }
 
                                     Layout.row: 6
                                     Layout.column: 1
@@ -336,7 +350,7 @@ Dialog {
 
                                 Label {
                                     id: lblCAP
-                                    text: qsTr("CAP") + translator.emptyString
+                                    text: qsTr("CAP") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -359,7 +373,7 @@ Dialog {
 
                                 Label {
                                     id: lblFO
-                                    text: qsTr("FO") + translator.emptyString
+                                    text: qsTr("FO") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -382,7 +396,7 @@ Dialog {
 
                                 Label {
                                     id: lblCM
-                                    text: qsTr("CM") + translator.emptyString
+                                    text: qsTr("CM") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -405,7 +419,7 @@ Dialog {
 
                                 Label {
                                     id: lblCA1
-                                    text: qsTr("CA 1") + translator.emptyString
+                                    text: qsTr("CA 1") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -428,7 +442,7 @@ Dialog {
 
                                 Label {
                                     id: lblCA2
-                                    text: qsTr("CA 2") + translator.emptyString
+                                    text: qsTr("CA 2") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -451,7 +465,7 @@ Dialog {
 
                                 Label {
                                     id: lblCA3
-                                    text: qsTr("CA 3") + translator.emptyString
+                                    text: qsTr("CA 3") + translator.tr
 
                                     font.pointSize: AppTheme.textSizeText
                                     verticalAlignment: Text.AlignVCenter
@@ -493,7 +507,7 @@ Dialog {
     }
 
     RoundButton {
-        text: qsTr("Update") + translator.emptyString
+        text: qsTr("Update") + translator.tr
 
         property bool hoverButton: false
 
@@ -503,7 +517,7 @@ Dialog {
         anchors.rightMargin: AppTheme.hscale(15)
 
         ToolTip.visible: hoverButton
-        ToolTip.text: isInserted ? qsTr("Save values") + translator.emptyString : qsTr("Update values") + translator.emptyString
+        ToolTip.text: isInserted ? qsTr("Save values") + translator.tr : qsTr("Update values") + translator.tr
 
         contentItem: Image {
             id: updateIcon
@@ -535,17 +549,104 @@ Dialog {
             onExited: parent.hoverButton = false
 
             onClicked: {
+                if (isInserted && flightNumber == "") {
+                    messages.displayMessage(qsTr("The flight code can not empty.") + translator.tr)
+
+                    return
+                }
+
+                if (aircraft == "") {
+                    messages.displayMessage(qsTr("The aircraft code can not empty.") + translator.tr)
+
+                    return
+                }
+
+                if (departure == "") {
+                    messages.displayMessage(qsTr("The departure port can not empty.") + translator.tr)
+
+                    return
+                }
+
+                if (arrival == "") {
+                    messages.displayMessage(qsTr("The arrival port can not empty.") + translator.tr)
+
+                    return
+                }
+
+                if (timeDeparture == "" || timeArrival == "" || Number(timeDeparture) <= 0 || Number(timeArrival) <= 0) {
+                    messages.displayMessage(qsTr("The estimated time is invalid.") + translator.tr)
+
+                    return
+                }
+
+                if (Number(timeArrival) <= Number(timeDeparture)) {
+                    messages.displayMessage(qsTr("Estimated time of arrival must be greater estimated time of departure.") + translator.tr)
+
+                    return
+                }
+
+                var optimizedData = []
+                var positionArr = ""
+
+                for (var i = 0; i < optimizedDataModels.count; i++) {
+                    for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                        if (optimizedDataModels.get(i).flights.get(j).name !== "" && optimizedDataModels.get(i).flights.get(j).newAircraft === aircraft) {
+                            if (optimizedDataModels.get(i).flights.get(j).name === flightNumber) {
+                                messages.displayMessage(qsTr("Flight number already exist.") + translator.tr)
+                                return
+                            } else {
+                                optimizedData.push(optimizedDataModels.get(i).flights.get(j))
+                            }
+                        }
+                    }
+                }
+
+                for (var i = 0; i < optimizedData.length; i++) {
+                    var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
+                    var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
+                    console.log(optimizedData.length, optimizedData[i].name,optimizedData[i].timeArrival, optimizedData[i].timeDeparture, timeDeparture, tea);
+                    if (optimizedData[i].timeDeparture === ted) {
+                        messages.displayMessage(qsTr("The departure time is invalid.") + translator.tr)
+                        return
+                    }
+
+                    if (optimizedData[i].timeArrival === tea) {
+                        messages.displayMessage(qsTr("The departure time is invalid.") + translator.tr)
+                        return
+                    }
+
+                    if (Number(timeDeparture) > Number(optimizedData[i].timeArrival)) {
+                        var max = 0
+                        if (Number(optimizedData[i].timeArrival > max)) {
+                            max = Number(optimizedData[i].timeArrival);
+                            positionArr = optimizedData[i + 1].timeArrival
+                        }
+                    }
+                }
+
+                if (timeArrival > positionArr) {
+                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
+                }
+
+
+                var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
+                var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
+
                 close();
 
                 var flightData = []
 
                 flightData = { "name": isInserted ? flightNumber : flightCode, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
                                "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
-                               "ACO": "", "TED": Number(timeDeparture), "TEA": Number(timeArrival) }
+                               "ACO": "", "TED": ted, "TEA": tea, "status": 0 }
 
                 flightDialog.updated(flightData, isInserted)
             }
         }
+    }
+
+    DFMBanner {
+        id: messages
     }
 
     footer: TabBar {
@@ -553,13 +654,13 @@ Dialog {
         currentIndex: flightSwipeView.currentIndex
 
         TabButton {
-            text: qsTr("Flight details") + translator.emptyString
+            text: qsTr("Flight details") + translator.tr
 
             font.pointSize: AppTheme.textSizeMenu
         }
 
         TabButton {
-            text: qsTr("Crew") + translator.emptyString
+            text: qsTr("Crew") + translator.tr
 
             font.pointSize: AppTheme.textSizeMenu
         }

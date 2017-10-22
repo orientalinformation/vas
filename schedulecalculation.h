@@ -71,9 +71,21 @@ public:
         int numFlightCompleted;
         bool isCompleted;
         double priorityRatio;
+
+        FlightData(){}
+
+        FlightData (const FlightData *data) {
+            this->departure = data->departure;
+            this->arrival = data->arrival;
+            this->flightTime = data->flightTime;
+            this->frequent = data->frequent;
+            this->numFlightCompleted = data->numFlightCompleted;
+            this->isCompleted = data->isCompleted;
+            this->priorityRatio = data->priorityRatio;
+        }
     };
 
-    Q_INVOKABLE int runSchedule(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart);
+    Q_INVOKABLE int execute(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart, int groundTime = 35);
 
     void write(QList<FlightCalendar> flightCalendar, QString path = "");
 

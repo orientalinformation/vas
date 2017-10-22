@@ -42,7 +42,7 @@ Item {
 
     signal rightClicked
 
-    width: Math.max(flightLenght, 100)
+    width: flightNumber.text !== "" ? Math.max(flightLenght, 100) : flightLenght
     height: AppTheme.tscale(45)
 
     opacity: hovered ? 1 : 0.95
@@ -55,6 +55,7 @@ Item {
         id: depAirport
 
         font.pointSize: AppTheme.textSizeTiny
+        font.capitalization: Font.AllUppercase
 
         anchors.right: flightNumber.left
         anchors.bottom: parent.bottom
@@ -70,6 +71,7 @@ Item {
         anchors.centerIn: parent
         padding: AppTheme.tscale(3)
         horizontalAlignment: Text.AlignHCenter
+        font.capitalization: Font.AllUppercase
 
         width: container.width - depAirport.width - arrAirport.width - padding
 
@@ -113,6 +115,7 @@ Item {
         id: arrAirport
 
         font.pointSize: AppTheme.textSizeTiny
+        font.capitalization: Font.AllUppercase
 
         anchors.left: flightNumber.right
         anchors.bottom: parent.bottom

@@ -33,6 +33,7 @@ import "../theme"
 
 import "../scripts/global.js" as Global
 import "../scripts/branding.js" as Branding
+import "../scripts/setting.js" as Settings
 
 import "../sections"
 import "../widgets"
@@ -90,7 +91,7 @@ Item {
                 currentIndex: 1
 
                 iconSource: "qrc:/das/images/title/schedule.png"
-                title: qsTr("Schedules") + translator.emptyString
+                title: qsTr("Schedules") + translator.tr
 
                 buildVisible: true
                 settingVisible: true
@@ -99,7 +100,7 @@ Item {
 
                 onBuilt: {
                     //Write code calculate here
-                    scheduleCalculation.runSchedule(csvAirportModel, csvAircraftModel, Number(txtStartTime.text));
+                    scheduleCalculation.execute(csvAirportModel, csvAircraftModel, Number(txtStartTime.text), Settings.groundTime);
 
                     scheduleDialog.built()
 
@@ -158,7 +159,7 @@ Item {
                     Label {
                         id: lblInputACData
 
-                        text: qsTr("Input aircraft data") + translator.emptyString
+                        text: qsTr("Input aircraft data") + translator.tr
                         font.pointSize: AppTheme.textSizeText
                         verticalAlignment: Text.AlignVCenter
 
@@ -184,7 +185,7 @@ Item {
                     DFMButton {
                         id: btnInputACData
 
-                        text: qsTr("Browse") + translator.emptyString
+                        text: qsTr("Browse") + translator.tr
 
                         onClicked: {
                             aircraftSelectDialog.open()
@@ -197,7 +198,7 @@ Item {
                     Label {
                         id: lblInputFlightData
 
-                        text: qsTr("Input airport data") + translator.emptyString
+                        text: qsTr("Input airport data") + translator.tr
                         font.pointSize: AppTheme.textSizeText
                         verticalAlignment: Text.AlignVCenter
 
@@ -223,7 +224,7 @@ Item {
                     DFMButton {
                         id: btnInputFlightData
 
-                        text: qsTr("Browse") + translator.emptyString
+                        text: qsTr("Browse") + translator.tr
 
                         onClicked: {
                             airportSelectDialog.open()
@@ -236,7 +237,7 @@ Item {
                     Label {
                         id: lblStartTime
 
-                        text: qsTr("Start time") + translator.emptyString
+                        text: qsTr("Start time") + translator.tr
                         font.pointSize: AppTheme.textSizeText
                         verticalAlignment: Text.AlignVCenter
 
@@ -250,7 +251,7 @@ Item {
                         Layout.fillWidth: true
 
                         text: ""
-                        placeholderText: qsTr("Enter start time") + translator.emptyString
+                        placeholderText: qsTr("Enter start time") + translator.tr
 
                         font.pointSize: AppTheme.textSizeText
 
@@ -307,13 +308,13 @@ Item {
 
     FileDialog {
         id: aircraftSelectDialog
-        title: qsTr("Select Aircraft Data") + translator.emptyString
+        title: qsTr("Select Aircraft Data") + translator.tr
 
         folder: shortcuts.documents
         selectExisting: true
         selectMultiple: false
 
-        nameFilters: [qsTr("CSV File (*.csv)")] + translator.emptyString
+        nameFilters: [qsTr("CSV File (*.csv)")] + translator.tr
 
         onAccepted: {
             txtInputAircraftData.text = fileUrl
@@ -324,13 +325,13 @@ Item {
 
     FileDialog {
         id: airportSelectDialog
-        title: qsTr("Select Airport Data") + translator.emptyString
+        title: qsTr("Select Airport Data") + translator.tr
 
         folder: shortcuts.documents
         selectExisting: true
         selectMultiple: false
 
-        nameFilters: [qsTr("CSV File (*.csv)")] + translator.emptyString
+        nameFilters: [qsTr("CSV File (*.csv)")] + translator.tr
 
         onAccepted: {
             txtInputAirportData.text = fileUrl
@@ -344,18 +345,29 @@ Item {
     }
 
     onOpen: {
-        //open
+        var airportPath = scheduleIostream.read("airportPath", "schedules", path)
+        var aircraftPath = scheduleIostream.read("aircraftPath", "schedules", path)
+
+        txtStartTime.text = scheduleIostream.read("startTime", "schedules", path)
+
+        txtInputAirportData.text = airportPath
+        txtInputAircraftData.text = aircraftPath
+
+//        csvAirportModel = airportReader.read()
+//        csvAirportModel = airportReader.read()
     }
 
     onSave: {
-        scheduleIostream.write("", "airport", aircraftReader.source, "schedules", path)
-        scheduleIostream.write("", "aircraft", aircraftReader.source, "schedules", path)
-        scheduleIostream.write("", "startTime", txtStartTime.text, "schedules", path)
+        scheduleIostream.write("airportPath", airportReader.source, "schedules", path)
+        scheduleIostream.write("aircraftPath", aircraftReader.source, "schedules", path)
+
+        scheduleIostream.write("startTime", txtStartTime.text, "schedules", path)
     }
 
     onSaveAs: {
-        scheduleIostream.write("", "airport", aircraftReader.source, "schedules", path)
-        scheduleIostream.write("", "aircraft", aircraftReader.source, "schedules", path)
-        scheduleIostream.write("", "startTime", txtStartTime.text, "schedules", path)
+        scheduleIostream.write("airportPath", airportReader.source, "schedules", path)
+        scheduleIostream.write("aircraftPath", aircraftReader.source, "schedules", path)
+
+        scheduleIostream.write("startTime", txtStartTime.text, "schedules", path)
     }
 }

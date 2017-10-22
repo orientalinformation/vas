@@ -50,7 +50,7 @@ Item {
 
     property alias titleReScheduleSection: titleSection
 
-    property var csvFlightModel: []
+    property var csvFlightList: []
 
     property alias airportModel: arrivalLimitedProblem.airportModel
 
@@ -78,13 +78,6 @@ Item {
 
     signal saveAs(var path)
 
-    property var actionModel: [
-        { "name": qsTr("Airline Day Delay") + translator.emptyString, "title": qsTr("Day Delay") + translator.emptyString, "image": "day.png", "index": 0 },
-        { "name": qsTr("Airline Time Delay") + translator.emptyString, "title": qsTr("Time Delay") + translator.emptyString, "image": "time.png", "index": 1 },
-        { "name": qsTr("Airline Arrival Limited") + translator.emptyString, "title": qsTr("Arrival Limited") + translator.emptyString, "image": "arrival.png", "index": 2 },
-        { "name": qsTr("Airline Time Limited") + translator.emptyString, "title": qsTr("Time Limited") + translator.emptyString, "image": "itinerary.png", "index": 3 },
-    ]
-
     IOStreams {
        id: rescheduleIostream
     }
@@ -111,7 +104,7 @@ Item {
                 currentIndex: 2
 
                 iconSource: "qrc:/das/images/title/departure.png"
-                title: qsTr("Rescheduled") + translator.emptyString
+                title: qsTr("Rescheduled") + translator.tr
 
                 buildVisible: true
                 settingVisible: true
@@ -120,7 +113,6 @@ Item {
 
                 onBuilt: {
                     //Write code calculate here
-
                     for (var i = 0 ; i < dayDelayModel.count ; i++) {
                        dayDelayList.push(dayDelayModel.get(i).name)
                     }
@@ -141,8 +133,8 @@ Item {
                         airportList.push(airportSelectedModel.get(i).name)
                     }
 
-                    rescheduleCalculation.runReschedule(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
-                                                        timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightModel)
+                    rescheduleCalculation.execute(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
+                                                        timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightList)
 
                     rescheduleDialog.built(flightReader.source)
 
@@ -177,7 +169,7 @@ Item {
 
                 Layout.fillHeight: true
 
-                Layout.preferredWidth: rescheduleDialog.width / 9 * 4
+                Layout.preferredWidth: rescheduleDialog.width / 9 * 3.9
 
                 spacing: AppTheme.tscale(3)
 
@@ -209,7 +201,7 @@ Item {
                         Label {
                             id: lblInputData
 
-                            text: qsTr("Input data") + translator.emptyString
+                            text: qsTr("Input data") + translator.tr
                             font.pointSize: AppTheme.textSizeText
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -229,7 +221,7 @@ Item {
                         DFMButton {
                             id: btnInputData
 
-                            text: qsTr("Browse") + translator.emptyString
+                            text: qsTr("Browse") + translator.tr
 
                             onClicked: {
                                 fileSelectDialog.open()
@@ -239,7 +231,7 @@ Item {
 
                     Label {
                         id: lblAircraftTitle
-                        text: qsTr("Aircraft list") + translator.emptyString
+                        text: qsTr("Aircraft list") + translator.tr
                         font.pointSize: AppTheme.textSizeText
                         font.weight: Font.Bold
                         horizontalAlignment: Text.AlignLeft
@@ -279,7 +271,7 @@ Item {
 
                             Repeater {
                                 id: repeater
-                                model: [qsTr("Aircraft name") + translator.emptyString ]
+                                model: [qsTr("Aircraft name") + translator.tr ]
 
                                 Label {
                                     text: modelData
@@ -361,7 +353,7 @@ Item {
 
                 Layout.fillHeight: true
 
-                Layout.preferredWidth: rescheduleDialog.width / 9 * 4
+                Layout.preferredWidth: rescheduleDialog.width / 9 * 3.9
 
                 spacing: AppTheme.tscale(3)
 
@@ -384,7 +376,7 @@ Item {
 
                     Label {
                         id: lblSettingTitle
-                        text: qsTr("Airline Day Delay") + translator.emptyString
+                        text: qsTr("Airline Day Delay") + translator.tr
                         font.pointSize: AppTheme.textSizeText
                         font.weight: Font.Bold
                         horizontalAlignment: Text.AlignLeft
@@ -460,15 +452,14 @@ Item {
 
                 Layout.fillHeight: true
 
-                Layout.preferredWidth: rescheduleDialog.width / 9 * 0.75
+                Layout.preferredWidth: rescheduleDialog.width / 9
 
                 spacing: AppTheme.tscale(3)
 
-                rightPadding: AppTheme.headerRightPadding
-                leftPadding: AppTheme.headerRightPadding
-
                 topPadding: 0
                 bottomPadding: 0
+                leftPadding: 0
+                rightPadding: 0
 
                 background: Rectangle {
                     border.color: "transparent"
@@ -481,36 +472,58 @@ Item {
 
                     anchors.fill: parent
 
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
+                    DFMOptionButton {
+                        sourceImage: "qrc:/das/images/schedules/day.png"
+                        text: qsTr("Day Delay") + translator.tr
 
-                    Repeater {
-                        id: listAction
-                        anchors.fill: parent
+                        anchors.horizontalCenter: parent.horizontalCenter
 
-                        clip: true
+                        onClicked: {
+                            lblSettingTitle.text = qsTr("Airline Day Delay") + translator.tr
 
-                        model: actionModel
+                            stackView.pop()
+                        }
+                    }
 
-                        delegate: DFMOptionButton {
-                            sourceImage: "qrc:/das/images/schedules/" + modelData.image
-                            text: modelData.title
+                    DFMOptionButton {
+                        sourceImage: "qrc:/das/images/schedules/time.png"
+                        text: qsTr("Time Delay") + translator.tr
 
-                            anchors.horizontalCenter: parent.horizontalCenter
+                        anchors.horizontalCenter: parent.horizontalCenter
 
-                            onClicked: {
-                                lblSettingTitle.text = modelData.name
+                        onClicked: {
+                            lblSettingTitle.text = qsTr("Airline Time Delay") + translator.tr
 
-                                stackView.pop()
+                            stackView.pop()
+                            stackView.push(timeDelayProblem)
+                        }
+                    }
 
-                                if (modelData.index === 1) {
-                                    stackView.push(timeDelayProblem)
-                                } else if (modelData.index === 2) {
-                                    stackView.push(arrivalLimitedProblem)
-                                } else if (modelData.index === 3) {
-                                    stackView.push(timeLimitedProblem)
-                                }
-                            }
+                    DFMOptionButton {
+                        sourceImage: "qrc:/das/images/schedules/arrival.png"
+                        text: qsTr("Arrival Limited") + translator.tr
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        onClicked: {
+                            lblSettingTitle.text = qsTr("Airline Arrival Limited") + translator.tr
+
+                            stackView.pop()
+                            stackView.push(arrivalLimitedProblem)
+                        }
+                    }
+
+                    DFMOptionButton {
+                        sourceImage: "qrc:/das/images/schedules/itinerary.png"
+                        text: qsTr("Time Limited") + translator.tr
+
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        onClicked: {
+                            lblSettingTitle.text = qsTr("Airline Time Limited") + translator.tr
+
+                            stackView.pop()
+                            stackView.push(timeLimitedProblem)
                         }
                     }
                 }
@@ -560,27 +573,39 @@ Item {
 
     RescheduleCalculation {
         id: rescheduleCalculation
+
+        onSuccessfull: {
+            numberFlightUnchanged = numberUnchanged
+            numberAircarftUnchanged = numberAircarft
+            numberFlightCancel = numberCancel
+            totalTimeDelay = totalTime
+            numberFlightDelay = numberDelay
+            maximumTimeDelay = maximumTime
+        }
     }
 
     FileDialog {
         id: fileSelectDialog
-        title: qsTr("Select input data") + translator.emptyString
+        title: qsTr("Select input data") + translator.tr
 
         folder: shortcuts.documents
         selectExisting: true
         selectMultiple: false
 
-        nameFilters: [qsTr("CSV File (*.csv)")] + translator.emptyString
+        nameFilters: [qsTr("CSV File (*.csv)")] + translator.tr
 
         onAccepted: {
             txtInputData.text = fileUrl
             flightReader.source = fileUrl
-            csvFlightModel = flightReader.read()
+            csvFlightList = flightReader.read()
             listAircraft.currentIndex = -1
 
-            for (var i = 0; i < csvFlightModel.length; i++) {
-                appendModel(airportModel, csvFlightModel[i].ARR)
-                appendModel(rescheduleModel, csvFlightModel[i].AC)
+            airportModel.clear()
+            rescheduleModel.clear()
+
+            for (var i = 0; i < csvFlightList.length; i++) {
+                appendModel(airportModel, csvFlightList[i].ARR)
+                appendModel(rescheduleModel, csvFlightList[i].AC)
             }
         }
     }
@@ -590,26 +615,143 @@ Item {
     }
 
     onOpen: {
-        //code
+        var rescheduleList = []
+        var arrivalLimitSelected  = []
+        var urlInput
+
+        dayDelayList = []
+        aircraftArrivalLimitedList = []
+        airportList = []
+        timeLimitedList = []
+        timeDelayList = []
+
+        urlInput = rescheduleIostream.read("path", "reschedules", path)
+
+        dayDelayList = rescheduleIostream.readData("problem1", "reschedules", path)
+
+        timeDelayList = rescheduleIostream.readObject("problem2", "reschedules", path)
+
+        arrivalLimitSelected = rescheduleIostream.readData("problem3AP", "reschedules", path)
+        aircraftArrivalLimitedList = rescheduleIostream.readData("problem3AC", "reschedules", path)
+
+        timeLimitedList = rescheduleIostream.readObject("problem4", "reschedules", path)
+
+        rescheduleList = rescheduleIostream.readData("availableAC", "reschedules", path)
+        airportList = rescheduleIostream.readData("availableAP", "reschedules", path)
+
+        txtInputData.text = urlInput
+
+        for (var i = 0; i < rescheduleList.length; i++) {
+            appendModel(rescheduleModel, rescheduleList[i])
+        }
+
+        for (var i = 0; i < dayDelayList.length; i++) {
+            appendModel(dayDelayModel, dayDelayList[i])
+        }
+
+        for (var i = 0; i < aircraftArrivalLimitedList.length; i++) {
+            appendModel(aircraftArrivalLimitModel, aircraftArrivalLimitedList[i])
+        }
+
+        for (var i = 0; i < airportList.length; i++) {
+            appendModel(airportModel, airportList[i])
+        }
+
+        for (var i = 0; i < arrivalLimitSelected.length; i++) {
+            appendModel(airportSelectedModel, arrivalLimitSelected[i])
+        }
+
+        for (var i = 0; i < timeDelayList.length; i++) {
+            timeDelayModel.append({ name: timeDelayList[i].name, time: timeDelayList[i].time })
+        }
+
+        for (var i = 0; i < timeLimitedList.length; i++) {
+            timeLimitedModel.append( { name: timeLimitedList[i].name, time: timeLimitedList[i].time })
+        }
+
+        dayDelayList = []
+        aircraftArrivalLimitedList = []
+        airportList = []
     }
 
     onSave: {
-        rescheduleIostream.write("", "inputdata", flightReader.source, "reschedules", path)
-        rescheduleIostream.write(dayDelayList, "daydelay", "", "reschedules", path)
-        rescheduleIostream.write(aircraftArrivalLimitedList, "arrivalLimitedAC", "", "reschedules", path)
-        rescheduleIostream.write(airportList, "arrivalLimitedAP", "", "reschedules", path)
+        var codes = getData()
 
-        rescheduleIostream.writeObject(timeDelayList, "timeDelay", "reschedules", path)
-        rescheduleIostream.writeObject(timeLimitedList, "timeLimited", "reschedules", path)
+        rescheduleIostream.write("path", txtInputData.text, "reschedules", path)
+
+        rescheduleIostream.write("problem1", codes[0], "reschedules", path)
+
+        rescheduleIostream.writeData("problem2", codes[1], "reschedules", path)
+
+        rescheduleIostream.write("problem3AC", codes[2], "reschedules", path)
+        rescheduleIostream.write("problem3AP", codes[3], "reschedules", path)
+
+        rescheduleIostream.writeData("problem4", codes[4], "reschedules", path)
+
+        rescheduleIostream.write("availableAC", codes[5], "reschedules", path)
+        rescheduleIostream.write("availableAP", codes[6], "reschedules", path)
+
     }
 
     onSaveAs: {
-        rescheduleIostream.write("", "inputdata", flightReader.source, "reschedules", path)
-        rescheduleIostream.write(dayDelayList, "daydelay", "", "reschedules", path)
-        rescheduleIostream.write(aircraftArrivalLimitedList, "arrivalLimitedAC", "", "reschedules", path)
-        rescheduleIostream.write(airportList, "arrivalLimitedAP", "", "reschedules", path)
+        var codes = getData()
 
-        rescheduleIostream.writeObject(timeDelayList, "timeDelay", "reschedules", path)
-        rescheduleIostream.writeObject(timeDelayList, "timeLimited", "reschedules", path)
+        rescheduleIostream.write("path", txtInputData.text, "reschedules", path)
+
+        rescheduleIostream.write("availableAC", codes[5], "reschedules", path)
+
+        rescheduleIostream.write("problem1", codes[0], "reschedules", path)
+
+        rescheduleIostream.writeData("problem2", codes[1], "reschedules", path)
+
+        rescheduleIostream.write("problem3AC", codes[2], "reschedules", path)
+        rescheduleIostream.write("problem3AP", codes[3], "reschedules", path)
+        rescheduleIostream.write("availableAP", codes[6], "reschedules", path)
+
+        rescheduleIostream.writeData("problem4", codes[4], "reschedules", path)
+    }
+
+    function getData()
+    {
+        var problem1Data = []
+        var problem2Data = []
+
+        var problem3Data1 = []
+        var problem3Data2 = []
+
+        var problem4Data = []
+
+        var rescheduleList = []
+        var arrivalLimitSelected = []
+
+        for (var i = 0; i < rescheduleModel.count; i++) {
+            rescheduleList.push(rescheduleModel.get(i).name)
+        }
+
+        for (var i = 0; i < airportModel.count; i++) {
+            arrivalLimitSelected.push(airportModel.get(i).name)
+        }
+
+        for (var i = 0 ; i < dayDelayModel.count ; i++) {
+           problem1Data.push(dayDelayModel.get(i).name)
+        }
+
+        for (var i = 0; i < timeDelayModel.count; i++) {
+            problem2Data.push(timeDelayModel.get(i))
+        }
+
+        for (var i = 0; i < timeLimitedModel.count; i++) {
+            problem4Data.push(timeLimitedModel.get(i))
+        }
+
+        for (var i = 0; i < aircraftArrivalLimitModel.count; i++) {
+            problem3Data1.push(aircraftArrivalLimitModel.get(i).name)
+        }
+
+        for (var i = 0; i < airportSelectedModel.count; i++) {
+            problem3Data2.push(airportSelectedModel.get(i).name)
+        }
+
+        return [problem1Data, problem2Data, problem3Data1, problem3Data2, problem4Data, rescheduleList, arrivalLimitSelected]
     }
 }

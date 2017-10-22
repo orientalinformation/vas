@@ -60,6 +60,8 @@ Item {
     property var currentInputDatas: []
     property var optimizedInputDatas: []
 
+    property var optimizedModels: []
+
     property alias currentDataModels: currentDataModels
     property alias optimizedDataModels: optimizedDataModels
 
@@ -68,11 +70,14 @@ Item {
 
     property int timeCounter: 0
 
+    property bool isInfoShowed: false
+
     signal reload(var path, var inputPath, var isSingleView)
 
-    signal open (var path)
+    signal open(var path)
     signal save(var path)
     signal saveAs(var path)
+    signal exportCSV(var path)
 
     function pad(num, size) {
         var s = num + "";
@@ -92,86 +97,86 @@ Item {
         id: flightDialog
 
         onUpdated: {
-            var modelLenght = optimizedDataModels.count;
+//            var modelLenght = optimizedDataModels.count;
 
-            for (var i = 0; i < modelLenght; i++) {
-                var flightLength = optimizedDataModels.get(i).flights.count
+//            for (var i = 0; i < modelLenght; i++) {
+//                var flightLength = optimizedDataModels.get(i).flights.count
 
-                for (var j = 0; j < flightLength; j++) {
-                    var currentFlights = optimizedDataModels.get(i).flights
+//                for (var j = 0; j < flightLength; j++) {
+//                    var currentFlights = optimizedDataModels.get(i).flights
 
-                    if (flightData.name === currentFlights.get(j).name) {
-                        if (optimizedDataModels.get(i).aircraft === aircraft) {
-                            if (currentFlights.get(j).timeDeparture === Number(timeDeparture) &&
-                                    currentFlights.get(j).timeArrival === Number(timeArrival)) {
-                                optimizedDataModels.get(i).flights.set(j, { "name": flightData.name,
-                                                                            "captain": flightData.CAP,
-                                                                            "coPilot": flightData.FO,
+//                    if (flightData.name === currentFlights.get(j).name) {
+//                        if (optimizedDataModels.get(i).aircraft === aircraft) {
+//                            if (currentFlights.get(j).timeDeparture === Number(timeDeparture) &&
+//                                    currentFlights.get(j).timeArrival === Number(timeArrival)) {
+//                                optimizedDataModels.get(i).flights.set(j, { "name": flightData.name,
+//                                                                            "captain": flightData.CAP,
+//                                                                            "coPilot": flightData.FO,
 
-                                                                            "cabinManager": flightData.CM,
-                                                                            "cabinAgent1": flightData.CA1,
-                                                                            "cabinAgent2": flightData.CA2,
-                                                                            "cabinAgent3": flightData.CA3,
+//                                                                            "cabinManager": flightData.CM,
+//                                                                            "cabinAgent1": flightData.CA1,
+//                                                                            "cabinAgent2": flightData.CA2,
+//                                                                            "cabinAgent3": flightData.CA3,
 
-                                                                            "departure": flightData.DEP,
-                                                                            "arrival": flightData.ARR,
+//                                                                            "departure": flightData.DEP,
+//                                                                            "arrival": flightData.ARR,
 
-                                                                            "timeDeparture": flightData.TED,
-                                                                            "timeArrival": flightData.TEA,
+//                                                                            "timeDeparture": flightData.TED,
+//                                                                            "timeArrival": flightData.TEA,
 
-                                                                            "newAircraft": flightData.AC,
-                                                                            "oldAircraft": flightData.ACO } )
-                            } else {
-                                UnitConverter.updateFlight(optimizedDataModels, flightData, i, j)
-                            }
-                        } else {
-                            var aircraftExisted = false
+//                                                                            "newAircraft": flightData.AC,
+//                                                                            "oldAircraft": flightData.ACO } )
+//                            } else {
+//                                UnitConverter.updateFlight(optimizedDataModels, flightData, i, j)
+//                            }
+//                        } else {
+//                            var aircraftExisted = false
 
-                            for (var k = 0; k < modelLenght; k++) {
-                                if (optimizedDataModels.get(k).aircraft === aircraft) {
-                                    aircraftExisted = true
+//                            for (var k = 0; k < modelLenght; k++) {
+//                                if (optimizedDataModels.get(k).aircraft === aircraft) {
+//                                    aircraftExisted = true
 
-                                    var success = UnitConverter.insertFlight(optimizedDataModels, flightData, k)
+//                                    var success = UnitConverter.insertFlight(optimizedDataModels, flightData, k)
 
-                                    optimizedDataModels.get(i).flights.set(j, { "name": "",
-                                                                                "captain": "",
-                                                                                "coPilot": "",
+//                                    optimizedDataModels.get(i).flights.set(j, { "name": "",
+//                                                                                "captain": "",
+//                                                                                "coPilot": "",
 
-                                                                                "cabinManager": "",
-                                                                                "cabinAgent1": "",
-                                                                                "cabinAgent2": "",
-                                                                                "cabinAgent3": "",
+//                                                                                "cabinManager": "",
+//                                                                                "cabinAgent1": "",
+//                                                                                "cabinAgent2": "",
+//                                                                                "cabinAgent3": "",
 
-                                                                                "departure": "",
-                                                                                "arrival": "",
+//                                                                                "departure": "",
+//                                                                                "arrival": "",
 
-                                                                                "timeDeparture": Number(timeDeparture),
-                                                                                "timeArrival": Number(timeArrival),
+//                                                                                "timeDeparture": Number(timeDeparture),
+//                                                                                "timeArrival": Number(timeArrival),
 
-                                                                                "newAircraft": "",
-                                                                                "oldAircraft": "" } )
+//                                                                                "newAircraft": "",
+//                                                                                "oldAircraft": "" } )
 
-                                    var array = UnitConverter.convertAircraftModelToArray(optimizedDataModels)
+//                                    var array = UnitConverter.convertAircraftModelToArray(optimizedDataModels)
 
-                                    updateScreen(currentInputDatas, currentDataModels, array, optimizedDataModels)
+//                                    updateScreen(currentInputDatas, currentDataModels, array, optimizedDataModels)
 
-                                    break
-                                }
-                            }
+//                                    break
+//                                }
+//                            }
 
-                            if (!aircraftExisted) {
-                                messages.displayMessage(aircraft + qsTr(" not existed.") + translator.emptyString)
+//                            if (!aircraftExisted) {
+//                                messages.displayMessage(aircraft + qsTr(" not existed.") + translator.tr)
 
-                                return
-                            }
-                        }
+//                                return
+//                            }
+//                        }
 
-                        break
-                    }
-                }
-            }
+//                        break
+//                    }
+//                }
+//            }
 
-            messages.displayMessage(flightNumber + qsTr(" was updated.") + translator.emptyString)
+            messages.displayMessage(flightNumber + qsTr(" was updated.") + translator.tr)
         }
     }
 
@@ -179,12 +184,15 @@ Item {
         id: insertFlightDialog
 
         onUpdated: {
-//            aFlightInserted = {  "name": flightNumber, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
-//                                 "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
-//                                 "ACO": "", "TED": Number(timeDeparture), "TEA": Number(timeArrival), "status": 0 }
-            //
+            var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
+            var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
 
-            messages.displayMessage(flightNumber + qsTr(" is inserted.") + translator.emptyString)
+            var insertData  = { "name": isInserted ? flightNumber : flightCode, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
+                           "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
+                           "ACO": "", "TED": ted, "TEA": tea, "status": 0 }
+
+            appendModel(optimizedDataModels, insertData, insertData.AC)
+            messages.displayMessage(flightNumber + qsTr(" is inserted.") + translator.tr)
         }
     }
 
@@ -202,7 +210,7 @@ Item {
         pageSize.height: 400
 
         onFinished: {
-            messages.displayMessage(qsTr("Print PDF successfull") + translator.emptyString)
+            messages.displayMessage(qsTr("Print PDF successfull") + translator.tr)
         }
     }
 
@@ -264,17 +272,79 @@ Item {
     }
 
     onOpen: {
-        //open case
+        currentInputDatas = homeIostreams.readObject("inputFlights", "homepage", path)
+        optimizedInputDatas = homeIostreams.readObject("resultFlights", "homepage", path)
+
+        var status = homeIostreams.read("isSplitScreen", "homepage", path)
+
+        isSplitScheduleView = status === "true" ? true : false
+
+        updateScreen(currentInputDatas, currentDataModels, optimizedInputDatas, optimizedDataModels)
     }
 
     onSave: {
-        homeIostreams.write("", "urlinput", inputReader.source, "homepage", path)
-        homeIostreams.write("", "urlresult", resultReader.source, "homepage", path)
+        var optimizedData = []
+        var currentData = []
+
+        for (var i = 0; i < optimizedDataModels.count; i++) {
+            for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                if (optimizedDataModels.get(i).flights.get(j).name !== "") {
+                    optimizedData.push(optimizedDataModels.get(i).flights.get(j))
+                }
+            }
+        }
+
+        for (var i = 0; i < currentDataModels.count; i++) {
+            for (var j = 0; j < currentDataModels.get(i).flights.count; j++) {
+                if (currentDataModels.get(i).flights.get(j).name !== "") {
+                    currentData.push(currentDataModels.get(i).flights.get(j))
+                }
+            }
+        }
+
+        homeIostreams.writeObject("c", currentData, "homepage", path)
+        homeIostreams.writeObject("resultFlights", optimizedData, "homepage", path)
+
+        homeIostreams.write("isSplitScreen", isSplitScheduleView ? "true" : "false", "homepage", path)
     }
 
     onSaveAs: {
-        homeIostreams.write("", "urlinput", inputReader.source, "homepage", path)
-        homeIostreams.write("", "urlresult", resultReader.source, "homepage", path)
+        var optimizedData = []
+        var currentData = []
+
+        for (var i = 0; i < optimizedDataModels.count; i++) {
+            for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                if (optimizedDataModels.get(i).flights.get(j).name !== "") {
+                    optimizedData.push(optimizedDataModels.get(i).flights.get(j))
+                }
+            }
+        }
+
+        for (var i = 0; i < currentDataModels.count; i++) {
+            for (var j = 0; j < currentDataModels.get(i).flights.count; j++) {
+                if (currentDataModels.get(i).flights.get(j).name !== "") {
+                    currentData.push(currentDataModels.get(i).flights.get(j))
+                }
+            }
+        }
+
+        homeIostreams.writeObject("inputFlights", currentData, "homepage", path)
+        homeIostreams.writeObject("resultFlights", optimizedData, "homepage", path)
+
+        homeIostreams.write("isSplitScreen", isSplitScheduleView ? "true" : "false", "homepage", path)
+    }
+
+    onExportCSV: {
+        for (var i = 0; i < optimizedDataModels.count; i++) {
+
+            for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                if (optimizedDataModels.get(i).flights.get(j).name !== "") {
+                    optimizedModels.push(optimizedDataModels.get(i).flights.get(j))
+                }
+            }
+        }
+
+        resultReader.write(optimizedModels, path);
     }
 
     onReload: {
@@ -313,6 +383,7 @@ Item {
     }
 
     function findObjectInData(data, value) {
+        //return index of aircraft
         if (data.count > 0 ) {
             var lenght = data.count
 
@@ -329,12 +400,10 @@ Item {
     function appendModel(array, data, name) {
         var codes = findObjectInData(array, name);
 
-        var times = Math.floor(data.TED / 100);
-
         if (!codes[0]) {
             indexColumn = 0;
 
-            if (times === 0) {
+            if (data.TED === 0) {
                 array.append({
                     "aircraft": data.AC,
 
@@ -424,30 +493,33 @@ Item {
 
             var lastTEA = array.get(codes[1]).flights.get(flightCount - 1).timeArrival
 
-            array.get(codes[1]).flights.append({
-                        "name": "",
+//            if (lastTEA < data.TED) {
+                array.get(codes[1]).flights.append({
+                            "name": "",
 
-                        "captain": "",
-                        "coPilot": "",
+                            "captain": "",
+                            "coPilot": "",
 
-                        "cabinManager": "",
-                        "cabinAgent1": "",
-                        "cabinAgent2": "",
-                        "cabinAgent3": "",
+                            "cabinManager": "",
+                            "cabinAgent1": "",
+                            "cabinAgent2": "",
+                            "cabinAgent3": "",
 
-                        "departure": "",
-                        "arrival": "",
+                            "departure": "",
+                            "arrival": "",
 
-                        "timeDeparture": lastTEA,
-                        "timeArrival": data.TED,
+                            "timeDeparture": lastTEA,
+                            "timeArrival": data.TED,
 
-                        "newAircraft": "",
-                        "oldAircraft": "",
+                            "newAircraft": "",
+                            "oldAircraft": "",
 
-                        "status": data.status
-                    })
+                            "status": data.status
+                        })
 
-            indexColumn++;
+
+                indexColumn++;
+            //}
 
             array.get(codes[1]).flights.append({
                         "name": data.name,
@@ -475,6 +547,30 @@ Item {
         }
     }
 
+    DFMInfoSheet {
+        id: info
+
+        anchors.right: root.right
+        anchors.rightMargin: AppTheme.hscale(10)
+
+        opacity: 0
+
+        visible: isInfoShowed
+
+        z: 3
+    }
+
+    function updateCalculationInfo() {
+        if (isInfoShowed) {
+            info.unchanged = numberFlightUnchanged
+            info.aircraftUnchanged = numberAircarftUnchanged
+            info.canceled = numberFlightCancel
+            info.totalDelay = totalTimeDelay
+            info.numberDelay = numberFlightDelay
+            info.maximumDelay = maximumTimeDelay
+        }
+    }
+
     ColumnLayout {
         id: columnLayout
 
@@ -491,7 +587,7 @@ Item {
             currentIndex: 0
 
             iconSource: "qrc:/das/images/title/home.png"
-            title: qsTr("Home") + translator.emptyString
+            title: qsTr("Home") + translator.tr
 
             backVisible: false
             homeVisible: false
@@ -554,7 +650,7 @@ Item {
                         Label {
                             id: lblCurrentSchedule
 
-                            text: qsTr("Current Airline Schedules") + translator.emptyString
+                            text: qsTr("Current Airline Schedules") + translator.tr
 
                             font.pointSize: AppTheme.textSizeText
                             verticalAlignment: Text.AlignVCenter
@@ -607,7 +703,7 @@ Item {
 
                                 Repeater {
                                     id: repeater
-                                    model: [qsTr("Aircraft N°") + translator.emptyString,
+                                    model: [qsTr("Aircraft N°") + translator.tr,
                                         "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",
                                         "12h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00", "20h00", "21h00", "22h00", "23h00",
                                         "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00", "12h00"]
@@ -653,6 +749,7 @@ Item {
                                         text: aircraft
 
                                         font.pointSize: AppTheme.textSizeText
+                                        font.capitalization: Font.AllUppercase
                                         verticalAlignment: Text.AlignVCenter
                                         horizontalAlignment: Text.AlignHCenter
 
@@ -684,9 +781,7 @@ Item {
 
                                             color: "#444444"
 
-                                            flightLenght: listViewData.headerItem.itemAt(column).width *
-                                                    (timeArrival / 100 > timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 :
-                                                    (timeArrival / 100 < timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 + 24 : 1))
+                                            flightLenght: listViewData.headerItem.itemAt(column).width * (timeArrival - timeDeparture) / 60
 
                                             onClicked: {
                                                 flightDialog.isInserted = false
@@ -701,8 +796,11 @@ Item {
                                                 flightDialog.departure = departure
                                                 flightDialog.arrival = arrival
 
-                                                flightDialog.timeDeparture = timeDeparture
-                                                flightDialog.timeArrival = timeArrival
+                                                var ted = ((timeDeparture % (24 * 60)) - (timeDeparture % (24 * 60)) % 60) / 60 * 100 + (timeDeparture % (24 * 60)) % 60;
+                                                var tea = ((timeArrival % (24 * 60)) - (timeArrival % (24 * 60)) % 60) / 60 * 100 + (timeArrival % (24 * 60)) % 60;
+
+                                                flightDialog.timeDeparture = ted
+                                                flightDialog.timeArrival = tea
 
                                                 flightDialog.captain = captain
                                                 flightDialog.coPilot = coPilot
@@ -774,7 +872,7 @@ Item {
                         Label {
                             id: lblOptimizedSchedule
 
-                            text: qsTr("Optimized Airline Schedules") + translator.emptyString
+                            text: qsTr("Optimized Airline Schedules") + translator.tr
 
                             font.pointSize: AppTheme.textSizeText
                             verticalAlignment: Text.AlignVCenter
@@ -828,7 +926,7 @@ Item {
                                 Repeater {
                                     id: repeaterOptimized
 
-                                    model: [qsTr("Aircraft N°") + translator.emptyString,
+                                    model: [qsTr("Aircraft N°") + translator.tr,
                                         "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",
                                         "12h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00", "20h00", "21h00", "22h00", "23h00",
                                         "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",  "12h00"]
@@ -876,6 +974,7 @@ Item {
 
                                         font.pointSize: AppTheme.textSizeText
                                         verticalAlignment: Text.AlignVCenter
+                                        font.capitalization: Font.AllUppercase
                                         horizontalAlignment: Text.AlignHCenter
 
                                         padding: AppTheme.tscale(5)
@@ -908,9 +1007,7 @@ Item {
                                                                                           status === FlightObject.OnlyChangedTime ? Settings.colorChangedTime :
                                                                                           status === FlightObject.BothChangedAirplaneAndTime ? Settings.colorChangedAirplaneAndTime : Settings.colorUnchanged
 
-                                            flightLenght: listViewDataOptimized.headerItem.itemAt(column).width *
-                                                   (timeArrival / 100 > timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 :
-                                                                                              (timeArrival / 100 < timeDeparture / 100 ? timeArrival / 100 - timeDeparture / 100 + 24 : 1))
+                                            flightLenght: listViewDataOptimized.headerItem.itemAt(column).width * (timeArrival - timeDeparture) / 60
 
                                             onClicked: {
                                                 flightDialog.isInserted = false
@@ -923,8 +1020,11 @@ Item {
                                                 flightDialog.departure = departure
                                                 flightDialog.arrival = arrival
 
-                                                flightDialog.timeDeparture = timeDeparture
-                                                flightDialog.timeArrival = timeArrival
+                                                var ted = ((timeDeparture % (24 * 60)) - (timeDeparture % (24 * 60)) % 60) / 60 * 100 + (timeDeparture % (24 * 60)) % 60;
+                                                var tea = ((timeArrival % (24 * 60)) - (timeArrival % (24 * 60)) % 60) / 60 * 100 + (timeArrival % (24 * 60)) % 60;
+
+                                                flightDialog.timeDeparture = ted
+                                                flightDialog.timeArrival = tea
 
                                                 flightDialog.captain = captain
                                                 flightDialog.coPilot = coPilot
@@ -993,8 +1093,62 @@ Item {
     RoundButton {
         property bool hoverButton: false
 
+        highlighted: true
+        font.pointSize: AppTheme.textSizeMenu
+
+        anchors.margins: 10
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+
+        visible: isInfoShowed
+
+        contentItem: Image {
+            id: updateIcon
+
+            fillMode: Image.PreserveAspectFit
+            horizontalAlignment: Image.AlignHCenter
+            verticalAlignment: Image.AlignVCenter
+
+            source: "qrc:/das/images/actions/info.png"
+        }
+
+        ColorOverlay {
+            anchors.fill: updateIcon
+            source: updateIcon
+            color: "#94e9f0"
+        }
+
+        z: 4
+
+        onHoverButtonChanged: {
+            if (!hoverButton) {
+                info.opacity = 0;
+            } else {
+
+                info.opacity = 0.8;
+            }
+
+            updateCalculationInfo();
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            anchors.margins: 0
+            hoverEnabled: true
+
+            cursorShape: Qt.PointingHandCursor
+
+            onEntered: parent.hoverButton = true
+
+            onExited: parent.hoverButton = false
+        }
+    }
+
+    RoundButton {
+        property bool hoverButton: false
+
         ToolTip.visible: hoverButton
-        ToolTip.text: qsTr("Insert block") + translator.emptyString
+        ToolTip.text: qsTr("Insert block") + translator.tr
 
         text: qsTr("+")
         highlighted: true
@@ -1003,6 +1157,8 @@ Item {
         anchors.margins: 10
         anchors.right: parent.right
         anchors.bottom: parent.bottom
+
+        z: 4
 
         MouseArea {
             anchors.fill: parent
@@ -1018,6 +1174,26 @@ Item {
             onClicked: {
                 insertFlightDialog.isInserted = true
                 insertFlightDialog.flightCode = qsTr("Add new flight")
+
+                insertFlightDialog.flightNumber = ""
+
+                insertFlightDialog.aircraft = ""
+                insertFlightDialog.aircraftOld = ""
+
+                insertFlightDialog.departure = ""
+                insertFlightDialog.arrival = ""
+
+                insertFlightDialog.timeDeparture = ""
+                insertFlightDialog.timeArrival = ""
+
+                insertFlightDialog.captain = ""
+                insertFlightDialog.coPilot = ""
+
+                insertFlightDialog.cabinManager = ""
+                insertFlightDialog.cabinAgent1 = ""
+                insertFlightDialog.cabinAgent2 = ""
+                insertFlightDialog.cabinAgent3 = ""
+
                 insertFlightDialog.open();
             }
         }
@@ -1065,7 +1241,7 @@ Item {
 
         MenuItem {
             id: itemDelete
-            text: qsTr("Delete block") + translator.emptyString
+            text: qsTr("Delete block") + translator.tr
             font.pointSize: AppTheme.textSizeMenu
 
             enabled: optimizedDataModels.count > 0
@@ -1090,7 +1266,7 @@ Item {
                                                                                              "status": FlightObject.Unchanged
                                                                      })
 
-                messages.displayMessage(contextMenu.flightCode + qsTr(" is deleted.") + translator.emptyString)
+                messages.displayMessage(contextMenu.flightCode + qsTr(" is deleted.") + translator.tr)
             }
         }
     }

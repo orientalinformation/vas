@@ -21,8 +21,8 @@ HEADERS += \
                 printer/printer.h \
                 printer/quickitempainter.h \
                 printer/styledtext.h \
-    problem.h \
-    iostreams.h
+                problem.h \
+                iostreams.h
 
 SOURCES +=      main.cpp \
                 translation.cpp \
@@ -39,8 +39,8 @@ SOURCES +=      main.cpp \
                 printer/printer.cpp \
                 printer/quickitempainter.cpp \
                 printer/styledtext.cpp \
-    problem.cpp \
-    iostreams.cpp
+                problem.cpp \
+                iostreams.cpp
 
 RESOURCES +=    qml.qrc \
                 das_res.qrc
@@ -87,11 +87,15 @@ OTHER_FILES +=  version.h \
 win32 {
     SOURCEPATH = $$PWD/data
     DESTPATH = $$OUT_PWD/bin/data
-    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH,/,\\) $$replace(DESTPATH,/,\\)"
+
+    SOURCEPATH1 = $$PWD/LICENSE
+    DESTPATH1 = $$OUT_PWD/bin/LICENSE
+
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH,/,\\) $$replace(DESTPATH,/,\\) && copy $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\)"
 }
 
 unix {
-    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/bin/"
+    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/bin/ && cp $$PWD/LICENSE $$OUT_PWD/bin/"
 }
 
 first.depends = $(first) copydata

@@ -45,10 +45,10 @@ Dialog {
     padding: AppTheme.screenPadding
 
     property var colorModel: [
-        { "type": qsTr("Unchanged") + translator.emptyString, "color": Settings.colorUnchanged },
-        { "type": qsTr("Only Changed Airplane") + translator.emptyString, "color": Settings.colorChangedAirplane },
-        { "type": qsTr("Only Changed Time") + translator.emptyString, "color": Settings.colorChangedTime },
-        { "type": qsTr("Changed Airplane and Time") + translator.emptyString, "color": Settings.colorChangedAirplaneAndTime },
+        { "type": qsTr("Unchanged") + translator.tr, "color": Settings.colorUnchanged },
+        { "type": qsTr("Only Changed Airplane") + translator.tr, "color": Settings.colorChangedAirplane },
+        { "type": qsTr("Only Changed Time") + translator.tr, "color": Settings.colorChangedTime },
+        { "type": qsTr("Changed Airplane and Time") + translator.tr, "color": Settings.colorChangedAirplaneAndTime }
     ]
 
     ColumnLayout {

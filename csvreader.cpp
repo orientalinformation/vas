@@ -26,7 +26,7 @@ modification, are permitted provided that the following conditions are met:
 #include <QTime>
 #include <QDate>
 
-#include <QApplication>
+#include <QStandardPaths>
 
 CSVReader::CSVReader(QObject *parent) : QObject(parent)
 {
@@ -74,8 +74,14 @@ QList<QObject *> CSVReader::read(bool isSingle)
                         flight->setDeparture(lineContent[7]);
                         flight->setArrival(lineContent[8]);
 
-                        flight->setTimeDeparture(lineContent[9].toInt());
-                        flight->setTimeArrival(lineContent[10].toInt());
+                        int timeDeparture = lineContent[9].toInt();
+                        timeDeparture = timeDeparture / 100 * 60 + timeDeparture % 100;
+
+                        int timeArrival = lineContent[10].toInt();
+                        timeArrival = timeArrival / 100 * 60 + timeArrival % 100;
+
+                        flight->setTimeDeparture(timeDeparture);
+                        flight->setTimeArrival(timeArrival);
 
                         flight->setNewAircraft(lineContent[11]);
 
@@ -120,8 +126,14 @@ QList<QObject *> CSVReader::read(bool isSingle)
                         flight->setDeparture(lineContent[2]);
                         flight->setArrival(lineContent[3]);
 
-                        flight->setTimeDeparture(lineContent[4].toInt());
-                        flight->setTimeArrival(lineContent[5].toInt());
+                        int timeDeparture = lineContent[4].toInt();
+                        timeDeparture = timeDeparture / 100 * 60 + timeDeparture % 100;
+
+                        int timeArrival = lineContent[5].toInt();
+                        timeArrival = timeArrival / 100 * 60 + timeArrival % 100;
+
+                        flight->setTimeDeparture(timeDeparture);
+                        flight->setTimeArrival(timeArrival);
 
                         flight->setNewAircraft(lineContent[1]);
 
@@ -175,6 +187,55 @@ QList<QObject *> CSVReader::read(bool isSingle)
         return QList<QObject *>();
     }
 
+    if (_isFlight) {
+        QList<int> indexUniqueFlight;
+
+        int numberOfFlight = data.length();
+
+        // Filter get information of flight
+        QStringList uniqueAircrafts;
+
+        for (int i = 0; i < numberOfFlight; i++) {
+            QString name = static_cast<FlightObject *>(data.at(i))->newAircraft();
+
+            if (!uniqueAircrafts.contains(name, Qt::CaseInsensitive)) {
+                indexUniqueFlight.push_back(i);
+                uniqueAircrafts.append(name);
+            }
+        }
+
+        indexUniqueFlight.push_back(numberOfFlight);
+
+        // Time synchronous TD with default time Oh
+        for (int j = 0; j < (indexUniqueFlight.size() - 1); j++) {
+            for (int i = indexUniqueFlight[j]; i <= indexUniqueFlight[j + 1] - 2; i++) {
+                if (static_cast<FlightObject *>(data.at(i))->timeDeparture() > static_cast<FlightObject *>(data.at(i + 1))->timeDeparture()) {
+                    if (i < ((indexUniqueFlight[j + 1] + indexUniqueFlight[j] - 1) / 2)) {
+                        for (int k = indexUniqueFlight[j]; k <= i; k++) {
+                            static_cast<FlightObject *>(data.at(k))->setTimeDeparture((static_cast<FlightObject *>(data.at(k))->timeDeparture() - 1440));
+                        }
+                    } else {
+                        for (int k = i + 1; k <= indexUniqueFlight[j + 1] - 1; k++) {
+                            static_cast<FlightObject *>(data.at(k))->setTimeDeparture((static_cast<FlightObject *>(data.at(k))->timeDeparture() + 1440));
+                        }
+                    }
+                }
+
+                if (static_cast<FlightObject *>(data.at(i))->timeArrival() > static_cast<FlightObject *>(data.at(i + 1))->timeArrival()) {
+                    if (i < ((indexUniqueFlight[j + 1] + indexUniqueFlight[j] - 1) / 2)) {
+                        for (int k = indexUniqueFlight[j]; k <= i; k++) {
+                            static_cast<FlightObject *>(data.at(k))->setTimeArrival((static_cast<FlightObject *>(data.at(k))->timeArrival() - 1440));
+                        }
+                    } else {
+                        for (int k = i + 1; k <= indexUniqueFlight[j + 1] - 1; k++) {
+                            static_cast<FlightObject *>(data.at(k))->setTimeArrival((static_cast<FlightObject *>(data.at(k))->timeArrival() + 1440));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     return data;
 }
 
@@ -184,7 +245,7 @@ QString CSVReader::write(QList<QObject *> data, QString path)
         if (!_source.isEmpty()) {
             path = _source.mid(0, (_source.lastIndexOf("/data/") + 1)) + QString("_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
         } else {
-            path = QApplication::applicationDirPath() + QString("/data/schedules_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
+            path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QString("/data/schedules_optimized %1.csv").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd HH_mm_ss"));
         }
     } else {
         if (path.startsWith("file:///", Qt::CaseInsensitive)) {

@@ -19,6 +19,7 @@ void Problem::setName(const QString &name)
 {
     if (name != _name) {
         _name = name;
+
         emit nameChanged();
     }
 }
@@ -32,6 +33,7 @@ void Problem::setTime(const int &time)
 {
     if (time != _time) {
         _time = time;
+
         emit timeChanged();
     }
 }

@@ -28,7 +28,7 @@ Translation::Translation(QObject *parent) :
     _viTranslator = new QTranslator(this);
 }
 
-QString Translation::getEmptyString()
+QString Translation::tr()
 {
     return "";
 }
@@ -36,7 +36,7 @@ QString Translation::getEmptyString()
 void Translation::selectLanguage(QString language)
 {
     if (language == QString("vi_VN")) { //Vietnamese
-        _viTranslator->load(":/vitrages/translation/qml_vi.qm");
+        _viTranslator->load(":/das/translation/qml_vi.qm");
 
         qApp->installTranslator(_viTranslator);
     }

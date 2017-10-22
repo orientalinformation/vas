@@ -84,7 +84,7 @@ Item {
                 currentIndex: 3
 
                 iconSource: "qrc:/das/images/title/setting.png"
-                title: qsTr("Setting") + translator.emptyString
+                title: qsTr("Setting") + translator.tr
 
                 settingVisible: false
             }
@@ -145,7 +145,7 @@ Item {
 
                                 Label {
                                     id: lblTitleTask
-                                    text: qsTr("Calculation") + translator.emptyString
+                                    text: qsTr("Calculation") + translator.tr
                                     color: "#00aaff"
                                     font.weight: Font.Bold
                                     font.bold: true
@@ -172,7 +172,7 @@ Item {
                             Label {
                                 id: lblGroundTime
 
-                                text: qsTr("Ground time") + translator.emptyString
+                                text: qsTr("Ground time") + translator.tr
                                 font.pointSize: AppTheme.textSizeText
                                 verticalAlignment: Text.AlignVCenter
 
@@ -187,7 +187,7 @@ Item {
 
                                 text: "35"
                                 font.pointSize: AppTheme.textSizeText
-                                placeholderText: qsTr("Enter ground time") + translator.emptyString
+                                placeholderText: qsTr("Enter ground time") + translator.tr
 
                                 horizontalAlignment: Text.AlignHCenter
 
@@ -204,7 +204,7 @@ Item {
                             Label {
                                 id: lblGroundTimeUnit
 
-                                text: qsTr("minutes") + translator.emptyString
+                                text: qsTr("minutes") + translator.tr
                                 font.pointSize: AppTheme.textSizeText
                                 verticalAlignment: Text.AlignVCenter
 
@@ -215,7 +215,7 @@ Item {
                             Label {
                                 id: lblSector
 
-                                text: qsTr("Sector") + translator.emptyString
+                                text: qsTr("Sector") + translator.tr
                                 font.pointSize: AppTheme.textSizeText
                                 verticalAlignment: Text.AlignVCenter
 
@@ -296,7 +296,7 @@ Item {
                             Label {
                                 id: lblDutyTime
 
-                                text: qsTr("Duty time") + translator.emptyString
+                                text: qsTr("Duty time") + translator.tr
                                 font.pointSize: AppTheme.textSizeText
                                 verticalAlignment: Text.AlignVCenter
 
@@ -333,7 +333,7 @@ Item {
                                 }
 
                                 contentItem: Text {
-                                    text: btnDutyTime.checked ? qsTr("Define") : qsTr("Infinite") + translator.emptyString
+                                    text: btnDutyTime.checked ? qsTr("Define") + translator.tr : qsTr("Infinite") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     opacity: enabled ? 1.0 : 0.3
                                     color: "#000000"
@@ -354,7 +354,7 @@ Item {
 
                                 text: "660"
                                 font.pointSize: AppTheme.textSizeText
-                                placeholderText: qsTr("Enter duty time") + translator.emptyString
+                                placeholderText: qsTr("Enter duty time") + translator.tr
 
                                 horizontalAlignment: Text.AlignHCenter
 
@@ -373,7 +373,7 @@ Item {
                             Label {
                                 id: lblDutyTimeUnit
 
-                                text: qsTr("minutes") + translator.emptyString
+                                text: qsTr("minutes") + translator.tr
                                 font.pointSize: AppTheme.textSizeText
                                 verticalAlignment: Text.AlignVCenter
 
@@ -429,7 +429,7 @@ Item {
 
                                 Label {
                                     id: lblTitleTool
-                                    text: qsTr("Application") + translator.emptyString
+                                    text: qsTr("Application") + translator.tr
                                     color: "#00aaff"
                                     font.weight: Font.Bold
                                     font.bold: true
@@ -464,7 +464,7 @@ Item {
 
                                 Label {
                                     id: lblLanguage
-                                    text: qsTr("Language") + translator.emptyString
+                                    text: qsTr("Language") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -502,7 +502,7 @@ Item {
 
                                 Label {
                                     id: lblUserGuide
-                                    text: qsTr("User Guide") + translator.emptyString
+                                    text: qsTr("User Guide") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -515,7 +515,7 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
 
                                         onClicked: {
-                                            //Qt.openUrlExternally("file:///" + applicationDir + "/VDHelpOnline/index.html")
+                                            Qt.openUrlExternally("file:///" + applicationDir + "/guide/UsersManual.pdf")
                                         }
                                     }
                                 }
@@ -532,7 +532,7 @@ Item {
 
                                 Label {
                                     id: lblStatusColor
-                                    text: qsTr("Flight Status Color") + translator.emptyString
+                                    text: qsTr("Flight Status Color") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -563,7 +563,7 @@ Item {
                                 Label {
                                     id: lblCustomerSupport
 
-                                    text: qsTr("Customer Support") + translator.emptyString
+                                    text: qsTr("Customer Support") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -576,7 +576,7 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
 
                                         onClicked: {
-                                            Qt.openUrlExternally("tel:(+84)911959505")
+                                            Qt.openUrlExternally("tel:(+84)2838422199")
                                         }
                                     }
                                 }
@@ -594,7 +594,7 @@ Item {
                                 Label {
                                     id: lblUpdate
 
-                                    text: qsTr("Update") + translator.emptyString
+                                    text: qsTr("Update") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -621,7 +621,7 @@ Item {
                                 Label {
                                     id: lblVersion
 
-                                    text: qsTr("Version: %1").arg(Branding.APP_VERSION_SHORT) + translator.emptyString
+                                    text: qsTr("Version: %1").arg(Branding.APP_VERSION_SHORT) + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -642,7 +642,7 @@ Item {
                                 Label {
                                     id: lblAbout
 
-                                    text: qsTr("About") + translator.emptyString
+                                    text: qsTr("About") + translator.tr
                                     font.pointSize: AppTheme.textSizeText
                                     Layout.fillWidth: true
                                     verticalAlignment: Text.AlignVCenter
@@ -681,16 +681,31 @@ Item {
     }
 
     onOpen: {
-        //open
+        var groundTime = settingsIostream.read("groundTime", "Settings", path)
+        var dutyTime = settingsIostream.read("dutyTime", "Settings", path)
+
+        txtGroundTime.text = groundTime === "" ? "35" : groundTime
+        txtDutyTime.text = dutyTime === "" ? "660" : dutyTime
+
+        var isDuty = settingsIostream.read("dutyOption", "Settings", path)
+
+        btnDutyTime.checked = isDuty === "true" ? true : false
+
+        var sectorValue = settingsIostream.read("sector", "Settings", path)
+        sectorSlider.value = sectorValue
     }
 
     onSave: {
-        settingsIostream.write("", "groundTime", txtGroundTime.text, "Settings", path)
-        settingsIostream.write("", "dutyTime", txtDutyTime.text, "Settings", path)
+        settingsIostream.write("groundTime", Settings.groundTime, "Settings", path)
+        settingsIostream.write("dutyTime", Settings.dutyTime, "Settings", path)
+        settingsIostream.write("sector", Settings.sector ,"Settings", path)
+        settingsIostream.write("dutyOption", Settings.isDutyTime ? "true" : "false" ,"Settings", path)
     }
 
     onSaveAs: {
-        settingsIostream.write("", "groundTime", txtGroundTime.text, "Settings", path)
-        settingsIostream.write("", "dutyTime", txtDutyTime.text, "Settings", path)
+        settingsIostream.write("groundTime", Settings.groundTime, "Settings", path)
+        settingsIostream.write("dutyTime", Settings.dutyTime, "Settings", path)
+        settingsIostream.write("sector", Settings.sector ,"Settings", path)
+        settingsIostream.write("dutyOption", Settings.isDutyTime ? "true" : "false" ,"Settings", path)
     }
 }

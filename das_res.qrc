@@ -66,5 +66,8 @@
         <file>images/social/share.png</file>
         <file>images/settings/palette.png</file>
         <file>images/actions/save.png</file>
+        <file>translation/qml_vi.qm</file>
+        <file>images/actions/info.png</file>
+        <file>images/actions/list-delete.png</file>
     </qresource>
 </RCC>

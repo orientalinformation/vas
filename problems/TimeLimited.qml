@@ -73,7 +73,7 @@ Frame {
                 spacing: 2
 
                 Repeater {
-                    model: [qsTr("Aircraft Name") + translator.emptyString, qsTr("Time") + translator.emptyString ]
+                    model: [qsTr("Aircraft Name") + translator.tr, qsTr("Time") + translator.tr ]
 
                     Label {
                         text: modelData
@@ -104,7 +104,7 @@ Frame {
                     spacing: 1
 
                     Label {
-                        text: modelData
+                        text: name
 
                         padding: AppTheme.screenPadding
                         font.pointSize: AppTheme.textSizeText
@@ -132,6 +132,9 @@ Frame {
                         horizontalAlignment: Text.AlignHCenter
 
                         validator: IntValidator { bottom:0; top: 2359}
+
+                        placeholderText: qsTr("Input time...") + translator.tr
+                        text: time
 
                         MouseArea {
                             anchors.fill: parent
@@ -180,7 +183,7 @@ Frame {
                 scale: hoverButton ? 1.25 : 1
 
                 ToolTip.visible: hoverButton
-                ToolTip.text: qsTr("Add") + translator.emptyString
+                ToolTip.text: qsTr("Add") + translator.tr
                 Layout.preferredWidth: AppTheme.tscale(40)
                 Layout.preferredHeight: AppTheme.tscale(40)
 
@@ -205,7 +208,7 @@ Frame {
                     function appendIfNotExist(aircraft) {
                         for (var i = 0; i < timeLimitedModel.count; i++) {
                             if (timeLimitedModel.get(i).name === aircraft ) {
-                                messages.displayMessage(qsTr("The aircraft already exists.") + translator.emptyString)
+                                messages.displayMessage(qsTr("The aircraft already exists.") + translator.tr)
                                 return
                             }
                         }
@@ -218,7 +221,7 @@ Frame {
                         if (currentAircraft != "") {
                             appendIfNotExist( currentAircraft )
                         } else {
-                            messages.displayMessage(qsTr("Please select an aircraft.") + translator.emptyString)
+                            messages.displayMessage(qsTr("Please select an aircraft.") + translator.tr)
                         }
                     }
                 }
@@ -231,7 +234,7 @@ Frame {
                 scale: hoverButton ? 1.25 : 1
 
                 ToolTip.visible: hoverButton
-                ToolTip.text: qsTr("Remove") + translator.emptyString
+                ToolTip.text: qsTr("Remove") + translator.tr
 
                 enabled: timeLimitedModel.count > 0
 

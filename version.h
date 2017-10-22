@@ -1,13 +1,17 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define VER_FILEVERSION             1,0,0
-#define VER_FILEVERSION_STR         "1.0.0\0"
+#define APP_VERSION_SHORT            "1.0.2"
+#define RELEASE_CODE                2
+#define BUILD_ID                    "53"
 
-#define VER_PRODUCTVERSION          1,0,0
+#define VER_FILEVERSION             1,0,2
+#define VER_FILEVERSION_STR         "1.0.2\0"
+
+#define VER_PRODUCTVERSION          1,0,2
 #define VER_PRODUCTVERSION_STR      "1.0\0"
 
-#define VER_COMPANYNAME_STR         "Vietmam Aviation Academy"
+#define VER_COMPANYNAME_STR         "Vietnam Aviation Academy"
 #define VER_FILEDESCRIPTION_STR     "VAA Airline Schedules Application"
 #define VER_INTERNALNAME_STR        "VAA Airline Schedules"
 #define VER_LEGALCOPYRIGHT_STR      "Copyright (C) 2017 " VER_COMPANYNAME_STR

@@ -24,8 +24,6 @@ modification, are permitted provided that the following conditions are met:
 
 #include <QStandardPaths>
 
-#include <QDebug>
-
 ScheduleCalculation::ScheduleCalculation(QObject *parent) :
     QObject(parent)
 {
@@ -53,20 +51,24 @@ void ScheduleCalculation::sortTimeDeparture(QList<FlightCalendar> &flightCalenda
     }
 }
 
-int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart)
+int ScheduleCalculation::execute(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart, int groundTime)
 {
-    int sizeFlightData =  qmlAirportData.size();
-    int sizeAircraftData = qmlAircraftData.size();
+    int airportSize =  qmlAirportData.size();
+    int aircraftSize = qmlAircraftData.size();
+
     int timeDifferenceOneAircraft = 5;
-    int timeDifferenceTwoAircraft = 35;
     int totalFlightSort = 0;
-    QList<FlightData *> flightData;
+
+    QList<FlightData *> airportData;
+
     struct AircraftData {
         QString aircraftName;
         QString departure;
     };
+
     QList<AircraftData> aircraftData;
     QList<FlightCalendar> flightCalendar, aircraft;
+
     struct FlightCrew {
         int crewID;
         QString aircraftName;
@@ -78,10 +80,11 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
         int frequent;
         bool isCompleted;
     };
+
     QList<FlightCrew> flightCrew;
 
     // add flight data
-    for (int i = 0; i < sizeFlightData; i++) {
+    for (int i = 0; i < airportSize; i++) {
         FlightData *data = new FlightData();
         data->arrival = static_cast<AirportObject *>(qmlAirportData.at(i))->arrival();
         data->departure = static_cast<AirportObject *>(qmlAirportData.at(i))->departure();
@@ -90,11 +93,11 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
         data->isCompleted = true;
         data->numFlightCompleted = 0;
         data->priorityRatio = 0.0;
-        flightData.push_back(data);
+        airportData.push_back(data);
     }
 
     // add aircraft data
-    for (int i = 0; i < sizeAircraftData; i++) {
+    for (int i = 0; i < aircraftSize; i++) {
         AircraftData data;
         data.aircraftName = static_cast<AircraftObject *>(qmlAircraftData.at(i))->name();
         data.departure = static_cast<AircraftObject *>(qmlAircraftData.at(i))->departure();
@@ -102,47 +105,59 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
     }
 
     // Divide flight data
-    int temp, sizeTemp = sizeFlightData - 1;
+    int temp, sizeTemp = airportSize - 1;
 
-    for (int i = 0; i <= sizeFlightData - 1; i++) {
-        if (flightData[i]->frequent >= 15) {
-            temp = flightData[i]->frequent;
+    for (int i = 0; i < airportSize; i++) {
+        if (airportData[i]->frequent >= 15) {
+            temp = airportData[i]->frequent;
             sizeTemp = sizeTemp + 1;
-            flightData[sizeTemp] = flightData[i];
-            flightData[i]->frequent = (temp - (temp % 3)) / 3 + temp % 3;
-            flightData[sizeTemp]->frequent = (temp - (temp % 3)) / 3;
+
+            FlightData *data = new FlightData(airportData[i]);
+            airportData.push_back(data);
+
+            airportData[i]->frequent = (temp - (temp % 3)) / 3 + temp % 3;
+            airportData[sizeTemp]->frequent = (temp - (temp % 3)) / 3;
+
             sizeTemp = sizeTemp + 1;
-            flightData[sizeTemp] = flightData[i];
-            flightData[sizeTemp]->frequent = (temp - (temp % 3)) / 3;
+            data = new FlightData(airportData[i]);
+            airportData.push_back(data);
+
+            airportData[sizeTemp]->frequent = (temp - (temp % 3)) / 3;
         }
     }
 
-    for (int i = 0; i < sizeFlightData; i++) {
-        if (flightData[i]->frequent >= 10) {
-            temp = flightData[i]->frequent;
+    airportSize = airportData.size();
+
+    for (int i = 0; i < airportSize; i++) {
+        if (airportData[i]->frequent >= 10) {
+            temp = airportData[i]->frequent;
+
             sizeTemp = sizeTemp + 1;
-            flightData[sizeTemp] = flightData[i];
-            flightData[i]->frequent = (temp - (temp % 2)) / 2 + temp % 2;
-            flightData[sizeTemp]->frequent = (temp - (temp % 2)) / 2;
+            FlightData *data = new FlightData(airportData[i]);
+            airportData.push_back(data);
+
+            airportData[i]->frequent = (temp - (temp % 2)) / 2 + temp % 2;
+            airportData[sizeTemp]->frequent = (temp - (temp % 2)) / 2;
         }
     }
+
+    airportSize = airportData.size();
 
     // Select ratio
-
-    for (int i = 0; i < sizeFlightData; i++) {
-        if (flightData[i]->frequent == 2) {
-            flightData[i]->priorityRatio = 0.14;
-        } else if (flightData[i]->frequent == 1) {
-            flightData[i]->priorityRatio = 0.2;
-        } else if (flightData[i]->frequent == 3) {
-            flightData[i]->priorityRatio = 0.09;
-        } else if (flightData[i]->frequent > 3) {
-            flightData[i]->priorityRatio = 0.02;
+    for (int i = 0; i < airportSize; i++) {
+        if (airportData[i]->frequent == 2) {
+            airportData[i]->priorityRatio = 0.14;
+        } else if (airportData[i]->frequent == 1) {
+            airportData[i]->priorityRatio = 0.2;
+        } else if (airportData[i]->frequent == 3) {
+            airportData[i]->priorityRatio = 0.09;
+        } else if (airportData[i]->frequent > 3) {
+            airportData[i]->priorityRatio = 0.02;
         }
     }
 
     // add data aircracft
-    for (int i = 0; i < sizeAircraftData; i++) {
+    for (int i = 0; i < aircraftSize; i++) {
         FlightCalendar data;
         data.aircraftName = aircraftData[i].aircraftName;
         data.departure = aircraftData[i].departure;
@@ -150,14 +165,14 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
     }
 
     // count total number flight
-    for (int i = 0; i < sizeFlightData; i++) {
-        totalFlightSort = totalFlightSort + flightData[i]->frequent;
+    for (int i = 0; i < airportSize; i++) {
+        totalFlightSort = totalFlightSort + airportData[i]->frequent;
     }
 
     // Arrangement flight data small -> large to priorityRatio
     // Arrangement aircraft name to departure
-    for (int i = 0; i < sizeAircraftData - 1; i++) {
-        for (int j = i + 1; j < sizeAircraftData; j++) {
+    for (int i = 0; i < aircraftSize - 1; i++) {
+        for (int j = i + 1; j < aircraftSize; j++) {
             if (aircraft[i].departure == aircraft[j].departure) {
                 qSwap(aircraft[i + 1], aircraft[j]);
                 break;
@@ -166,102 +181,108 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
     }
 
     // Arrangement first flight of aircracft
-    for (int i = 0; i < sizeAircraftData; i++) {
+    for (int i = 0; i < aircraftSize; i++) {
         // Arrangement flight data to priority ratio
-        sortPriorityRatio(flightData, sizeFlightData);
+        sortPriorityRatio(airportData, airportSize);
 
-        for (int j = 0; j < sizeFlightData; j++) {
-            if (aircraft[i].departure != flightData[j]->departure) {
+        for (int j = 0; j < airportSize; j++) {
+            if (aircraft[i].departure != airportData[j]->departure) {
                 continue;
             }
 
-            aircraft[i].arrival = flightData[j]->arrival;
+            aircraft[i].arrival = airportData[j]->arrival;
 
             if (i == 0) { // if is the first flight
                 aircraft[i].timeDeparture = timeStart;
-                aircraft[i].timeArrival = timeStart + flightData[j]->flightTime;
+                aircraft[i].timeArrival = timeStart + airportData[j]->flightTime;
                 aircraft[i].crewID = 1;
 
-                if (flightData[j]->arrival == "SGN" || flightData[j]->arrival == "HAN") {
+                if (airportData[j]->arrival == "SGN" || airportData[j]->arrival == "HAN") {
                     aircraft[i].flag = 1;
                 }
 
-                if (flightData[j]->arrival == "CXR") {
+                if (airportData[j]->arrival == "CXR") {
                     aircraft[i].flag = 2;
                 }
 
-                flightData[j]->numFlightCompleted = 1;
-                flightData[j]->priorityRatio = 1 / flightData[j]->frequent;
+                airportData[j]->numFlightCompleted = 1;
+                airportData[j]->priorityRatio = 1.0 / airportData[j]->frequent;
+
                 FlightCalendar data(aircraft[i]);
                 flightCalendar.push_back(data);
-                aircraft[i].timeArrival = aircraft[i].timeArrival + timeDifferenceTwoAircraft;
+
+                aircraft[i].timeArrival += groundTime;
                 break;
             } else {
                 if (aircraft[i].departure == aircraft[i - 1].departure) {
                     aircraft[i].timeDeparture = aircraft[i - 1].timeDeparture + timeDifferenceOneAircraft;
-                    aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                    aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
 
                     for (int k = 0; k < flightCalendar.size(); k++) {
                         if (aircraft[i].departure == flightCalendar[k].departure && abs(aircraft[i].timeDeparture - flightCalendar[k].timeDeparture) < 2 * timeDifferenceOneAircraft) {
                             aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                            aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                            aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                         } else if (aircraft[i].departure == flightCalendar[k].arrival && abs(aircraft[i].timeDeparture - flightCalendar[k].timeArrival) < 2 * timeDifferenceOneAircraft) {
                             aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                            aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                            aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                         } else if (aircraft[i].arrival == flightCalendar[k].arrival && abs(aircraft[i].timeArrival - flightCalendar[k].timeArrival) < 2 * timeDifferenceOneAircraft) {
                             aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                            aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                            aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                         }
                     }
 
                     aircraft[i].crewID = i + 1;
 
-                    if (flightData[j]->arrival == "SGN" || flightData[j]->arrival == "HAN") {
+                    if (airportData[j]->arrival == "SGN" || airportData[j]->arrival == "HAN") {
                         aircraft[i].flag = 1;
                     }
 
-                    if (flightData[j]->arrival == "CXR") {
+                    if (airportData[j]->arrival == "CXR") {
                         aircraft[i].flag = 2;
                     }
 
-                    flightData[j]->numFlightCompleted = flightData[j]->numFlightCompleted + 1;
-                    flightData[j]->priorityRatio = flightData[j]->numFlightCompleted / flightData[j]->frequent;
+                    airportData[j]->numFlightCompleted++;
+                    airportData[j]->priorityRatio = (double)airportData[j]->numFlightCompleted / airportData[j]->frequent;
+
                     FlightCalendar data(aircraft[i]);
                     flightCalendar.push_back(data);
-                    aircraft[i].timeArrival = aircraft[i].timeArrival + timeDifferenceTwoAircraft;
+
+                    aircraft[i].timeArrival += groundTime;
                     break;
                 } else {
                     aircraft[i].timeDeparture = timeStart;
-                    aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                    aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
 
                     for (int k = 0; k < flightCalendar.size(); k++) {
                         if (aircraft[i].departure == flightCalendar[k].departure && abs(aircraft[i].timeDeparture - flightCalendar[k].timeDeparture) < timeDifferenceOneAircraft) {
                             aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                            aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                            aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                         } else if (aircraft[i].departure == flightCalendar[k].arrival && abs(aircraft[i].timeDeparture - flightCalendar[k].timeArrival) < timeDifferenceOneAircraft) {
                             aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                            aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                            aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                         } else if (aircraft[i].arrival == flightCalendar[k].arrival && abs(aircraft[i].timeArrival - flightCalendar[k].timeArrival) < timeDifferenceOneAircraft) {
                             aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                            aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                            aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                         }
                     }
 
                     aircraft[i].crewID = i + 1;
 
-                    if (flightData[j]->arrival == "SGN" || flightData[j]->arrival == "HAN") {
+                    if (airportData[j]->arrival == "SGN" || airportData[j]->arrival == "HAN") {
                         aircraft[i].flag = 1;
                     }
 
-                    if (flightData[j]->arrival == "CXR") {
+                    if (airportData[j]->arrival == "CXR") {
                         aircraft[i].flag = 2;
                     }
 
-                    flightData[j]->numFlightCompleted = flightData[j]->numFlightCompleted + 1;
-                    flightData[j]->priorityRatio = flightData[j]->numFlightCompleted / flightData[j]->frequent;
+                    airportData[j]->numFlightCompleted++;
+                    airportData[j]->priorityRatio = (double)airportData[j]->numFlightCompleted / airportData[j]->frequent;
+
                     FlightCalendar data(aircraft[i]);
                     flightCalendar.push_back(data);
-                    aircraft[i].timeArrival = aircraft[i].timeArrival + timeDifferenceTwoAircraft;
+
+                    aircraft[i].timeArrival += groundTime;
                     break;
                 }
             }
@@ -271,13 +292,14 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
     // Arrangement flight calendar
     int z = flightCalendar.size();
 
+label_2:
     while (z < totalFlightSort) {
         // Arrangement to priority radio
-        sortPriorityRatio(flightData, sizeFlightData);
+        sortPriorityRatio(airportData, airportSize);
 
         // Arrangement aircraft data to timeArrival
-        for (int i = 0; i < sizeAircraftData; i++) {
-            for (int j = i; j < sizeAircraftData; j++) {
+        for (int i = 0; i < aircraftSize; i++) {
+            for (int j = i; j < aircraftSize; j++) {
                 if (aircraft[i].timeArrival > aircraft[j].timeArrival) {
                     qSwap(aircraft[i], aircraft[j]);
                 }
@@ -285,71 +307,65 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
         }
 
         // Implement arrangememt flight calendar
-        for (int i = 0; i < sizeAircraftData; i++) {
-            bool isAircraft = false;
-
-            for (int j = 0; j < sizeFlightData; j++) {
-                if (flightData[j]->priorityRatio == 1) {
+        for (int i = 0; i < aircraftSize; i++) {
+            for (int j = 0; j < airportSize; j++) {
+                if (airportData[j]->priorityRatio == 1.0) {
                     break;
                 }
 
-                if (aircraft[i].arrival != flightData[j]->departure) {
+                if (aircraft[i].arrival != airportData[j]->departure) {
                     continue;
                 }
 
-                if (flightData[j]->arrival == "SGN" || flightData[j]->arrival == "HAN") {
+                if (airportData[j]->arrival == "SGN" || airportData[j]->arrival == "HAN") {
                     aircraft[i].flag = 1;
                 }
 
-                if (flightData[j]->arrival == "CXR") {
+                if (airportData[j]->arrival == "CXR") {
                     aircraft[i].flag = 2;
                 }
 
-                if (flightData[j]->arrival != "SGN" && flightData[j]->arrival != "HAN" && flightData[j]->arrival != "CXR") {
+                if (airportData[j]->arrival != "SGN" && airportData[j]->arrival != "HAN" && airportData[j]->arrival != "CXR") {
                     aircraft[i].flag = 0;
                 }
 
-                flightData[j]->numFlightCompleted = flightData[j]->numFlightCompleted + 1;
-                flightData[j]->priorityRatio = flightData[j]->numFlightCompleted / flightData[j]->frequent;
+                airportData[j]->numFlightCompleted++;
+                airportData[j]->priorityRatio = (double)airportData[j]->numFlightCompleted / airportData[j]->frequent;
+
                 aircraft[i].timeDeparture = aircraft[i].timeArrival;
-                aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
-                aircraft[i].departure = flightData[j]->departure;
-                aircraft[i].arrival = flightData[j]->arrival;
+                aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
+                aircraft[i].departure = airportData[j]->departure;
+                aircraft[i].arrival = airportData[j]->arrival;
 
                 // Check on the same runway, one or multi aircraft can't use takeoff avoid collisions
                 for (int k = 0; k < flightCalendar.size(); k++) {
                     if (aircraft[i].departure == flightCalendar[k].departure && abs(aircraft[i].timeDeparture - flightCalendar[k].timeDeparture) < timeDifferenceOneAircraft) {
                         aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                        aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                        aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                     } else if (aircraft[i].departure == flightCalendar[k].arrival && abs(aircraft[i].timeDeparture - flightCalendar[k].timeArrival) < timeDifferenceOneAircraft) {
                         aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                        aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                        aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                     } else if (aircraft[i].arrival == flightCalendar[k].arrival && abs(aircraft[i].timeArrival - flightCalendar[k].timeArrival) < timeDifferenceOneAircraft) {
                         aircraft[i].timeDeparture = aircraft[i].timeDeparture + timeDifferenceOneAircraft;
-                        aircraft[i].timeArrival = aircraft[i].timeDeparture + flightData[j]->flightTime;
+                        aircraft[i].timeArrival = aircraft[i].timeDeparture + airportData[j]->flightTime;
                     }
                 }
 
                 FlightCalendar data(aircraft[i]);
                 flightCalendar.push_back(data);
-                aircraft[i].timeArrival = aircraft[i].timeArrival + timeDifferenceTwoAircraft;
+
+                aircraft[i].timeArrival += groundTime;
+
                 z = z + 1;
-                isAircraft = true;
-                break;
-            }
 
-            if (isAircraft) {
-                break;
+                goto label_2;
             }
-        }
-
-        if (sizeAircraftData == -1) {
-            break;
         }
     }
 
     // Arrangement flight calendar to timeDeparture
     sortTimeDeparture(flightCalendar, totalFlightSort);
+
     // Arrangement flight crew
     int countFlightCrew = 0; //countFlightCrew+1: is number flight crew used
     int flag_1 = 0;
@@ -359,7 +375,7 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
         flightCalendar[i].crewID = 0;
     }
 
-    for (int i = 0; i < sizeAircraftData; i++) {
+    for (int i = 0; i < aircraftSize; i++) {
         FlightCalendar AC_temp[300];
         int temp = 0;
 
@@ -455,7 +471,7 @@ int ScheduleCalculation::runSchedule(QList<QObject *> qmlAirportData, QList<QObj
 
     // Arrangement aircraft name random
     for (int i = 0; i < totalFlightSort; i++) {
-        flightCalendar[i].flightNumber = "BL" + QString::number(101 + i);
+        flightCalendar[i].flightNumber = "VAA" + QString::number(101 + i);
     }
 
     // sort flightCalendar: to name flight, hour timeDeparture.

@@ -19,7 +19,7 @@ ApplicationWindow {
     visible: true
     visibility: Window.Maximized
 
-    title: qsTr("%1").arg(Branding.VER_PRODUCTNAME_STR) + translator.emptyString
+    title: qsTr(Branding.VER_PRODUCTNAME_STR) + translator.tr
 
     Material.accent: "#00aaff"
 
@@ -29,6 +29,15 @@ ApplicationWindow {
 
     property string currentAircraft: ""
 
+    property string currentCaseName: ""
+
+    property int numberFlightUnchanged: 0
+    property int numberAircarftUnchanged: 0
+    property int numberFlightCancel: 0
+    property int totalTimeDelay: 0
+    property int numberFlightDelay: 0
+    property int maximumTimeDelay: 0
+
     width: AppTheme.screenWidthSize
     height: AppTheme.screenHeightSize
 
@@ -36,11 +45,11 @@ ApplicationWindow {
     minimumHeight: AppTheme.screenHeightSize
 
     property var bottomMenuModel: [
-        { "name": qsTr("Home") + translator.emptyString, "icon": "home.png" },
-        { "name": qsTr("Schedules") + translator.emptyString, "icon": "schedule.png" },
-        { "name": qsTr("Rescheduled") + translator.emptyString, "icon": "departure.png" },
-        { "name": qsTr("Settings") + translator.emptyString, "icon": "setting.png" },
-        { "name": qsTr("About") + translator.emptyString, "icon": "about.png" },
+        { "name": qsTr("Home") + translator.tr, "icon": "home.png" },
+        { "name": qsTr("Schedules") + translator.tr, "icon": "schedule.png" },
+        { "name": qsTr("Rescheduled") + translator.tr, "icon": "departure.png" },
+        { "name": qsTr("Settings") + translator.tr, "icon": "setting.png" },
+        { "name": qsTr("About") + translator.tr, "icon": "about.png" },
     ]
 
     property bool isSplitScheduleView: false
@@ -58,6 +67,9 @@ ApplicationWindow {
 
         onCaseOpened: {
             homePage.open(path)
+            schedulePage.open(path)
+            reschedulePage.open(path)
+            settingPage.open(path)
         }
 
         onCaseSaved: {
@@ -72,6 +84,10 @@ ApplicationWindow {
             schedulePage.saveAs(path)
             reschedulePage.saveAs(path)
             settingPage.saveAs(path)
+        }
+
+        onCaseExport: {
+           homePage.exportCSV(path)
         }
     }
 
@@ -98,6 +114,8 @@ ApplicationWindow {
 
                 onBuilt: {
                     homePage.reload(localDataPath + "/data/flight_schedule.csv", "", true)
+
+                    homePage.isInfoShowed = false
                 }
             }
 
@@ -106,6 +124,8 @@ ApplicationWindow {
 
                 onBuilt: {
                     homePage.reload(localDataPath + "/data/flight_reschedule.csv", inputPath, false)
+
+                    homePage.isInfoShowed = true
                 }
             }
 

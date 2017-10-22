@@ -25,6 +25,8 @@ import QtQuick.Layouts 1.3
 import QtQuick.Extras 1.4
 import QtQuick.Window 2.2
 
+import FileProcessing 1.0
+
 import "../theme"
 
 import "../scripts/global.js" as Global
@@ -41,6 +43,10 @@ Item {
     property int parentIndex: Global.parentAboutIndex
 
     property alias titleAboutSection: titleSection
+
+    FileProcessing {
+        id: fileProcessing
+    }
 
     ColumnLayout {
         id: columnLayout
@@ -63,7 +69,7 @@ Item {
                 currentIndex: 4
 
                 iconSource: "qrc:/das/images/title/about.png"
-                title: qsTr("About") + translator.emptyString
+                title: qsTr("About") + translator.tr
 
                 settingVisible: false
             }
@@ -238,7 +244,7 @@ Item {
 
                         Label {
                             id: lblProductName
-                            text: qsTr("%1 %2").arg(Branding.VER_APPNAME_STR).arg(Branding.APP_VERSION_SHORT) + translator.emptyString
+                            text: Branding.VER_APPNAME_STR + " " + Branding.APP_VERSION_SHORT
                             font.weight: Font.Bold
                             font.pointSize: AppTheme.textSizeTitle
                             Layout.fillWidth: true
@@ -248,13 +254,13 @@ Item {
                             Layout.fillWidth: true
 
                             Label {
-                                text: qsTr("Website: ") + translator.emptyString
+                                text: qsTr("Website: ") + translator.tr
                                 font.pointSize: AppTheme.textSizeText
                             }
 
                             Label {
                                 id: lblWebsite
-                                text: qsTr("<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "\">" + Branding.VER_PRODUCTDOMAIN_STR + "</a>")
+                                text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "\">" + Branding.VER_PRODUCTDOMAIN_STR + "</a>"
                                 font.pointSize: AppTheme.textSizeText
                                 Layout.fillWidth: true
 
@@ -276,14 +282,14 @@ Item {
                             Layout.fillWidth: true
 
                             Label {
-                                text: qsTr("For any further information, please send an email to: ") + translator.emptyString
+                                text: qsTr("For any further information, please send an email to: ") + translator.tr
                                 wrapMode: Text.WordWrap
                                 font.pointSize: AppTheme.textSizeText
                             }
 
                             Label {
                                 id: lblEmail
-                                text: qsTr("<a href=\"mailto:info@vaa.edu.vn\">info@vaa.edu.vn</a>")
+                                text: "<a href=\"mailto:info@vaa.edu.vn\">info@vaa.edu.vn</a>"
                                 wrapMode: Text.WordWrap
                                 font.pointSize: AppTheme.textSizeText
                                 Layout.fillWidth: true
@@ -319,7 +325,7 @@ Item {
                     Label {
                         id: lblLicensing
 
-                        text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "/licensing\">" + qsTr("License Information") + translator.emptyString + "</a>"
+                        text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "/licensing\">" + qsTr("License Information") + translator.tr + "</a>"
                         color: "#04aade"
                         font.pointSize: AppTheme.textSizeText
                         horizontalAlignment: Text.AlignHCenter
@@ -333,7 +339,11 @@ Item {
                             cursorShape: Qt.PointingHandCursor
 
                             onClicked: {
-                                Qt.openUrlExternally(Branding.VER_PRODUCTDOMAIN_STR + "/licensing")
+                                if (fileProcessing.exist(applicationDir + "/LICENSE")) {
+                                    Qt.openUrlExternally("file:///" + applicationDir + "/LICENSE")
+                                } else {
+                                    Qt.openUrlExternally(Branding.VER_PRODUCTDOMAIN_STR + "/licensing")
+                                }
                             }
                         }
                     }
@@ -350,7 +360,7 @@ Item {
                     Label {
                         id: lblTermSerices
 
-                        text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "/terms-of-use\">" + qsTr("End-User Rights") + translator.emptyString + "</a>"
+                        text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "/terms-of-use\">" + qsTr("End-User Rights") + translator.tr + "</a>"
                         color: "#04aade"
                         font.pointSize: AppTheme.textSizeText
                         horizontalAlignment: Text.AlignHCenter
@@ -382,7 +392,7 @@ Item {
                     Label {
                         id: lblPolicy
 
-                        text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "/privacy-policy\">" + qsTr("Privacy Policy") + translator.emptyString + "</a>"
+                        text: "<a href=\"" + Branding.VER_PRODUCTDOMAIN_STR + "/privacy-policy\">" + qsTr("Privacy Policy") + translator.tr + "</a>"
                         color: "#04aade"
                         font.pointSize: AppTheme.textSizeText
                         horizontalAlignment: Text.AlignHCenter
@@ -419,7 +429,7 @@ Item {
 
                     Label {
                         id: lblWarning
-                        text: qsTr("Warning: <i>This computer program is protected by copyright law and international treaties. Unauthorized reproduction or distribution of this program, or any portion of it, may result in severe civil or criminal penalties, and will be prosecuted to the maximum extent possible under the law.</i>") + translator.emptyString
+                        text: qsTr("Warning: <i>This computer program is protected by copyright law and international treaties. Unauthorized reproduction or distribution of this program, or any portion of it, may result in severe civil or criminal penalties, and will be prosecuted to the maximum extent possible under the law.</i>") + translator.tr
                         font.pointSize: AppTheme.textSizeText
                         horizontalAlignment: Text.AlignJustify
                         wrapMode: Text.WordWrap
@@ -430,7 +440,7 @@ Item {
                         Layout.fillWidth: true
 
                         Label {
-                            text: qsTr("%1 and the %2 logos are registered trademarks of the ").arg(Branding.VER_APPNAME_STR).arg(Branding.VER_APPNAME_STR) + translator.emptyString
+                            text: qsTr("%1 and the %2 logos are registered trademarks of the ").arg(Branding.VER_APPNAME_STR).arg(Branding.VER_APPNAME_STR) + translator.tr
                             font.pointSize: AppTheme.textSizeText
                         }
 
@@ -458,7 +468,7 @@ Item {
 
                     Label {
                         id: lblCopyright
-                        text: qsTr("Copyright %1").arg(Branding.VER_LEGALCOPYRIGHT_STR) + translator.emptyString
+                        text: qsTr("Copyright ") + translator.tr + Branding.VER_LEGALCOPYRIGHT_STR + ". " + qsTr("Developed by ") + translator.tr + Branding.VER_MANUFACTURER_STR + "."
                         font.pointSize: AppTheme.textSizeText
                         Layout.fillWidth: true
                         verticalAlignment: Text.AlignVCenter

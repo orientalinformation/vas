@@ -22,14 +22,14 @@ modification, are permitted provided that the following conditions are met:
 
 var VERSIONMAJOR = 1
 var VERSIONMINOR = 0
-var VERSIONEMER = 0
+var VERSIONEMER = 2
 
 var VERSIONSHORT = VERSIONMAJOR + "." + VERSIONMINOR
 var VERSIONFULL = VERSIONMAJOR + "." + VERSIONMINOR + "." + VERSIONEMER
 
 var RELEASENUMBER = 1
 
-var VER_APPNAME_STR = "VAA Airline Schedules"
+var VER_APPNAME_STR = qsTr("VAA Airline Schedules")
 
 var VER_PRODUCTNAME_STR = VER_APPNAME_STR
 
@@ -45,11 +45,11 @@ var APP_VERSION_SHORT = VERSIONMAJOR + "." + VERSIONMINOR + "." + VERSIONEMER
 
 var DATABASE_VERSION_SHORT = VERSIONMAJOR + "." + VERSIONMINOR
 
-var VER_PUBLISHER_STR = "Vietmam Aviation Academy"
+var VER_PUBLISHER_STR = qsTr("Vietnam Aviation Academy")
 
 var VER_PUBLISHEDYEAR_STR = "2017"
 
-var VER_LEGALTRADEMARKS1_STR = "All Rights Reserved"
+var VER_LEGALTRADEMARKS1_STR = qsTr("All Rights Reserved")
 
 var VER_LEGALCOPYRIGHT_STR = "© " + VER_PUBLISHEDYEAR_STR + " " + VER_PUBLISHER_STR
 

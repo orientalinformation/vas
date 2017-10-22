@@ -36,71 +36,72 @@ Dialog {
     focus: true
     modal: true
 
-    width: _mainWindow.width / 4 * 0.7
-    height: _mainWindow.height / 5
+    width: _mainWindow.width / 4 * 0.8
+    height: _mainWindow.height / 5 * 0.8
 
     x: (_mainWindow.width - width) / 2
     y: (_mainWindow.height - height) / 2
 
     property int currentLanguage: 0
 
-    padding: 0
+    padding: AppTheme.screenPadding
 
-    ListView {
-        id: listViewLanguage
+    ButtonGroup {
+        id: radioGroup
+    }
 
-        focus: true
-        currentIndex: 1
+    ColumnLayout {
         anchors.fill: parent
 
-        interactive: false
+        Repeater {
+            RowLayout {
+                Layout.fillWidth: true
 
-        ButtonGroup {
-            id: radioGroup
-        }
+                RadioButton {
+                    text: model.name
 
-        ColumnLayout {
-            Repeater {
-                RowLayout {
-                    RadioButton {
-                        text: model.name
+                    font.pointSize: AppTheme.textSizeText
+                    Layout.fillWidth: true
 
-                        font.pointSize: AppTheme.textSizeText
-                        Layout.fillWidth: true
+                    checked: index === currentLanguage
 
-                        checked: index === currentLanguage
+                    padding: AppTheme.radioButtonPadding
+                    spacing: AppTheme.radioButtonSpacing
+                    topPadding: AppTheme.radioButtonPadding
+                    bottomPadding: AppTheme.radioButtonPadding
+                    leftPadding: AppTheme.radioButtonPadding
+                    rightPadding: AppTheme.radioButtonPadding
 
-                        padding: AppTheme.radioButtonPadding
-                        spacing: AppTheme.radioButtonSpacing
-                        topPadding: AppTheme.radioButtonPadding
-                        bottomPadding: AppTheme.radioButtonPadding
-                        leftPadding: AppTheme.radioButtonPadding
-                        rightPadding: AppTheme.radioButtonPadding
+                    ButtonGroup.group: radioGroup
 
-                        ButtonGroup.group: radioGroup
+                    onClicked: {
+                        Settings.language = model.value
 
-                        onClicked: {
-                            Settings.language = model.value
+                        currentLanguage = index
 
-                            currentLanguage = index
+                        translator.selectLanguage(model.value)
 
-                            translator.selectLanguage(model.value)
-
-                            languageDialog.close()
-                        }
-                    }
-
-                    Image {
-                        source: "qrc:/das/images/language/" + model.nation + ".png"
+                        languageDialog.close()
                     }
                 }
 
-                model: languageModel
-                focus: true
-            }
-        }
+                Item {
+                    // horizontal spacer item
+                    Layout.fillWidth: true
+                    Rectangle {
+                        anchors.fill: parent
+                        color: "transparent"
+                    }
+                }
 
-        ScrollIndicator.vertical: ScrollIndicator { }
+                Image {
+                    source: "qrc:/das/images/language/" + model.nation + ".png"
+                }
+            }
+
+            model: languageModel
+            focus: true
+        }
     }
 
     ListModel {

@@ -30,6 +30,7 @@ Loader {
         messages.source = "";
         messages.source = Qt.resolvedUrl("DFMMessageBox.qml");
         messages.item.message = message;
+        messages.visible = true
     }
 
     width: AppTheme.hscale(500)
@@ -52,6 +53,7 @@ Loader {
 
         onTriggered: {
             messages.state = ""
+            messages.visible = false
         }
     }
 

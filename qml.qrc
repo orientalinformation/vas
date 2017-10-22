@@ -36,5 +36,6 @@
         <file>widgets/DFMPressAndHoldButton.qml</file>
         <file>dialogs/StatusColorDialog.qml</file>
         <file>scripts/unitconvert.js</file>
+        <file>widgets/DFMInfoSheet.qml</file>
     </qresource>
 </RCC>

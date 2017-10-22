@@ -76,7 +76,7 @@ Frame {
 
                 Repeater {
                     id: repeater
-                    model: [qsTr("Aircraft name") + translator.emptyString ]
+                    model: [qsTr("Aircraft name") + translator.tr ]
 
                     Label {
                         text: modelData
@@ -171,7 +171,7 @@ Frame {
                 scale: hoverButton ? 1.25 : 1
 
                 ToolTip.visible: hoverButton
-                ToolTip.text: qsTr("Add") + translator.emptyString
+                ToolTip.text: qsTr("Add") + translator.tr
 
                 Layout.preferredWidth: AppTheme.tscale(40)
                 Layout.preferredHeight: AppTheme.tscale(40)
@@ -198,7 +198,7 @@ Frame {
                         function appendModel(aircraft) {
                             for (var i = 0; i < dayDelayModel.count; i++) {
                                 if (dayDelayModel.get(i).name === aircraft ) {
-                                    messages.displayMessage(qsTr("The aircraft already exists.") + translator.emptyString)
+                                    messages.displayMessage(qsTr("The aircraft already exists.") + translator.tr)
                                     return
                                 }
                             }
@@ -207,7 +207,7 @@ Frame {
                         }
 
                         if (currentAircraft == "") {
-                            messages.displayMessage(qsTr("Please select an aircraft.") + translator.emptyString)
+                            messages.displayMessage(qsTr("Please select an aircraft.") + translator.tr)
                             return
                         }
 
@@ -226,7 +226,7 @@ Frame {
                 enabled: dayDelayModel.count > 0
 
                 ToolTip.visible: hoverButton
-                ToolTip.text: qsTr("Remove") + translator.emptyString
+                ToolTip.text: qsTr("Remove") + translator.tr
 
                 Layout.preferredWidth: AppTheme.tscale(40)
                 Layout.preferredHeight: AppTheme.tscale(40)

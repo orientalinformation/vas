@@ -72,7 +72,7 @@ ToolButton {
 
         Label {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: modelData.name + translator.emptyString
+            text: modelData.name + translator.tr
             opacity: isActive ? 1.0 : 0.7
             color: isActive ? "#00aaff" : "#424242"
             font.pointSize: AppTheme.textSizeTiny

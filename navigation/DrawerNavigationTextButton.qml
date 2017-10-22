@@ -56,7 +56,7 @@ ItemDelegate {
 
         Label {
             anchors.verticalCenter: parent.verticalCenter
-            text: modelData.name + translator.emptyString
+            text: modelData.name + translator.tr
             opacity: 0.87
             color: isActive? "#00aaff" : "#000000"
             font.pointSize: AppTheme.textSizeMenu

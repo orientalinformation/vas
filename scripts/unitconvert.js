@@ -165,7 +165,7 @@ function updateFlight(data, flight, row, column)
     }
 
     if (bottomInvalid || topInvalid) {
-        messages.displayMessage(qsTr("There is not enough space to perform this operation.") + translator.emptyString)
+        messages.displayMessage(qsTr("There is not enough space to perform this operation.") + translator.tr)
     } else {
         var temp = column - 1
         while (temp > bottomIndex) {

@@ -25,7 +25,6 @@ import QtQuick.Controls 2.2
 import "../theme"
 
 Frame {
-
     property var timeDelayModel: timeDelayModel
 
     Layout.fillHeight: true
@@ -77,7 +76,7 @@ Frame {
                 Repeater {
                     id: repeater
 
-                    model: [qsTr("Aircraft Name") + translator.emptyString, qsTr("Time") + translator.emptyString ]
+                    model: [qsTr("Aircraft Name") + translator.tr, qsTr("Time") + translator.tr ]
 
                     Label {
                         text: modelData
@@ -110,7 +109,7 @@ Frame {
                     spacing: 1
 
                     Label {
-                        text: modelData
+                        text: name
 
                         font.pointSize: AppTheme.textSizeText
                         verticalAlignment: Text.AlignVCenter
@@ -143,7 +142,8 @@ Frame {
 
                         validator: IntValidator { bottom:0; top: 2359}
 
-                        // placeholderText: qsTr("Input time...")
+                        placeholderText: qsTr("Input time...") + translator.tr
+                        text: time
 
                         MouseArea {
                             id: mouseArea
@@ -194,7 +194,7 @@ Frame {
                 scale: hoverButton ? 1.25 : 1
 
                 ToolTip.visible: hoverButton
-                ToolTip.text: qsTr("Add") + translator.emptyString
+                ToolTip.text: qsTr("Add") + translator.tr
 
                 Layout.preferredWidth: AppTheme.tscale(40)
                 Layout.preferredHeight: AppTheme.tscale(40)
@@ -221,19 +221,19 @@ Frame {
                         function appendModel(aircraft) {
                             for (var i = 0; i < timeDelayModel.count; i++) {
                                 if (timeDelayModel.get(i).name === aircraft ) {
-                                     messages.displayMessage(qsTr("The aircraft already exists.") + translator.emptyString)
+                                     messages.displayMessage(qsTr("The aircraft already exists.") + translator.tr)
                                     return
                                 }
                             }
 
-                            timeDelayModel.append( { name: aircraft } )
+                            timeDelayModel.append( { "name": aircraft, "time": "" } )
                             timeDelay.currentIndex += 1
                         }
 
                         if (currentAircraft != "") {
                             appendModel( currentAircraft )
                         } else {
-                            messages.displayMessage(qsTr("Please select an aircraft.") + translator.emptyString)
+                            messages.displayMessage(qsTr("Please select an aircraft.") + translator.tr)
                         }
                     }
                 }
@@ -246,7 +246,7 @@ Frame {
                 scale: hoverButton ? 1.25 : 1
 
                 ToolTip.visible: hoverButton
-                ToolTip.text: qsTr("Remove") + translator.emptyString
+                ToolTip.text: qsTr("Remove") + translator.tr
 
                 Layout.preferredWidth: AppTheme.tscale(40)
                 Layout.preferredHeight: AppTheme.tscale(40)

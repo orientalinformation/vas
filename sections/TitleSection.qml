@@ -94,7 +94,7 @@ Frame {
             property bool hoverButton: false
 
             ToolTip.visible: hoverButton
-            ToolTip.text: qsTr("Back") + translator.emptyString
+            ToolTip.text: qsTr("Back") + translator.tr
 
             Layout.preferredWidth: AppTheme.tscale(42)
             Layout.preferredHeight: AppTheme.tscale(42)
@@ -137,7 +137,7 @@ Frame {
             property bool hoverButton: false
 
             ToolTip.visible: hoverButton
-            ToolTip.text: qsTr("Home") + translator.emptyString
+            ToolTip.text: qsTr("Home") + translator.tr
 
             Layout.preferredWidth: AppTheme.tscale(36)
             Layout.preferredHeight: AppTheme.tscale(36)
@@ -210,7 +210,7 @@ Frame {
             property bool hoverButton: false
 
             ToolTip.visible: hoverButton
-            ToolTip.text: qsTr("Print") + translator.emptyString
+            ToolTip.text: qsTr("Print") + translator.tr
 
             Layout.preferredWidth: AppTheme.tscale(36)
             Layout.preferredHeight: AppTheme.tscale(36)
@@ -250,7 +250,7 @@ Frame {
             property bool hoverButton: false
 
             ToolTip.visible: hoverButton
-            ToolTip.text: qsTr("Build") + translator.emptyString
+            ToolTip.text: qsTr("Build") + translator.tr
 
             Layout.preferredWidth: AppTheme.tscale(36)
             Layout.preferredHeight: AppTheme.tscale(36)
@@ -287,7 +287,7 @@ Frame {
             property bool hoverButton: false
 
             ToolTip.visible: hoverButton
-            ToolTip.text: qsTr("Settings") + translator.emptyString
+            ToolTip.text: qsTr("Settings") + translator.tr
 
             Layout.preferredWidth: AppTheme.tscale(36)
             Layout.preferredHeight: AppTheme.tscale(36)
@@ -326,7 +326,7 @@ Frame {
             property bool hoverButton: false
 
             ToolTip.visible: hoverButton
-            ToolTip.text: qsTr("Quit") + translator.emptyString
+            ToolTip.text: qsTr("Quit") + translator.tr
 
             Layout.preferredWidth: AppTheme.tscale(36)
             Layout.preferredHeight: AppTheme.tscale(36)
@@ -358,8 +358,8 @@ Frame {
 
     MessageDialog {
         id: quitMessageDialog
-        title: qsTr("%1").arg(Branding.VER_PRODUCTNAME_STR) + translator.emptyString
-        text: qsTr("Are you sure you want to quit this application?") + translator.emptyString
+        title: qsTr("%1").arg(Branding.VER_PRODUCTNAME_STR) + translator.tr
+        text: qsTr("Are you sure you want to quit this application?") + translator.tr
         icon: StandardIcon.Warning
         standardButtons: StandardButton.No | StandardButton.Ok
 

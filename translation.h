@@ -27,11 +27,12 @@ modification, are permitted provided that the following conditions are met:
 class Translation : public QObject
 {
     Q_OBJECT
-     Q_PROPERTY(QString emptyString READ getEmptyString NOTIFY languageChanged)
+    Q_PROPERTY(QString tr READ tr NOTIFY languageChanged)
+
 public:
     explicit Translation(QObject *parent = 0);
 
-    QString getEmptyString();
+    QString tr();
 
     Q_INVOKABLE void selectLanguage(QString language);
 
