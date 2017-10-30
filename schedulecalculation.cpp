@@ -51,6 +51,34 @@ void ScheduleCalculation::sortTimeDeparture(QList<FlightCalendar> &flightCalenda
     }
 }
 
+QList<ScheduleCalculation::FlightCalendar> ScheduleCalculation::sortFlightCalendar(QList<FlightCalendar> &flightCalendar, int size)
+{
+    for (int i = 0; i < size - 1; i++) {
+        for (int j = 0; j < size; j++) {
+           if (sortByTimeDeparture(flightCalendar.at(i), flightCalendar.at(j))) {
+               qSwap(flightCalendar[i], flightCalendar[j]);
+           }
+        }
+    }
+
+    return flightCalendar;
+}
+
+bool ScheduleCalculation::sortByTimeDeparture(FlightCalendar lhs, FlightCalendar rhs)
+{
+    if (lhs.aircraftName < rhs.aircraftName) {
+        return true;
+    } else if (lhs.aircraftName > rhs.aircraftName) {
+        return false;
+    } else if (lhs.timeDeparture < rhs.timeDeparture) {
+        return true;
+    } else if (lhs.timeDeparture > rhs.timeDeparture) {
+        return false;
+    }
+
+    return true;
+}
+
 int ScheduleCalculation::execute(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart, int groundTime)
 {
     int airportSize =  qmlAirportData.size();
@@ -58,6 +86,8 @@ int ScheduleCalculation::execute(QList<QObject *> qmlAirportData, QList<QObject 
 
     int timeDifferenceOneAircraft = 5;
     int totalFlightSort = 0;
+
+    timeStart = timeStart / 100 * 60 + timeStart % 100;
 
     QList<FlightData *> airportData;
 
@@ -461,28 +491,26 @@ label_2:
         countFlightCrew = countFlightCrew + 1;
     }
 
-    //Convert timeDeparture and timeArrival of struct flightCalendar from minutes to hour-minute
-    for (int i = 0; i < totalFlightSort; i++) {
-        flightCalendar[i].timeDeparture = flightCalendar[i].timeDeparture % 1440;
-        flightCalendar[i].timeArrival = flightCalendar[i].timeArrival % 1440;
-        flightCalendar[i].timeDeparture = (flightCalendar[i].timeDeparture % 60) + (flightCalendar[i].timeDeparture - (flightCalendar[i].timeDeparture % 60)) * 100 / 60;
-        flightCalendar[i].timeArrival = (flightCalendar[i].timeArrival % 60) + (flightCalendar[i].timeArrival - (flightCalendar[i].timeArrival % 60)) * 100 / 60;
-    }
-
     // Arrangement aircraft name random
     for (int i = 0; i < totalFlightSort; i++) {
         flightCalendar[i].flightNumber = "VAA" + QString::number(101 + i);
     }
 
-    // sort flightCalendar: to name flight, hour timeDeparture.
-    for (int i = 0; i < totalFlightSort - 1; i++) {
-        for (int j = i; j < totalFlightSort; j++) {
-            if (flightCalendar[i].crewID > flightCalendar[j].crewID) {
-                qSwap(flightCalendar[i], flightCalendar[j]);
-            }
+    flightCalendar = sortFlightCalendar(flightCalendar, totalFlightSort);
+
+    //Convert timeDeparture and timeArrival of struct flightCalendar from minutes to hour-minute
+    for (int i = 0; i < totalFlightSort; i++) {
+//        flightCalendar[i].timeDeparture = flightCalendar[i].timeDeparture % 1440;
+//        flightCalendar[i].timeArrival = flightCalendar[i].timeArrival % 1440;
+//        flightCalendar[i].timeDeparture = (flightCalendar[i].timeDeparture % 60) + (flightCalendar[i].timeDeparture - (flightCalendar[i].timeDeparture % 60)) * 100 / 60;
+//        flightCalendar[i].timeArrival = (flightCalendar[i].timeArrival % 60) + (flightCalendar[i].timeArrival - (flightCalendar[i].timeArrival % 60)) * 100 / 60;
+        if (flightCalendar[i].timeDeparture < timeStart) {
+            flightCalendar[i].timeDeparture += 1440;
+            flightCalendar[i].timeArrival += 1440;
         }
 
-        sortTimeDeparture(flightCalendar, totalFlightSort);
+        flightCalendar[i].timeDeparture = ((flightCalendar[i].timeDeparture % (24 * 60)) - (flightCalendar[i].timeDeparture % (24 * 60)) % 60) / 60 * 100 + (flightCalendar[i].timeDeparture % (24 * 60)) % 60;
+        flightCalendar[i].timeArrival = ((flightCalendar[i].timeArrival % (24 * 60)) - (flightCalendar[i].timeArrival % (24 * 60)) % 60) / 60 * 100 + (flightCalendar[i].timeArrival % (24 * 60)) % 60;
     }
 
     // Write new data to file csv

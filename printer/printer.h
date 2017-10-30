@@ -2,6 +2,10 @@
 #define PRINTER_H
 
 #include <QQuickItem>
+#include <QtWidgets>
+#ifndef QT_NO_PRINTER
+#include <QPrinter>
+#endif
 
 class QPrinter;
 
@@ -45,6 +49,7 @@ public:
     Q_INVOKABLE void newPage();
     Q_INVOKABLE void printWindow();
     Q_INVOKABLE void endPrinting();
+    Q_INVOKABLE void printerPDF(QList<QObject *> data);
 
 public:
     QQuickWindow *window() const;
@@ -70,6 +75,11 @@ public:
     bool debugVerbose() const;
 
     void setDebugVerbose(bool debugVerbose);
+
+private:
+    int renderHeader();
+    int renderFooter();
+    int renderTableTitle(int position);
 
 signals:
     void windowChanged();
@@ -103,6 +113,7 @@ private:
 
     int _miniPageIndex;
     bool _debugVerbose;
+
 };
 
 #endif // PRINTER_H

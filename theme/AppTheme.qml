@@ -30,9 +30,6 @@ QtObject
     readonly property real refScreenWidth: 1600
     readonly property real refScreenHeight: 1024
 
-    //readonly property real screenPixelWidth: 640
-    //readonly property real screenPixelHeight: 360
-
     readonly property real contentScaleFactor: screenDpi / 96;
 
     function dp(value) {
@@ -42,18 +39,6 @@ QtObject
     function sp(value, textScale) {
         return Math.round(value * contentScaleFactor * textScale)
     }
-
-//    function hscale(size) {
-//        return dp(Math.round(size * (screenPixelWidth / refScreenWidth)))
-//    }
-
-//    function vscale(size) {
-//        return dp(Math.round(size * (screenPixelHeight / refScreenHeight)))
-//    }
-
-//    function tscale(size) {
-//        return dp(Math.round((hscale(size) + vscale(size)) / 2))
-//    }
 
     function hscale(size) {
         return Math.round(size * (screenPixelWidth / refScreenWidth))

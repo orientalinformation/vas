@@ -48,16 +48,15 @@ Item {
 
     property alias titleScheduleSection: titleSection
 
-    property var csvAircraftModel
+    property var csvAircraftModel: []
 
-    property var csvAirportModel
+    property var csvAirportModel: []
 
     signal built
 
+    signal newCase()
     signal open(var path)
-
     signal save(var path)
-
     signal saveAs(var path)
 
     ScheduleCalculation {
@@ -99,14 +98,17 @@ Item {
                 buildEnable: txtInputAircraftData.text !== "" && txtInputAirportData.text != ""
 
                 onBuilt: {
-                    //Write code calculate here
-                    scheduleCalculation.execute(csvAirportModel, csvAircraftModel, Number(txtStartTime.text), Settings.groundTime);
+                    if (txtStartTime.text === "") {
+                        messages.displayMessage(qsTr("Please input start time") + translator.tr)
+                    } else {
+                        scheduleCalculation.execute(csvAirportModel, csvAircraftModel, Number(txtStartTime.text), Settings.groundTime);
 
-                    scheduleDialog.built()
+                        scheduleDialog.built()
 
-                    isSplitScheduleView = false
+                        isSplitScheduleView = false
 
-                    swipeView.setCurrentIndex(0)
+                        swipeView.setCurrentIndex(0)
+                    }
                 }
             }
         }
@@ -320,6 +322,11 @@ Item {
             txtInputAircraftData.text = fileUrl
             aircraftReader.source = fileUrl
             csvAircraftModel = aircraftReader.read()
+
+            if (csvAircraftModel.length === 0) {
+                txtInputAircraftData.text = ""
+                messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
+            }
         }
     }
 
@@ -337,11 +344,26 @@ Item {
             txtInputAirportData.text = fileUrl
             airportReader.source = fileUrl
             csvAirportModel = airportReader.read()
+
+            if (csvAirportModel.length === 0) {
+                txtInputAirportData.text = ""
+                messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
+            }
         }
     }
 
     DFMBanner {
         id: messages
+    }
+
+    onNewCase: {
+        txtInputAirportData.text = ""
+        txtInputAircraftData.text = ""
+
+        csvAirportModel = []
+        csvAirportModel = []
+
+        txtStartTime.text = ""
     }
 
     onOpen: {
@@ -353,8 +375,8 @@ Item {
         txtInputAirportData.text = airportPath
         txtInputAircraftData.text = aircraftPath
 
-//        csvAirportModel = airportReader.read()
-//        csvAirportModel = airportReader.read()
+        csvAirportModel = airportReader.read()
+        csvAirportModel = airportReader.read()
     }
 
     onSave: {

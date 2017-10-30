@@ -1,4 +1,4 @@
-QT +=           widgets qml quick printsupport
+QT +=           qml quick printsupport widgets concurrent
 
 CONFIG +=       resources_big c++11\
 
@@ -65,7 +65,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 # Default rules for deployment.
 include(das_qml.pri)
-include(SortFilterProxyModel/SortFilterProxyModel.pri)
 
 TRANSLATIONS =  translation/qml_vi.ts
 
@@ -84,6 +83,8 @@ OTHER_FILES +=  version.h \
                 LICENSE \
                 *.md
 
+INCLUDEPATH += $$PWD/
+
 win32 {
     SOURCEPATH = $$PWD/data
     DESTPATH = $$OUT_PWD/bin/data
@@ -91,11 +92,15 @@ win32 {
     SOURCEPATH1 = $$PWD/LICENSE
     DESTPATH1 = $$OUT_PWD/bin/LICENSE
 
-    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH,/,\\) $$replace(DESTPATH,/,\\) && copy $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\)"
+    SOURCEPATH2 = $$PWD/guide
+    DESTPATH2 = $$OUT_PWD/bin/guide
+
+    copydata.commands = "$(COPY_DIR) $$replace(SOURCEPATH,/,\\) $$replace(DESTPATH,/,\\) && copy $$replace(SOURCEPATH1,/,\\) $$replace(DESTPATH1,/,\\) && $(COPY_DIR) $$replace(SOURCEPATH2,/,\\) $$replace(DESTPATH2,/,\\)"
 }
 
-unix {
-    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/bin/ && cp $$PWD/LICENSE $$OUT_PWD/bin/"
+android {
+} else:unix {
+    copydata.commands = "$(COPY_DIR) $$PWD/data $$OUT_PWD/bin/ && cp $$PWD/LICENSE $$OUT_PWD/bin/ && $(COPY_DIR) $$PWD/guide $$OUT_PWD/bin/"
 }
 
 first.depends = $(first) copydata

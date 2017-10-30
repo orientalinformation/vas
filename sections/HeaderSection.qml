@@ -62,44 +62,50 @@ Frame {
     signal caseSavedAs(var path)
     signal caseExport(var path)
 
+    signal caseNew()
+
     onNavigationIndexChanged: {
         switch (navigationIndex) {
-        case 0: // Open
-            fileOpenDialog.open()
-            break;
+            case 0: // New
+                newMessageDialog.visible = true
+                break;
 
-        case 1: // Save
-            if (currentCaseName !== "") {
-                header.caseSaved(currentCaseName)
-            } else {
-                fileSaveDialog.open()
-            }
-            break;
+            case 1: // Open
+                fileOpenDialog.open()
+                break;
 
-        case 2: // Save as
-            fileSaveAsDialog.open()
-            break;
+            case 2: // Save
+                if (currentCaseName !== "") {
+                    header.caseSaved(currentCaseName)
+                } else {
+                    fileSaveDialog.open()
+                }
+                break;
 
-        case 4: // Export
-            fileExportDialog.open()
-            break;
+            case 3: // Save as
+                fileSaveAsDialog.open()
+                break;
 
-        case 6: // Quit
-            quitMessageDialog.visible = true
-            break;
+            case 5: // Export
+                fileExportDialog.open()
+                break;
 
-        case 8: //Feedback
-            break;
+            case 7: // Quit
+                quitMessageDialog.visible = true
+                break;
 
-        case 9: // About this app
-            swipeView.setCurrentIndex(4)
-            break;
+            case 9: //Feedback
+                break;
 
-        case 3: // Devider
-        case 5: // Devider
-        case 7: // Devider
-        default:
-            break;
+            case 10: // About this app
+                swipeView.setCurrentIndex(4)
+                break;
+
+            case 4: // Devider
+            case 6: // Devider
+            case 8: // Devider
+            default:
+                break;
         }
 
         navigationIndex = -1
@@ -202,6 +208,7 @@ Frame {
     }
 
     property var navigationModel: [
+        {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("New") + translator.tr, "icon": "new.png" },
         {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Open") + translator.tr, "icon": "open_file.png" },
         {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Save") + translator.tr, "icon": "save.png" },
         {"type": "../navigation/DrawerNavigationButton.qml", "name": qsTr("Save As") + translator.tr, "icon": "save_as.png" },
@@ -283,8 +290,20 @@ Frame {
     }
 
     MessageDialog {
+        id: newMessageDialog
+        title: Branding.VER_PRODUCTNAME_STR
+        text: qsTr("Are you sure you want to reset this case?") + translator.tr
+        icon: StandardIcon.Warning
+        standardButtons: StandardButton.No | StandardButton.Ok
+
+        onAccepted: {
+            header.caseNew()
+        }
+    }
+
+    MessageDialog {
         id: quitMessageDialog
-        title: qsTr("%1").arg(Branding.VER_PRODUCTNAME_STR) + translator.tr
+        title: Branding.VER_PRODUCTNAME_STR
         text: qsTr("Are you sure you want to quit this application?") + translator.tr
         icon: StandardIcon.Warning
         standardButtons: StandardButton.No | StandardButton.Ok

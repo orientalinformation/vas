@@ -28,7 +28,7 @@ modification, are permitted provided that the following conditions are met:
 
 #include <QDateTime>
 
-#include "../version.h"
+#include "version.h"
 
 RescheduleCalculation::RescheduleCalculation(QObject *parent) :
     QObject(parent)
@@ -103,7 +103,7 @@ void RescheduleCalculation::writeFlightSchedule(QString outputPath, QList <Fligh
         out << "FN,CREW1,CREW2,CREW3,CREW4,CREW5,CREW6,DEP,ARR,TD,TA,AC,ACo,STATUS" << endl;
 
         for (int i = 0; i < flightSchedule.size(); i++) {
-            out << flightSchedule.at(i)->flightNumber << "," << flightSchedule.at(i)->crew1 << "," << flightSchedule.at(i)->crew2 << "," << flightSchedule.at(i)->crew3
+            out << flightSchedule.at(i)->flightNumber.toUpper() << "," << flightSchedule.at(i)->crew1 << "," << flightSchedule.at(i)->crew2 << "," << flightSchedule.at(i)->crew3
                 << "," << flightSchedule.at(i)->crew4 << "," << flightSchedule.at(i)->crew5 << "," << flightSchedule.at(i)->crew6 << "," << flightSchedule.at(i)->departure
                 << "," << flightSchedule.at(i)->arrive <<  "," << flightSchedule.at(i)->timeDeparture << "," << flightSchedule.at(i)->timeArrive
                 << "," << flightSchedule.at(i)->aircraft << "," << flightSchedule.at(i)->aircraftOld << "," << flightSchedule.at(i)->status << endl;
@@ -162,7 +162,6 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
         if (isArrayContains(name, uniqueAircrafts) == false) {
             indexUniqueFlight.push_back(i);
             uniqueAircrafts.append(name);
-            n++;
         }
     }
 
@@ -411,6 +410,9 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
 
     delete value;
 
+    QList <Aircraft> aircraft1 = aircraft;
+    QStringList acProblem41;
+
     // Processing
     do {
         int minimumTime = INT_MAX;
@@ -503,6 +505,8 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
             }
 
             if (flight1[k].timeDeparture < aircraft[indexMinimum].timeDeparture) {
+                n = n + 1;
+
                 FlightSchedule  *flightSchedule1 = new FlightSchedule();
                 flightSchedule1->aircraft = aircraft[indexMinimum].aircraftNumber;
                 flightSchedule1->aircraftOld = flight1[k].aircraft;
@@ -524,6 +528,8 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                     }
                 }
             } else {
+                n = n + 1;
+
                 FlightSchedule *flightSchedule1 = new FlightSchedule();
                 flightSchedule1->aircraft = aircraft[indexMinimum].aircraftNumber;
                 flightSchedule1->aircraftOld = flight1[k].aircraft;
@@ -551,67 +557,64 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
 
         // Handle problem 4
         if (isArrayContains(aircraft[indexMinimum].aircraftNumber, acProblem4) == true) {
-            if (aircraft[indexMinimum].departure == "SGN" ||
-                    aircraft[indexMinimum].departure == "HAN" ||
-                    aircraft[indexMinimum].departure == "CXR") {
-                int loc;
+            int loc;
+            for (int i = 0; i < AC4.size(); i++) {
+                if (aircraft[indexMinimum].aircraftNumber == AC4[i].aircraftNumber) {
+                    loc = i;
+                    break;
+                }
+            }
 
-                for (int i = 0; i < AC4.size(); i++) {
-                    if (aircraft[indexMinimum].aircraftNumber == AC4[i].aircraftNumber) {
-                        loc = i;
-                        break;
+            if ((aircraft[indexMinimum].timeDeparture - groundTime) <= AC4[loc].time) {
+                if (aircraft[indexMinimum].departure == "SGN" || aircraft[indexMinimum].departure == "HAN") {
+                    AC4[loc].flag = n;
+                }
+            } else {
+                for (int i = n - 1; i >= AC4[loc].flag; i--) { //test flights not fly
+                    for (int j = 0; j < flight.size(); j++) {
+                        if (flightSchedule[i]->flightNumber == flight[j].flightNumber) {
+                            flight[j].check = false;
+                            break;
+                        }
+                    }
+                    flightSchedule.removeAt(i);
+                    n = i - 1;
+                }
+
+                aircraft = aircraft1;
+
+                for (int i = 0; i < aircraft.size(); i++) {
+                    for (int j = AC4[loc].flag - 1; j >= 0; j--) {
+                        if (flightSchedule[j]->aircraft == aircraft[i].aircraftNumber) {
+                            aircraft[i].departure = flightSchedule[j]->arrive;
+                            aircraft[i].timeDeparture = flightSchedule[j]->timeArrive + groundTime;
+                            break;
+                        }
                     }
                 }
 
-                if (aircraft[indexMinimum].timeDeparture <= AC4[loc].time) {
-                    AC4[loc].flag = flightSchedule.size() - 1;
-                } else {
-                    for (int i = flightSchedule.size() - 1; i > AC4[loc].flag; i--) { //test flights not fly
-                        for (int j = 0; j < flight.size(); j++) {
-                            if (flightSchedule[i]->flightNumber == flight[j].flightNumber) {
-                                flight[j].check = false;
-                                break;
+                acProblem41.append(aircraft[indexMinimum].aircraftNumber);
+
+                for (int i = 0; i < AC4.size(); i++) {
+                    if (AC4[i].flag > AC4[loc].flag) {
+                        for (int j = 0; j < acProblem41.size(); j++) {
+                            if (acProblem4[i] == acProblem41[j]) {
+                                acProblem41.removeAt(j);
                             }
                         }
                     }
+                }
 
-                    for (int i = 0; i < aircraft.size(); i++) {
-                        for (int j = AC4[loc].flag; j >= 0; j--) {
-                            if (flightSchedule[j]->aircraft == aircraft[i].aircraftNumber) {
-                                aircraft[i].departure = flightSchedule[j]->arrive;
-                                aircraft[i].timeDeparture = flightSchedule[j]->timeArrive + groundTime;
-                                break;
-                            }
-                        }
-                    }
-
-                    flightSchedule.erase(flightSchedule.begin() + AC4[loc].flag + 1, flightSchedule.end());
-
-                    aircraft[indexMinimum].flagInProcess = true;
-
-                    for (int i = 0; i < AC4.size(); i++) {
-                        if (AC4[i].flag > AC4[loc].flag) {
-                            for (int j = 0; j < aircraft.size(); j++) {
-                                if (aircraft[j].aircraftNumber == AC4[i].aircraftNumber) {
-                                    aircraft[j].flagInProcess = false;
-                                }
-                            }
-
-                            for (int j = AC4[loc].flag; j >= 0; j--) {
-                                if (flightSchedule[j]->aircraft == AC4[i].aircraftNumber) {
-                                    if (flightSchedule[j]->arrive == "SGN" ||
-                                            flightSchedule[j]->arrive == "HAN" ||
-                                            flightSchedule[j]->arrive == "CXR") {
-                                        AC4[i].flag = j;
-                                        break;
-                                    }
-                                }
-                            }
+                for (int i = 0; i < acProblem41.size(); i++) {
+                    for (int j = 0; j < aircraft.size(); j++) {
+                        if (acProblem41.at(i) == aircraft.at(j).aircraftNumber) {
+                            aircraft[j].flagInProcess = true;
                         }
                     }
                 }
             }
         }
+        // End problem 4
     } while (countAircraft(aircraft) > 0);
 
     int stimeDelay = 0;
@@ -635,7 +638,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
     indexUniqueFlight.push_back(flightSchedule.size());
 
     // add some crew
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 50; i++) {
         P1SGN.push_back("0");
         P1HAN.push_back("0");
         P1CXR.push_back("0");
@@ -668,9 +671,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
         int mark1 = mark;
 
         for (int j = indexUniqueFlight[i]; j < indexUniqueFlight[i + 1]; j++) {
-            if (flightSchedule[j]->arrive == "HAN" ||
-                    flightSchedule[j]->arrive == "SGN" ||
-                    flightSchedule[j]->arrive == "CXR") {
+            if (flightSchedule[j]->arrive == "HAN" || flightSchedule[j]->arrive == "SGN" || flightSchedule[j]->arrive == "CXR") {
                 if (((flightSchedule[j]->timeArrive - flightSchedule[mark1]->timeDeparture) <= dutyTime) && ((j - mark1 + 1) <= sector)) {
                     mark = j + 1;
                 } else {
@@ -785,8 +786,8 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                     P4HAN.pop_front();
                     P5HAN.pop_front();
                     P6HAN.pop_front();
-                } else if ((flightSchedule[mark1]->departure == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
-                           && !P4CXR.isEmpty() && !P5CXR.isEmpty()) || !P6CXR.isEmpty()) {
+                } else if (flightSchedule[mark1]->departure == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
+                           && !P4CXR.isEmpty() && !P5CXR.isEmpty() && !P6CXR.isEmpty()) {
                     crCXRused++;
                     P1CXR.pop_front();
                     P2CXR.pop_front();
@@ -808,7 +809,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
 
     int countUnchangedAircraftAndTime = 0;
     int countUnchangedAircraft = 0;
-    int maxx = flightSchedule[1]->timeDelay;
+    int maxx = flightSchedule[0]->timeDelay;
     int convert = 0, flightCancel = 0;
 
     for (int i = 0; i < flightSchedule.size(); i++) {

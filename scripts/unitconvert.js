@@ -17,6 +17,12 @@ modification, are permitted provided that the following conditions are met:
       documentation and/or other materials provided with the distribution.
 **
 ****************************************************************************/
+function compareString(tr1, tr2) {
+    if(tr1.toUpperCase() === tr2.toUpperCase()) {
+        return true
+    }
+    return false
+}
 
 function convertAircraftModelToArray(model)
 {

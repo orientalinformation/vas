@@ -67,7 +67,7 @@ Item {
 
     Label {
         id: flightNumber
-        font.pointSize: AppTheme.textSizeSmall
+        font.pointSize: AppTheme.textSizeMenu
         anchors.centerIn: parent
         padding: AppTheme.tscale(3)
         horizontalAlignment: Text.AlignHCenter

@@ -134,6 +134,7 @@ Frame {
                         validator: IntValidator { bottom:0; top: 2359}
 
                         placeholderText: qsTr("Input time...") + translator.tr
+
                         text: time
 
                         MouseArea {
@@ -147,7 +148,7 @@ Frame {
                         }
 
                         onTextChanged: {
-                            timeLimitedModel.set(row, { "time": txtTimeLimited.text} )
+                            timeLimitedModel.set(row, { time: txtTimeLimited.text} )
                         }
                     }
                 }
@@ -213,7 +214,7 @@ Frame {
                             }
                         }
 
-                        timeLimitedModel.append( { name: aircraft } )
+                        timeLimitedModel.append( { name: aircraft, time: "" } )
                         timeLimited.currentIndex += 1
                     }
 

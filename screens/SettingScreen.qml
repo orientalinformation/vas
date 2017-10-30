@@ -26,7 +26,6 @@ import QtQuick.Extras 1.4
 import QtQuick.Window 2.2
 import QtGraphicalEffects 1.0
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Controls.Material 2.1
 
 import IOStreams 1.0
 
@@ -38,6 +37,7 @@ import "../scripts/branding.js" as Branding
 
 import "../dialogs"
 import "../sections"
+import "../widgets"
 
 Item {
     width: AppTheme.screenWidthSize
@@ -61,6 +61,10 @@ Item {
 
     IOStreams {
         id: settingsIostream
+    }
+
+    DFMBanner {
+        id: messages
     }
 
     ColumnLayout {
@@ -515,7 +519,7 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
 
                                         onClicked: {
-                                            Qt.openUrlExternally("file:///" + applicationDir + "/guide/UsersManual.pdf")
+                                            Qt.openUrlExternally((Qt.platform.os === "windows" ? "file:///" : "file://") + applicationDir + "/guide/UsersManual.pdf")
                                         }
                                     }
                                 }
@@ -588,6 +592,37 @@ Item {
                                 spacing: AppTheme.screenPadding
 
                                 Image {
+                                    source: "qrc:/das/images/settings/license.png"
+                                }
+
+                                Label {
+                                    id: lblLicense
+
+                                    text: qsTr("Register License") + translator.tr
+                                    font.pointSize: AppTheme.textSizeText
+                                    Layout.fillWidth: true
+                                    verticalAlignment: Text.AlignVCenter
+
+                                    MouseArea {
+                                        id: mouseAreaLicense
+                                        anchors.fill: parent
+                                        anchors.margins: 0
+                                        hoverEnabled: true
+                                        cursorShape: Qt.PointingHandCursor
+
+                                        onClicked: {
+                                            messages.displayMessage(qsTr("This feature is not avaiable in this version.") + translator.tr)
+                                        }
+                                    }
+                                }
+                            }
+
+                            RowLayout {
+                                Layout.fillWidth: true
+
+                                spacing: AppTheme.screenPadding
+
+                                Image {
                                     source: "qrc:/das/images/settings/update.png"
                                 }
 
@@ -607,7 +642,7 @@ Item {
                                         cursorShape: Qt.PointingHandCursor
 
                                         onClicked: {
-                                            //
+                                            messages.displayMessage(qsTr("This feature is not avaiable in this version.") + translator.tr)
                                         }
                                     }
                                 }

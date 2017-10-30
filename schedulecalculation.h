@@ -94,6 +94,10 @@ private:
 
     void sortTimeDeparture(QList<FlightCalendar> &flightCalendar, int totalFlightSort);
 
+    bool sortByTimeDeparture(FlightCalendar lhs, FlightCalendar rhs);
+
+    QList<FlightCalendar> sortFlightCalendar(QList<FlightCalendar> &flightCalendar, int size);
+
 signals:
     void error(const QString& msg);
 

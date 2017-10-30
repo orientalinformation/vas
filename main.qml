@@ -89,6 +89,12 @@ ApplicationWindow {
         onCaseExport: {
            homePage.exportCSV(path)
         }
+
+        onCaseNew: {
+            homePage.newCase()
+            schedulePage.newCase()
+            reschedulePage.newCase()
+        }
     }
 
     ColumnLayout {

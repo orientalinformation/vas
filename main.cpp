@@ -1,3 +1,4 @@
+#include <QObject>
 #include <QScreen>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -41,16 +42,15 @@ int main(int argc, char *argv[])
 
     qmlRegisterType<IOStreams, 1>("IOStreams", 1, 0, "IOStreams");
 
-    QScreen *screen = QGuiApplication::screens().at(0);
-
     qreal dpi;
 
 #if defined (Q_OS_WIN)
+    QScreen *screen = QGuiApplication::screens().at(0);
     dpi = screen->logicalDotsPerInch() * app.devicePixelRatio();
 #elif defined(Q_OS_ANDROID)
     dpi = 96;
 #else
-    dpi = screen->physicalDotsPerInch() * app.devicePixelRatio();
+    dpi =  app.devicePixelRatio();
 #endif
 
     //Get Desktop Screen Size
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     context->setContextProperty("screenPixelWidth", rec.width());
     context->setContextProperty("screenPixelHeight", rec.height());
 
-    context->setContextProperty("translator", (QObject*)&translator);
+    context->setContextProperty("translator", static_cast<QObject*>(&translator));
 
     engine.addImportPath("qrc:/");
 

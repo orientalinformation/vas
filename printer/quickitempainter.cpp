@@ -8,12 +8,13 @@
 
 #include "styledtext.h"
 
-QuickItemPainter::QuickItemPainter(QPainter *_painter, QQuickWindow *_window) : _painter(_painter), _window(_window), _debugVerbose(false)
+QuickItemPainter::QuickItemPainter(QPainter *_painter, QQuickWindow *_window) :
+    _painter(_painter), _window(_window), _debugVerbose(false)
 {
 }
 
-namespace
-{
+namespace {
+
 bool inherits(const QMetaObject *_metaObject, const QString &_name)
 {
     if (_metaObject->className() == _name) {
@@ -24,6 +25,7 @@ bool inherits(const QMetaObject *_metaObject, const QString &_name)
         return false;
     }
 }
+
 }
 
 void QuickItemPainter::paintQuickRectangle(QQuickItem *_item)

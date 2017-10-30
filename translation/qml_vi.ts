@@ -82,17 +82,17 @@
         <translation>Xoá</translation>
     </message>
     <message>
-        <location filename="../problems/ArrivalLimited.qml" line="360"/>
+        <location filename="../problems/ArrivalLimited.qml" line="362"/>
         <source>Airport code</source>
         <translation>Mã sân bay</translation>
     </message>
     <message>
-        <location filename="../problems/ArrivalLimited.qml" line="394"/>
+        <location filename="../problems/ArrivalLimited.qml" line="396"/>
         <source>Airport list</source>
         <translation>Danh sách sân bay</translation>
     </message>
     <message>
-        <location filename="../problems/ArrivalLimited.qml" line="439"/>
+        <location filename="../problems/ArrivalLimited.qml" line="441"/>
         <source>The airport already exists.</source>
         <translation>Sân bay đã tồn tại.</translation>
     </message>
@@ -105,12 +105,12 @@
         <translation>Vui lòng chọn đường dẫn</translation>
     </message>
     <message>
-        <location filename="../csvreader.cpp" line="227"/>
+        <location filename="../csvreader.cpp" line="186"/>
         <source>Unable to open the file</source>
         <translation>Không thể mở file</translation>
     </message>
     <message>
-        <location filename="../csvreader.cpp" line="308"/>
+        <location filename="../csvreader.cpp" line="279"/>
         <source>Unable open file!</source>
         <translation>Không thể mở file!</translation>
     </message>
@@ -179,122 +179,148 @@
 <context>
     <name>FlightDetail</name>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="145"/>
+        <location filename="../dialogs/FlightDetail.qml" line="147"/>
         <source>A/C</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="169"/>
+        <location filename="../dialogs/FlightDetail.qml" line="171"/>
         <source>FN</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="196"/>
+        <location filename="../dialogs/FlightDetail.qml" line="198"/>
         <source>A/C old</source>
         <translation>A/C cũ</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="223"/>
+        <location filename="../dialogs/FlightDetail.qml" line="225"/>
         <source>DEP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="247"/>
+        <location filename="../dialogs/FlightDetail.qml" line="249"/>
         <source>ARR</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="271"/>
+        <location filename="../dialogs/FlightDetail.qml" line="273"/>
         <source>ETD</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="299"/>
+        <location filename="../dialogs/FlightDetail.qml" line="301"/>
         <source>ETA</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="353"/>
+        <location filename="../dialogs/FlightDetail.qml" line="355"/>
         <source>CAP</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="376"/>
+        <location filename="../dialogs/FlightDetail.qml" line="378"/>
         <source>FO</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="399"/>
+        <location filename="../dialogs/FlightDetail.qml" line="401"/>
         <source>CM</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="422"/>
+        <location filename="../dialogs/FlightDetail.qml" line="424"/>
         <source>CA 1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="445"/>
+        <location filename="../dialogs/FlightDetail.qml" line="447"/>
         <source>CA 2</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="468"/>
+        <location filename="../dialogs/FlightDetail.qml" line="470"/>
         <source>CA 3</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="510"/>
+        <location filename="../dialogs/FlightDetail.qml" line="512"/>
         <source>Update</source>
         <translation>Cập nhật</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="520"/>
+        <location filename="../dialogs/FlightDetail.qml" line="522"/>
         <source>Update values</source>
         <translation>Cập nhật</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="520"/>
+        <location filename="../dialogs/FlightDetail.qml" line="522"/>
         <source>Save values</source>
         <translation>Lưu</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="553"/>
+        <location filename="../dialogs/FlightDetail.qml" line="555"/>
         <source>The flight code can not empty.</source>
         <translation>Tên chuyến bay không thể rỗng.</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="559"/>
+        <location filename="../dialogs/FlightDetail.qml" line="561"/>
         <source>The aircraft code can not empty.</source>
         <translation>Mã máy bay không thể rỗng.</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="565"/>
+        <location filename="../dialogs/FlightDetail.qml" line="567"/>
         <source>The departure port can not empty.</source>
         <translation>Mã sân bay đi không thể rỗng.</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="571"/>
+        <location filename="../dialogs/FlightDetail.qml" line="573"/>
         <source>The arrival port can not empty.</source>
         <translation>Mã sân bay đến không thể rỗng.</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="577"/>
+        <location filename="../dialogs/FlightDetail.qml" line="579"/>
         <source>The estimated time is invalid.</source>
         <translation>Thời gian dự kiến không hợp lệ.</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="583"/>
+        <location filename="../dialogs/FlightDetail.qml" line="585"/>
         <source>Estimated time of arrival must be greater estimated time of departure.</source>
         <translation>Thời gian dự kiến đến phải lớn hơn thời gian dự kiến đi.</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="610"/>
+        <source>Flight number already exist.</source>
+        <translation type="vanished">Số hiệu chuyến bay đã tồn tại.</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/FlightDetail.qml" line="646"/>
+        <location filename="../dialogs/FlightDetail.qml" line="651"/>
+        <location filename="../dialogs/FlightDetail.qml" line="722"/>
+        <source>The departure time is invalid.</source>
+        <translation>Thời gian đi không hợp lệ.</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/FlightDetail.qml" line="706"/>
+        <source>The departure time is invalid ground time.</source>
+        <translation>Không đủ thời gian nghỉ của chuyến bay. Vui lòng nhập lại hoặc thiết lập lại thời gian nghỉ trong mục Cấu hình.</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/FlightDetail.qml" line="711"/>
+        <source>The arrival time is invalid ground time.</source>
+        <translation>Không đủ thời gian nghỉ của chuyến bay. Vui lòng nhập lại hoặc thiết lập lại thời gian nghỉ trong mục Cấu hình.</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/FlightDetail.qml" line="717"/>
+        <source>The arrival time is invalid.</source>
+        <translation>Thời gian đến không hợp lệ.</translation>
+    </message>
+    <message>
+        <location filename="../dialogs/FlightDetail.qml" line="750"/>
         <source>Flight details</source>
         <translation>Chi tiết chuyến bay</translation>
     </message>
     <message>
-        <location filename="../dialogs/FlightDetail.qml" line="616"/>
+        <location filename="../dialogs/FlightDetail.qml" line="756"/>
         <source>Crew</source>
         <translation>Tổ bay</translation>
     </message>
@@ -302,75 +328,80 @@
 <context>
     <name>HeaderSection</name>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="287"/>
-        <source>%1</source>
-        <translation></translation>
+        <location filename="../sections/HeaderSection.qml" line="211"/>
+        <source>New</source>
+        <translation>Tạo mới</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="205"/>
+        <location filename="../sections/HeaderSection.qml" line="212"/>
         <source>Open</source>
         <translation>Mở</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="206"/>
+        <location filename="../sections/HeaderSection.qml" line="213"/>
         <source>Save</source>
         <translation>Lưu</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="207"/>
+        <location filename="../sections/HeaderSection.qml" line="214"/>
         <source>Save As</source>
         <translation>Lưu thành</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="210"/>
+        <location filename="../sections/HeaderSection.qml" line="217"/>
         <source>Export</source>
         <translation>Xuất</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="212"/>
+        <location filename="../sections/HeaderSection.qml" line="219"/>
         <source>Quit</source>
         <translation>Thoát</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="214"/>
+        <location filename="../sections/HeaderSection.qml" line="221"/>
         <source>Feedback</source>
         <translation>Phản hồi</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="215"/>
+        <location filename="../sections/HeaderSection.qml" line="222"/>
         <source>About this App</source>
         <translation>Thông tin ứng dụng</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="225"/>
+        <location filename="../sections/HeaderSection.qml" line="232"/>
         <source>Open %1 Case File</source>
         <translation>Mở Tệp %1</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="231"/>
-        <location filename="../sections/HeaderSection.qml" line="248"/>
-        <location filename="../sections/HeaderSection.qml" line="263"/>
+        <location filename="../sections/HeaderSection.qml" line="238"/>
+        <location filename="../sections/HeaderSection.qml" line="255"/>
+        <location filename="../sections/HeaderSection.qml" line="270"/>
         <source>%1 File (*.vas)</source>
         <translation>Tệp %1 (*.vas)</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="242"/>
-        <location filename="../sections/HeaderSection.qml" line="257"/>
+        <location filename="../sections/HeaderSection.qml" line="249"/>
+        <location filename="../sections/HeaderSection.qml" line="264"/>
         <source>Save %1 Case File</source>
         <translation>Lưu Tệp %1</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="272"/>
+        <location filename="../sections/HeaderSection.qml" line="279"/>
         <source>Export CSV data</source>
         <translation>Xuất dữ liệu CSV</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="278"/>
+        <location filename="../sections/HeaderSection.qml" line="285"/>
         <source>CSV File (*.csv)</source>
         <translation>Tệp CSV (*.csv)</translation>
     </message>
     <message>
-        <location filename="../sections/HeaderSection.qml" line="288"/>
+        <location filename="../sections/HeaderSection.qml" line="295"/>
+        <source>Are you sure you want to reset this case?</source>
+        <translation>Bạn có muốn thiết lập lại toàn bộ?</translation>
+    </message>
+    <message>
+        <location filename="../sections/HeaderSection.qml" line="307"/>
         <source>Are you sure you want to quit this application?</source>
         <translation>Bạn có muốn thoát khỏi ứng dụng?</translation>
     </message>
@@ -378,65 +409,117 @@
 <context>
     <name>HomeScreen</name>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="180"/>
+        <location filename="../screens/HomeScreen.qml" line="155"/>
+        <location filename="../screens/HomeScreen.qml" line="167"/>
+        <source>The arrival time is invalid.</source>
+        <translation>Thời gian đến không hợp lệ.</translation>
+    </message>
+    <message>
+        <location filename="../screens/HomeScreen.qml" line="191"/>
+        <source> not existed.</source>
+        <translation> không tồn tại.</translation>
+    </message>
+    <message>
+        <location filename="../screens/HomeScreen.qml" line="207"/>
         <source> was updated.</source>
         <translation> đã đucợ cập nhật.</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="196"/>
+        <location filename="../screens/HomeScreen.qml" line="223"/>
         <source> is inserted.</source>
         <translation> đã đucợ thêm.</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="214"/>
+        <location filename="../screens/HomeScreen.qml" line="242"/>
         <source>Print PDF successfull</source>
         <translation>In PDF thành công</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="589"/>
+        <location filename="../screens/HomeScreen.qml" line="627"/>
         <source>Home</source>
         <translation>Trang chủ</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="652"/>
+        <location filename="../screens/HomeScreen.qml" line="696"/>
         <source>Current Airline Schedules</source>
         <translation>Lịch Bay Hiện Tại</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="705"/>
-        <location filename="../screens/HomeScreen.qml" line="927"/>
+        <location filename="../screens/HomeScreen.qml" line="749"/>
+        <location filename="../screens/HomeScreen.qml" line="976"/>
         <source>Aircraft N°</source>
         <translation>Mã chuyến bay</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="873"/>
+        <location filename="../screens/HomeScreen.qml" line="922"/>
         <source>Optimized Airline Schedules</source>
         <translation>Lịch Bay Tối Ưu</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="1148"/>
+        <location filename="../screens/HomeScreen.qml" line="1198"/>
         <source>Insert block</source>
         <translation>Thêm chuyến bay</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="1150"/>
+        <location filename="../screens/HomeScreen.qml" line="1200"/>
         <source>+</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="1173"/>
+        <location filename="../screens/HomeScreen.qml" line="1223"/>
         <source>Add new flight</source>
         <translation>Thêm chuyến bay mới</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="1241"/>
+        <location filename="../screens/HomeScreen.qml" line="1291"/>
         <source>Delete block</source>
         <translation>Xoá chuyến bay</translation>
     </message>
     <message>
-        <location filename="../screens/HomeScreen.qml" line="1266"/>
+        <location filename="../screens/HomeScreen.qml" line="1316"/>
         <source> is deleted.</source>
         <translation> đã bị xoá.</translation>
+    </message>
+</context>
+<context>
+    <name>Printer</name>
+    <message>
+        <location filename="../printer/printer.cpp" line="42"/>
+        <location filename="../printer/printer.cpp" line="337"/>
+        <source>VAA Airline Schedules</source>
+        <translation>Chương trình Lập lịch bay VAA</translation>
+    </message>
+    <message>
+        <location filename="../printer/printer.cpp" line="102"/>
+        <location filename="../printer/printer.cpp" line="266"/>
+        <source>Export PDF</source>
+        <translation>Xuất tệp PDF</translation>
+    </message>
+    <message>
+        <location filename="../printer/printer.cpp" line="102"/>
+        <location filename="../printer/printer.cpp" line="266"/>
+        <source>PDF File (*.pdf)</source>
+        <translation>Tệp PDF (*.pdf)</translation>
+    </message>
+    <message>
+        <location filename="../printer/printer.cpp" line="329"/>
+        <source>Vietnam Aviation Academy</source>
+        <translation>Học Viện Hàng Không Việt Nam</translation>
+    </message>
+    <message>
+        <location filename="../printer/printer.cpp" line="332"/>
+        <source>No. 104, Nguyen Van Troi Street, Phu Nhuan District, Ho Chi Minh City, Vietnam</source>
+        <translation>104 Nguyễn Văn Trỗi, P.8, Q. Phú Nhuận, TP.HCM, Việt Nam</translation>
+    </message>
+    <message>
+        <location filename="../printer/printer.cpp" line="333"/>
+        <source>Tel</source>
+        <translation>ĐT</translation>
+    </message>
+    <message>
+        <location filename="../printer/printer.cpp" line="333"/>
+        <source>Email</source>
+        <translation>Email</translation>
     </message>
 </context>
 <context>
@@ -454,86 +537,96 @@
 <context>
     <name>RescheduleScreen</name>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="379"/>
-        <location filename="../screens/RescheduleScreen.qml" line="482"/>
+        <location filename="../screens/RescheduleScreen.qml" line="400"/>
+        <location filename="../screens/RescheduleScreen.qml" line="503"/>
         <source>Airline Day Delay</source>
         <translation>Hoãn Chuyến Bay Theo Ngày</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="477"/>
+        <location filename="../screens/RescheduleScreen.qml" line="498"/>
         <source>Day Delay</source>
         <translation>Hoãn Ngày</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="495"/>
+        <location filename="../screens/RescheduleScreen.qml" line="516"/>
         <source>Airline Time Delay</source>
         <translation>Hoãn Chuyến Bay Theo Giờ</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="490"/>
+        <location filename="../screens/RescheduleScreen.qml" line="511"/>
         <source>Time Delay</source>
         <translation>Hoãn Thời Gian</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="509"/>
+        <location filename="../screens/RescheduleScreen.qml" line="530"/>
         <source>Airline Arrival Limited</source>
         <translation>Giới Hạn Sân Bay Đến</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="504"/>
+        <location filename="../screens/RescheduleScreen.qml" line="525"/>
         <source>Arrival Limited</source>
         <translation>Giới Hạn Sân Bay Đến</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="523"/>
+        <location filename="../screens/RescheduleScreen.qml" line="544"/>
         <source>Airline Time Limited</source>
         <translation>Giới Hạn Thời Gian Bay</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="518"/>
+        <location filename="../screens/RescheduleScreen.qml" line="539"/>
         <source>Time Limited</source>
         <translation>Giới Hạn Thời Gian</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="107"/>
+        <location filename="../screens/RescheduleScreen.qml" line="106"/>
         <source>Rescheduled</source>
         <translation>Tái lập lịch</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="204"/>
+        <location filename="../screens/RescheduleScreen.qml" line="161"/>
+        <source>You must enter all input time.</source>
+        <translation>Bạn phải nhập tất cả các dữ liệu đầu vào.</translation>
+    </message>
+    <message>
+        <location filename="../screens/RescheduleScreen.qml" line="225"/>
         <source>Input data</source>
         <translation>Dữ liệu đầu vào</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="224"/>
+        <location filename="../screens/RescheduleScreen.qml" line="245"/>
         <source>Browse</source>
         <translation>Duyệt</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="234"/>
+        <location filename="../screens/RescheduleScreen.qml" line="255"/>
         <source>Aircraft list</source>
         <translation>Danh sách máy bay</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="274"/>
+        <location filename="../screens/RescheduleScreen.qml" line="295"/>
         <source>Aircraft name</source>
         <translation>Tên máy bay</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="589"/>
+        <location filename="../screens/RescheduleScreen.qml" line="610"/>
         <source>Select input data</source>
         <translation>Chọn dữ liệu đầu vào</translation>
     </message>
     <message>
-        <location filename="../screens/RescheduleScreen.qml" line="595"/>
+        <location filename="../screens/RescheduleScreen.qml" line="616"/>
         <source>CSV File (*.csv)</source>
         <translation>Tệp CSV (*.csv)</translation>
+    </message>
+    <message>
+        <location filename="../screens/RescheduleScreen.qml" line="629"/>
+        <source>Please select correct data.</source>
+        <translation>Vui lòng chọn dữ liệu.</translation>
     </message>
 </context>
 <context>
     <name>ScheduleCalculation</name>
     <message>
-        <location filename="../schedulecalculation.cpp" line="521"/>
+        <location filename="../schedulecalculation.cpp" line="549"/>
         <source>Can not write result file!</source>
         <translation>Không thể ghi file kết quả!</translation>
     </message>
@@ -541,49 +634,60 @@
 <context>
     <name>ScheduleScreen</name>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="94"/>
+        <location filename="../screens/ScheduleScreen.qml" line="93"/>
         <source>Schedules</source>
         <translation>Lập Lịch Bay</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="162"/>
+        <location filename="../screens/ScheduleScreen.qml" line="102"/>
+        <source>Please input start time</source>
+        <translation>Vui lòng chọn thời gian bắt đầu</translation>
+    </message>
+    <message>
+        <location filename="../screens/ScheduleScreen.qml" line="164"/>
         <source>Input aircraft data</source>
         <translation>Dữ liệu máy bay đầu vào</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="188"/>
-        <location filename="../screens/ScheduleScreen.qml" line="227"/>
+        <location filename="../screens/ScheduleScreen.qml" line="190"/>
+        <location filename="../screens/ScheduleScreen.qml" line="229"/>
         <source>Browse</source>
         <translation>Duyệt</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="201"/>
+        <location filename="../screens/ScheduleScreen.qml" line="203"/>
         <source>Input airport data</source>
         <translation>Dữ liệu sân bay đầu vào</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="240"/>
+        <location filename="../screens/ScheduleScreen.qml" line="242"/>
         <source>Start time</source>
         <translation>Thời gian bắt đầu</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="254"/>
+        <location filename="../screens/ScheduleScreen.qml" line="256"/>
         <source>Enter start time</source>
         <translation>Nhập thời gian bắt đầu</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="311"/>
+        <location filename="../screens/ScheduleScreen.qml" line="313"/>
         <source>Select Aircraft Data</source>
         <translation>Chọn dữ liệu máy bay</translation>
     </message>
     <message>
-        <location filename="../screens/ScheduleScreen.qml" line="317"/>
-        <location filename="../screens/ScheduleScreen.qml" line="334"/>
+        <location filename="../screens/ScheduleScreen.qml" line="319"/>
+        <location filename="../screens/ScheduleScreen.qml" line="341"/>
         <source>CSV File (*.csv)</source>
         <translation>Tệp CSV (*.csv)</translation>
     </message>
     <message>
         <location filename="../screens/ScheduleScreen.qml" line="328"/>
+        <location filename="../screens/ScheduleScreen.qml" line="350"/>
+        <source>Please select correct data.</source>
+        <translation>Vui lòng chọn dữ liệu.</translation>
+    </message>
+    <message>
+        <location filename="../screens/ScheduleScreen.qml" line="335"/>
         <source>Select Airport Data</source>
         <translation>Chon dữ liệu sân bay</translation>
     </message>
@@ -591,93 +695,104 @@
 <context>
     <name>SettingScreen</name>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="87"/>
+        <location filename="../screens/SettingScreen.qml" line="91"/>
         <source>Setting</source>
         <translation>Cấu hình</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="148"/>
+        <location filename="../screens/SettingScreen.qml" line="152"/>
         <source>Calculation</source>
         <translation>Tham số tính toán</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="175"/>
+        <location filename="../screens/SettingScreen.qml" line="179"/>
         <source>Ground time</source>
         <translation>Thời gian nghỉ</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="190"/>
+        <location filename="../screens/SettingScreen.qml" line="194"/>
         <source>Enter ground time</source>
         <translation>Nhập thời gian nghỉ</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="207"/>
-        <location filename="../screens/SettingScreen.qml" line="376"/>
+        <location filename="../screens/SettingScreen.qml" line="211"/>
+        <location filename="../screens/SettingScreen.qml" line="380"/>
         <source>minutes</source>
         <translation>phút</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="218"/>
+        <location filename="../screens/SettingScreen.qml" line="222"/>
         <source>Sector</source>
         <translation>Số lượng</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="299"/>
+        <location filename="../screens/SettingScreen.qml" line="303"/>
         <source>Duty time</source>
         <translation>Thời gian bay</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="336"/>
+        <location filename="../screens/SettingScreen.qml" line="340"/>
         <source>Define</source>
         <translation>Định nghĩa</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="336"/>
+        <location filename="../screens/SettingScreen.qml" line="340"/>
         <source>Infinite</source>
         <translation>Không xác định</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="357"/>
+        <location filename="../screens/SettingScreen.qml" line="361"/>
         <source>Enter duty time</source>
         <translation>Nhập thời gian bay</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="432"/>
+        <location filename="../screens/SettingScreen.qml" line="436"/>
         <source>Application</source>
         <translation>Ứng dụng</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="467"/>
+        <location filename="../screens/SettingScreen.qml" line="471"/>
         <source>Language</source>
         <translation>Ngôn ngữ</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="505"/>
+        <location filename="../screens/SettingScreen.qml" line="509"/>
         <source>User Guide</source>
         <translation>Hướng dẫn sử dụng</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="535"/>
+        <location filename="../screens/SettingScreen.qml" line="539"/>
         <source>Flight Status Color</source>
         <translation>Bảng màu trạng thái chuyến bay</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="566"/>
+        <location filename="../screens/SettingScreen.qml" line="570"/>
         <source>Customer Support</source>
         <translation>Hỗ trợ khách hàng</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="597"/>
+        <location filename="../screens/SettingScreen.qml" line="601"/>
+        <source>Register License</source>
+        <translation>Đăng ký giấy phép</translation>
+    </message>
+    <message>
+        <location filename="../screens/SettingScreen.qml" line="614"/>
+        <location filename="../screens/SettingScreen.qml" line="645"/>
+        <source>This feature is not avaiable in this version.</source>
+        <translation>Tính năng này chưa có sẵn.</translation>
+    </message>
+    <message>
+        <location filename="../screens/SettingScreen.qml" line="632"/>
         <source>Update</source>
         <translation>Cập nhật</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="624"/>
+        <location filename="../screens/SettingScreen.qml" line="659"/>
         <source>Version: %1</source>
         <translation>Phiên bản: %1</translation>
     </message>
     <message>
-        <location filename="../screens/SettingScreen.qml" line="645"/>
+        <location filename="../screens/SettingScreen.qml" line="680"/>
         <source>About</source>
         <translation>Thông tin</translation>
     </message>
@@ -761,22 +876,22 @@
         <translation>Nhập thời gian...</translation>
     </message>
     <message>
-        <location filename="../problems/TimeLimited.qml" line="186"/>
+        <location filename="../problems/TimeLimited.qml" line="187"/>
         <source>Add</source>
         <translation>Thêm</translation>
     </message>
     <message>
-        <location filename="../problems/TimeLimited.qml" line="211"/>
+        <location filename="../problems/TimeLimited.qml" line="212"/>
         <source>The aircraft already exists.</source>
         <translation>Máy bay đã tồn tại.</translation>
     </message>
     <message>
-        <location filename="../problems/TimeLimited.qml" line="224"/>
+        <location filename="../problems/TimeLimited.qml" line="225"/>
         <source>Please select an aircraft.</source>
         <translation>Vui lòng chọn một máy bay.</translation>
     </message>
     <message>
-        <location filename="../problems/TimeLimited.qml" line="237"/>
+        <location filename="../problems/TimeLimited.qml" line="238"/>
         <source>Remove</source>
         <translation>Xoá</translation>
     </message>
@@ -789,37 +904,37 @@
         <translation>Quay lại</translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="140"/>
+        <location filename="../sections/TitleSection.qml" line="141"/>
         <source>Home</source>
         <translation>Trang chủ</translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="213"/>
+        <location filename="../sections/TitleSection.qml" line="214"/>
         <source>Print</source>
         <translation>In báo cáo</translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="253"/>
+        <location filename="../sections/TitleSection.qml" line="254"/>
         <source>Build</source>
         <translation>Thực thi</translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="290"/>
+        <location filename="../sections/TitleSection.qml" line="291"/>
         <source>Settings</source>
         <translation>Cấu hình</translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="329"/>
+        <location filename="../sections/TitleSection.qml" line="330"/>
         <source>Quit</source>
         <translation>Thoát</translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="361"/>
+        <location filename="../sections/TitleSection.qml" line="362"/>
         <source>%1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../sections/TitleSection.qml" line="362"/>
+        <location filename="../sections/TitleSection.qml" line="363"/>
         <source>Are you sure you want to quit this application?</source>
         <translation>Bạn có muốn thoát khỏi ứng dụng?</translation>
     </message>
@@ -873,7 +988,7 @@
 <context>
     <name>unitconvert</name>
     <message>
-        <location filename="../scripts/unitconvert.js" line="168"/>
+        <location filename="../scripts/unitconvert.js" line="174"/>
         <source>There is not enough space to perform this operation.</source>
         <translation>Không đủ khoảng trống để thực hiện tác vụ này.</translation>
     </message>

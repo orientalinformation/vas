@@ -72,10 +72,9 @@ Item {
 
     signal built(var inputPath)
 
+    signal newCase()
     signal open(var path)
-
     signal save(var path)
-
     signal saveAs(var path)
 
     IOStreams {
@@ -113,6 +112,23 @@ Item {
 
                 onBuilt: {
                     //Write code calculate here
+
+                    function checkInputTimeValid(timeDelay, timeLimit) {
+                        for (var i = 0; i < timeDelay.count; i++) {
+                            if (timeDelayModel.get(i).time === "") {
+                                return false
+                            }
+                        }
+
+                        for (var i = 0; i < timeLimit.count; i++) {
+                            if (timeLimit.get(i).time === "") {
+                                return false
+                            }
+                        }
+
+                        return true
+                    }
+
                     for (var i = 0 ; i < dayDelayModel.count ; i++) {
                        dayDelayList.push(dayDelayModel.get(i).name)
                     }
@@ -132,15 +148,20 @@ Item {
                     for (var i = 0; i < airportSelectedModel.count; i++) {
                         airportList.push(airportSelectedModel.get(i).name)
                     }
+                    if (checkInputTimeValid(timeDelayModel, timeLimitedModel)) {
+                        rescheduleCalculation.execute(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
+                                                            timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightList)
 
-                    rescheduleCalculation.execute(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
-                                                        timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightList)
+                        rescheduleDialog.built(flightReader.source)
 
-                    rescheduleDialog.built(flightReader.source)
+                        isSplitScheduleView = true
 
-                    isSplitScheduleView = true
+                        swipeView.setCurrentIndex(0)
+                    } else {
+                        messages.displayMessage(qsTr("You must enter all input time.") + translator.tr)
+                    }
 
-                    swipeView.setCurrentIndex(0)
+
                 }
             }
         }
@@ -603,6 +624,12 @@ Item {
             airportModel.clear()
             rescheduleModel.clear()
 
+            if (csvFlightList.length === 0) {
+                txtInputData.text = ""
+                messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
+                return
+            }
+
             for (var i = 0; i < csvFlightList.length; i++) {
                 appendModel(airportModel, csvFlightList[i].ARR)
                 appendModel(rescheduleModel, csvFlightList[i].AC)
@@ -614,18 +641,45 @@ Item {
         id: messages
     }
 
+    onNewCase: {
+        txtInputData.text = ""
+
+        csvFlightList = []
+
+        dayDelayList = []
+        timeDelayList = []
+
+        aircraftArrivalLimitedList = []
+        airportList = []
+
+        timeLimitedList = []
+
+        rescheduleModel.clear()
+
+        dayDelayModel.clear()
+        timeDelayModel.clear()
+
+        aircraftArrivalLimitModel.clear()
+
+        airportModel.clear()
+        airportSelectedModel.clear()
+
+        timeLimitedModel.clear()
+    }
+
     onOpen: {
         var rescheduleList = []
         var arrivalLimitSelected  = []
-        var urlInput
 
         dayDelayList = []
-        aircraftArrivalLimitedList = []
-        airportList = []
-        timeLimitedList = []
         timeDelayList = []
 
-        urlInput = rescheduleIostream.read("path", "reschedules", path)
+        aircraftArrivalLimitedList = []
+        airportList = []
+
+        timeLimitedList = []
+
+        var urlInput = rescheduleIostream.read("path", "reschedules", path)
 
         dayDelayList = rescheduleIostream.readData("problem1", "reschedules", path)
 
@@ -698,21 +752,20 @@ Item {
 
         rescheduleIostream.write("path", txtInputData.text, "reschedules", path)
 
-        rescheduleIostream.write("availableAC", codes[5], "reschedules", path)
-
         rescheduleIostream.write("problem1", codes[0], "reschedules", path)
 
         rescheduleIostream.writeData("problem2", codes[1], "reschedules", path)
 
         rescheduleIostream.write("problem3AC", codes[2], "reschedules", path)
         rescheduleIostream.write("problem3AP", codes[3], "reschedules", path)
-        rescheduleIostream.write("availableAP", codes[6], "reschedules", path)
 
         rescheduleIostream.writeData("problem4", codes[4], "reschedules", path)
+
+        rescheduleIostream.write("availableAC", codes[5], "reschedules", path)
+        rescheduleIostream.write("availableAP", codes[6], "reschedules", path)
     }
 
-    function getData()
-    {
+    function getData() {
         var problem1Data = []
         var problem2Data = []
 

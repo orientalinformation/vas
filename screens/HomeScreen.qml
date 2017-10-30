@@ -97,84 +97,112 @@ Item {
         id: flightDialog
 
         onUpdated: {
-//            var modelLenght = optimizedDataModels.count;
+            var modelLenght = optimizedDataModels.count;
 
-//            for (var i = 0; i < modelLenght; i++) {
-//                var flightLength = optimizedDataModels.get(i).flights.count
+            var exited = false
 
-//                for (var j = 0; j < flightLength; j++) {
-//                    var currentFlights = optimizedDataModels.get(i).flights
+            var optimizedData = []
+            var minTimeDeparture = 2350
 
-//                    if (flightData.name === currentFlights.get(j).name) {
-//                        if (optimizedDataModels.get(i).aircraft === aircraft) {
-//                            if (currentFlights.get(j).timeDeparture === Number(timeDeparture) &&
-//                                    currentFlights.get(j).timeArrival === Number(timeArrival)) {
-//                                optimizedDataModels.get(i).flights.set(j, { "name": flightData.name,
-//                                                                            "captain": flightData.CAP,
-//                                                                            "coPilot": flightData.FO,
+            var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
+            var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
 
-//                                                                            "cabinManager": flightData.CM,
-//                                                                            "cabinAgent1": flightData.CA1,
-//                                                                            "cabinAgent2": flightData.CA2,
-//                                                                            "cabinAgent3": flightData.CA3,
+            for (var i = 0; i < optimizedDataModels.count; i++) {
+                for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                    if (optimizedDataModels.get(i).flights.get(j).name !== "" &&
+                         UnitConverter.compareString(optimizedDataModels.get(i).flights.get(j).newAircraft, aircraft)) {
+                        optimizedData.push(optimizedDataModels.get(i).flights.get(j))
+                    }
+                }
+            }
 
-//                                                                            "departure": flightData.DEP,
-//                                                                            "arrival": flightData.ARR,
+            for (var i = 0; i < optimizedData.length; i++) {
+                if (minTimeDeparture > Number(optimizedData[i].timeDeparture)) {
+                    minTimeDeparture = Number(optimizedData[i].timeDeparture)
+                }
+            }
 
-//                                                                            "timeDeparture": flightData.TED,
-//                                                                            "timeArrival": flightData.TEA,
+            for (var i = 0; i < modelLenght; i++) {
+                var flightLength = optimizedDataModels.get(i).flights.count
 
-//                                                                            "newAircraft": flightData.AC,
-//                                                                            "oldAircraft": flightData.ACO } )
-//                            } else {
-//                                UnitConverter.updateFlight(optimizedDataModels, flightData, i, j)
-//                            }
-//                        } else {
-//                            var aircraftExisted = false
+                for (var j = 0; j < flightLength; j++) {
+                    var currentFlights = optimizedDataModels.get(i).flights
 
-//                            for (var k = 0; k < modelLenght; k++) {
-//                                if (optimizedDataModels.get(k).aircraft === aircraft) {
-//                                    aircraftExisted = true
+                    if (UnitConverter.compareString(flightData.name, currentFlights.get(j).name)) {
+                        if (UnitConverter.compareString(optimizedDataModels.get(i).aircraft, aircraft)) {
+                            if (currentFlights.get(j).timeDeparture === Number(timeDeparture) &&
+                                    currentFlights.get(j).timeArrival === Number(timeArrival)) {
+                                optimizedDataModels.get(i).flights.set(j, { "name": flightData.name,
+                                                                            "captain": flightData.CAP,
+                                                                            "coPilot": flightData.FO,
 
-//                                    var success = UnitConverter.insertFlight(optimizedDataModels, flightData, k)
+                                                                            "cabinManager": flightData.CM,
+                                                                            "cabinAgent1": flightData.CA1,
+                                                                            "cabinAgent2": flightData.CA2,
+                                                                            "cabinAgent3": flightData.CA3,
 
-//                                    optimizedDataModels.get(i).flights.set(j, { "name": "",
-//                                                                                "captain": "",
-//                                                                                "coPilot": "",
+                                                                            "departure": flightData.DEP,
+                                                                            "arrival": flightData.ARR,
 
-//                                                                                "cabinManager": "",
-//                                                                                "cabinAgent1": "",
-//                                                                                "cabinAgent2": "",
-//                                                                                "cabinAgent3": "",
+                                                                            "timeDeparture": flightData.TED,
+                                                                            "timeArrival": flightData.TEA,
 
-//                                                                                "departure": "",
-//                                                                                "arrival": "",
+                                                                            "newAircraft": flightData.AC,
+                                                                            "oldAircraft": flightData.ACO } )
+                            } else {
+                                //Handle time changed
+                                if (Number(currentFlights.get(j).timeDeparture) === Number(tea)) {
+                                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
+                                    return
+                                }
 
-//                                                                                "timeDeparture": Number(timeDeparture),
-//                                                                                "timeArrival": Number(timeArrival),
+                                UnitConverter.updateFlight(optimizedDataModels, flightData, i, j)
+                            }
+                        } else {
+                            var aircraftExisted = false
 
-//                                                                                "newAircraft": "",
-//                                                                                "oldAircraft": "" } )
+                            for (var k = 0; k < modelLenght; k++) {
 
-//                                    var array = UnitConverter.convertAircraftModelToArray(optimizedDataModels)
+                                if (Number(tea) > Number(minTimeDeparture)) {
+                                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
+                                    return
+                                }
 
-//                                    updateScreen(currentInputDatas, currentDataModels, array, optimizedDataModels)
+                                if (UnitConverter.compareString(optimizedDataModels.get(k).aircraft, aircraft)) {
 
-//                                    break
-//                                }
-//                            }
+                                    aircraftExisted = true
 
-//                            if (!aircraftExisted) {
-//                                messages.displayMessage(aircraft + qsTr(" not existed.") + translator.tr)
+                                    var currentAircraft = {   "name": "", "captain": "", "coPilot": "", "cabinManager": "",
+                                                              "cabinAgent1": "", "cabinAgent2": "", "cabinAgent3": "",
+                                                              "departure": "", "arrival": "", "newAircraft": "",
+                                                              "oldAircraft": "", "status": FlightObject.Unchanged }
 
-//                                return
-//                            }
-//                        }
+                                    if (!UnitConverter.compareString(optimizedDataModels.get(i).aircraft, aircraft)) {
+                                        optimizedDataModels.get(i).flights.set(j, currentAircraft)
+                                    }
 
-//                        break
-//                    }
-//                }
-//            }
+                                    appendModel(optimizedDataModels, flightData, flightData.AC)
+
+                                    break
+                                }
+                            }
+
+                            if (!aircraftExisted) {
+                                messages.displayMessage(aircraft + qsTr(" not existed.") + translator.tr)
+
+                                return
+                            }
+                        }
+
+                        exited = true
+                        break
+                    }
+                }
+
+                if (exited) {
+                    break
+                }
+            }
 
             messages.displayMessage(flightNumber + qsTr(" was updated.") + translator.tr)
         }
@@ -187,7 +215,7 @@ Item {
             var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
             var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
 
-            var insertData  = { "name": isInserted ? flightNumber : flightCode, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
+            var insertData  = { "name": flightNumber, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
                            "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
                            "ACO": "", "TED": ted, "TEA": tea, "status": 0 }
 
@@ -210,7 +238,9 @@ Item {
         pageSize.height: 400
 
         onFinished: {
-            messages.displayMessage(qsTr("Print PDF successfull") + translator.tr)
+            if (success) {
+                messages.displayMessage(qsTr("Print PDF successfull") + translator.tr)
+            }
         }
     }
 
@@ -302,7 +332,7 @@ Item {
             }
         }
 
-        homeIostreams.writeObject("c", currentData, "homepage", path)
+        homeIostreams.writeObject("inputFlights", currentData, "homepage", path)
         homeIostreams.writeObject("resultFlights", optimizedData, "homepage", path)
 
         homeIostreams.write("isSplitScreen", isSplitScheduleView ? "true" : "false", "homepage", path)
@@ -369,6 +399,13 @@ Item {
         indexColumn = 0;
 
         for (var i = 0; i < currentData.length; i++) {
+            for (var j = 0; j < optimizedData.length; j++) {
+                if (currentData[i].name === optimizedData[j].name) {
+                    currentData[i].status = optimizedData[j].status
+                    break
+                }
+            }
+
             appendModel(currentModel, currentData[i], currentData[i].AC)
         }
 
@@ -388,7 +425,7 @@ Item {
             var lenght = data.count
 
             for (var i = 0; i < lenght; i++) {
-                if (data.get(i).aircraft === value) {
+                if (data.get(i).aircraft.toUpperCase() === value.toUpperCase()) {
                     return [true, i];
                 }
             }
@@ -595,9 +632,15 @@ Item {
             settingVisible: false
 
             onPrinted: {
-                printer.beginPrinting();
-                printer.printWindow();
-                printer.endPrinting();
+                for (var i = 0; i < optimizedDataModels.count; i++) {
+                    for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                        if (optimizedDataModels.get(i).flights.get(j).name !== "") {
+                            optimizedModels.push(optimizedDataModels.get(i).flights.get(j))
+                        }
+                    }
+                }
+
+                printer.printerPDF(optimizedModels)
             }
         }
 
@@ -779,7 +822,11 @@ Item {
                                             depAirport: departure
                                             arrAirport: arrival
 
-                                            color: "#444444"
+                                            color: status === FlightObject.OnlyChangedAirplane ? Settings.colorChangedAirplane :
+                                                                                          status === FlightObject.OnlyChangedTime ? Settings.colorChangedTime :
+                                                                                          status === FlightObject.BothChangedAirplaneAndTime ? Settings.colorChangedAirplaneAndTime : Settings.colorUnchanged
+
+                                            //color: "#444444"
 
                                             flightLenght: listViewData.headerItem.itemAt(column).width * (timeArrival - timeDeparture) / 60
 

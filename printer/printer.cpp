@@ -8,6 +8,9 @@
 #include "pagesize.h"
 #include "quickitempainter.h"
 
+static const QString footer("This is the\nfooter\ntext");
+static const QString fontfamily("Times New Roman");
+
 Printer::Printer(QQuickItem *parent):
     QQuickItem(parent), _window(0), _printer(0), _painter(0), _mode(GRAB_IMAGE), _pageSize(new PageSize), _miniPage(new MiniPage), _orientation(Portrait), _itemPainter(0), _debugVerbose(false)
 {
@@ -23,8 +26,91 @@ Printer::~Printer()
     endPrinting();
 }
 
+int Printer::renderHeader()
+{
+    QFont font(fontfamily, 50, 50);
+    font.setBold(true);
+
+    QPen penHText(QColor("#00aaff"));
+
+    _painter->save();
+    _painter->resetTransform();
+
+    _painter->setFont(font);
+    _painter->setPen(penHText);
+
+    QString header = tr("VAA Airline Schedules");
+
+    QRect boundingRect = _painter->boundingRect(_painter->window(), Qt::AlignHCenter | Qt::TextWordWrap, header);
+    _painter->drawText(boundingRect, Qt::AlignHCenter | Qt::TextWordWrap, header);
+    _painter->restore();
+
+    return boundingRect.height() + 20;
+}
+
+int Printer::renderFooter()
+{
+    _painter->save();
+    _painter->resetTransform();
+
+    _painter->setFont(QFont(fontfamily, 12));
+
+    QRect boundingRect = _painter->boundingRect(_painter->window(), Qt::AlignJustify | Qt::TextWordWrap, footer);
+    _painter->translate(0, _painter->window().height() - boundingRect.height() - 5);
+
+    _painter->drawText(boundingRect, Qt::AlignJustify | Qt::TextWordWrap, footer);
+    _painter->restore();
+
+    return boundingRect.height();
+}
+
+int Printer::renderTableTitle(int position)
+{
+    _painter->save();
+    _painter->resetTransform();
+    _painter->setFont(QFont(fontfamily, 18));
+
+    QRect boundingRect = _painter->boundingRect(_painter->window(), Qt::AlignJustify | Qt::TextWordWrap, "FN");
+    _painter->translate(0, position);
+
+    QTextDocument td;
+    td.setHtml("<table style=\"width: 100%;border: 1px solid black;border-collapse: collapse\">"
+               "<tr style=\"background-color: #00aaff;color: white;\">"
+                 "<th>FN</th>"
+                 "<th>Crew1</th>"
+                 "<th>Crew2</th>"
+                 "<th>Crew3</th>"
+                 "<th>Crew4</th>"
+                 "<th>Crew5</th>"
+                 "<th>Crew6</th>"
+                 "<th>DEP</th>"
+                 "<th>ARR</th>"
+                 "<th>TD</th> "
+                 "<th>TA</th> "
+                 "<th>AC</th> "
+                 "<th>ACo</th>"
+               "</tr>"
+             "</table>");
+    td.drawContents(_painter);
+
+    _painter->restore();
+    return boundingRect.height();
+}
+
 void Printer::beginPrinting()
 {
+    QString fileName = QFileDialog::getSaveFileName(0, tr("Export PDF"), QString(), tr("PDF File (*.pdf)"));
+
+    if (fileName.isEmpty()) {
+        return;
+    }
+
+    if (!fileName.endsWith(".pdf", Qt::CaseInsensitive)) {
+        fileName.append(".pdf");
+    }
+
+    _filename = fileName;
+
     if (!_window) {
         qWarning() << "Window is not set, cannot print!";
         return;
@@ -55,6 +141,7 @@ void Printer::beginPrinting()
     const int miniPageWidth  = _printer->pageRect().width() / _miniPage->columns();
     const int miniPageHeight = _printer->pageRect().height() / _miniPage->rows();
     const int miniPageMargin = _miniPage->margin();
+
     const QMargins miniPageMargins(miniPageMargin, miniPageMargin, miniPageMargin, miniPageMargin);
     _miniPages.clear();
 
@@ -172,6 +259,106 @@ void Printer::endPrinting()
         delete _printer;
         _printer = 0;
     }
+}
+
+void Printer::printerPDF(QList<QObject *> data)
+{
+    QString fileName = QFileDialog::getSaveFileName((QWidget* )0, tr("Export PDF"), QString(), tr("PDF File (*.pdf)"));
+
+    if (fileName.isEmpty()) {
+        qWarning() << "Printing not started";
+
+        return;
+    }
+
+    if (!fileName.endsWith(".pdf", Qt::CaseInsensitive)) {
+        fileName.append(".pdf");
+    }
+
+    QPrinter printer(QPrinter::PrinterResolution);
+    printer.setOutputFormat(QPrinter::PdfFormat);
+    printer.setPageMargins(35, 10, 20, 10, QPrinter::Millimeter);
+    printer.setPaperSize(QPrinter::A4);
+    printer.setOrientation(QPrinter::Landscape);
+    printer.setOutputFileName(fileName);
+
+    QTextDocument doc;
+
+    QStringList datas;
+
+    QString currentAircraft = "";
+    QString color = "";
+    bool isAircraftChanged = false;
+
+    for(int i = 0; i < data.length(); i++) {
+        if (data[i]->property("newAircraft").toString() != currentAircraft) {
+            currentAircraft = data[i]->property("newAircraft").toString();
+            isAircraftChanged = !isAircraftChanged;
+
+            if (!isAircraftChanged) {
+                color = "#FFFFCC";
+            } else {
+                color = "#C6EFCE";
+            }
+        }
+
+        QString rowData = "<tr style=\"background-color: " + color + ";color: #000000;\">"
+                           "<td>"+ data[i]->property("name").toString() +"</td>"
+                           "<td>"+ data[i]->property("captain").toString() +"</td>"
+                           "<td>"+ data[i]->property("coPilot").toString() +"</td>"
+                           "<td>"+ data[i]->property("cabinManager").toString() +"</td>"
+                           "<td>"+ data[i]->property("cabinAgent1").toString() +"</td>"
+                           "<td>"+ data[i]->property("cabinAgent2").toString() +"</td>"
+                           "<td>"+ data[i]->property("cabinAgent3").toString() +"</td>"
+                           "<td>"+ data[i]->property("departure").toString() +"</td>"
+                           "<td>"+ data[i]->property("arrival").toString() +"</td>"
+                           "<td>"+ data[i]->property("timeDeparture").toString() +"</td>"
+                           "<td>"+ data[i]->property("timeArrival").toString() +"</td>"
+                           "<td>"+ data[i]->property("newAircraft").toString() +"</td>"
+                           "<td>"+ data[i]->property("oldAircraft").toString() +"</td>"
+                         "</tr>";
+
+        datas.append(rowData);
+    }
+
+    QString footer = "<div style=\"position: relative;\">"
+                         "<div align=right style=\"position: absolute;\">"
+                             "<a href=\"www.vaa.edu.vn\">www.vaa.edu.vn</a>"
+                          "</div>"
+                          "<div align=left>" +
+                             tr("Vietnam Aviation Academy") +
+                          "<br></div>"
+                     "</div>" +
+                     tr("No. 104, Nguyen Van Troi Street, Phu Nhuan District, Ho Chi Minh City, Vietnam") + "<br>" +
+                     tr("Tel") + ": 028.38.422.199 – " + tr("Email") + ":<a href=\"mailto:info@vaa.edu.vn\"> info@vaa.edu.vn</a><br>";
+
+    doc.setHtml(
+              "<table style=\"width: 100%;border: 1px solid black;border-collapse: collapse\">"
+                  "<caption style=\"color: #00aaff; font-size: 50px; font-weight: 600; text-align:center;\">" + tr("VAA Airline Schedules") + "</caption>"
+                  "<tr style=\"background-color: #00aaff;color: white;\">"
+                    "<th>FN</th>"
+                    "<th>Crew1</th>"
+                    "<th>Crew2</th>"
+                    "<th>Crew3</th>"
+                    "<th>Crew4</th>"
+                    "<th>Crew5</th>"
+                    "<th>Crew6</th>"
+                    "<th>DEP</th>"
+                    "<th>ARR</th>"
+                    "<th>TD</th> "
+                    "<th>TA</th> "
+                    "<th>AC</th> "
+                    "<th>ACo</th>"
+                  "</tr>"
+               + datas.join(" ") +
+               "</table><hr>"
+                + footer
+                );
+
+    doc.setPageSize(printer.pageRect().size()); // This is necessary if you want to hide the page number
+    doc.print(&printer);
+
+    emit finished(true);
 }
 
 QQuickWindow *Printer::window() const

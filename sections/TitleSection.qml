@@ -100,16 +100,17 @@ Frame {
             Layout.preferredHeight: AppTheme.tscale(42)
 
             contentItem: Image {
+                id: iconBack
                 fillMode: Image.PreserveAspectFit
                 horizontalAlignment: Image.AlignHCenter
                 verticalAlignment: Image.AlignVCenter
                 source: backIconSource
+            }
 
-                ColorOverlay {
-                    anchors.fill: parent
-                    source: parent
-                    color: "#000000"
-                }
+            ColorOverlay {
+                anchors.fill: iconBack
+                source: iconBack
+                color: "#000000"
             }
 
             MouseArea {

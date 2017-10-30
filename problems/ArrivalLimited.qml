@@ -298,12 +298,14 @@ Frame {
                     Row {
                         anchors.centerIn: parent
 
+                        spacing: AppTheme.hscale(8)
+
                         Label {
                             text: name
                             font.pointSize: AppTheme.textSizeText
 
                             Layout.fillWidth: true
-                            width: AppTheme.hscale(280)
+                            width: AppTheme.hscale(265)
 
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignHCenter
