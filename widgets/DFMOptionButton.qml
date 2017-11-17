@@ -65,14 +65,6 @@ Item {
                 verticalAlignment: Image.AlignTop
                 anchors.horizontalCenter: parent.horizontalCenter
             }
-
-            ColorOverlay {
-                id: colorOverlay
-                visible: container.isActive
-                anchors.fill: contentImage
-                source: contentImage
-                color: "#00aaff"
-            }
         }
 
         Label {

@@ -27,7 +27,6 @@ import QtQuick.Controls.Styles 1.4
 import "../theme"
 
 Frame {
-
     property var dayDelayModel: dayDelayModel
 
     Layout.fillWidth: true

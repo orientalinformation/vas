@@ -285,7 +285,7 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    validator: IntValidator { bottom:0; top: 2359}
+                                    validator: IntValidator { bottom:0; top: 4759 }
 
                                     readOnly: isReadOnly
 
@@ -313,7 +313,7 @@ Dialog {
 
                                     font.pointSize: AppTheme.textSizeText
 
-                                    validator: IntValidator { bottom:0; top: 2359}
+                                    validator: IntValidator { bottom:0; top: 4759 }
 
                                     readOnly: isReadOnly
 
@@ -588,27 +588,34 @@ Dialog {
                 }
 
                 var optimizedData = []
-                var dataTea = []
-                var maxTea = 0
-                var positionDep = 0
-                var positionArr = 0
+
                 var maxTimeArrival = 0
                 var minTimeArrival = 2350
-                var isTea = false
-                var isGroundTime = false
-                var isEmplty = false
+
+                var checkTed = true
+                var checkTea = true
+                var checkDep = true
+                var checkArr = true
+
+                var checkGroundtime = true
 
                 var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
                 var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
 
                 for (var i = 0; i < optimizedDataModels.count; i++) {
                     for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+                        if (UnitConverter.compareString(optimizedDataModels.get(i).flights.get(j).name, flightNumber) && isInserted) {
+                             messages.displayMessage(qsTr("The flight number was existed.") + translator.tr)
+
+                            return
+                        }
+
                         if (optimizedDataModels.get(i).flights.get(j).name !== "" &&
                                 UnitConverter.compareString(optimizedDataModels.get(i).flights.get(j).newAircraft, aircraft)) {
                             if (UnitConverter.compareString(optimizedDataModels.get(i).flights.get(j).name, flightNumber)) {
                                 var flightData = { "name": flightNumber, "captain": captain, "coPilot": coPilot, "cabinManager": cabinManager, "cabinAgent1": cabinAgent1,
                                                "cabinAgent2": cabinAgent2, "cabinAgent3": cabinAgent3, "departure": departure, "arrival": arrival, "aircraft": aircraft ,
-                                               "oldAircraft": aircraftOld, "timeDeparture": timeDeparture, "timeArrival": timeArrival, "status": 0 }
+                                               "oldAircraft": aircraftOld, "timeDeparture": Number(ted), "timeArrival": Number(tea), "status": 0 }
 
                                 optimizedData.push(flightData)
                             } else {
@@ -641,97 +648,127 @@ Dialog {
                     }
                 }
 
-                for (var i = 0; i < optimizedData.length; i++) {
-                    if (Number(optimizedData[i].timeDeparture) === ted) {
-                        messages.displayMessage(qsTr("The departure time is invalid.") + translator.tr)
-                        return
-                    }
+                var optimizedLength = optimizedData.length
 
-                    if (Number(optimizedData[i].timeArrival) === ted) {
-                        messages.displayMessage(qsTr("The departure time is invalid.") + translator.tr)
-                        return
-                    }
+                for (var i = optimizedLength - 1; i >= 0; i--) {
+                    if (Number(ted) > optimizedData[i].timeDeparture) {
+                        if (Number(ted) < Number(optimizedData[i].timeArrival)) {
+                            checkTed = false
 
-                    if (Number(ted) > (Number(optimizedData[i].timeArrival))) {
-                        dataTea.push(optimizedData[i])
-                        isTea  = true
-                        var max = Number(optimizedData[i].timeArrival);
-                        if (maxTimeArrival !== max) {
-                            positionDep = optimizedData[i + 1].timeDeparture
-                            isEmplty = true
-                            isGroundTime = true
+                            break
+                        } else if (Number(ted) < Number(optimizedData[i].timeArrival) + Settings.groundTime) {
+                            checkGroundtime = false
+
+                            break
                         }
 
-                        if (minTimeArrival === max) {
-                            positionArr = optimizedData[i].timeArrival
-                            isGroundTime = true
-                        } else {
-                            positionArr = optimizedData[i - 1].timeArrival
-                            isGroundTime = true
+                        if (!UnitConverter.compareString(optimizedData[i].arrival, departure)) {
+                            checkDep = false
+
+                            break
                         }
-                    } else {
-                        isTea = false
-                        if (Number(tea) > Number(optimizedData[i].timeArrival)) {
-                            if (optimizedData.length === 1) {
-                                positionArr = optimizedData[i].timeArrival
-                            } else {
-                                if (minTimeArrival === Number(optimizedData[i].timeArrival)) {
-                                    positionArr = optimizedData[i].timeArrival
-                                } else {
-                                    positionArr = optimizedData[i - 1].timeArrival
-                                }
+
+                        if ((i + 1) < optimizedLength && isInserted) {
+                            if (!UnitConverter.compareString(optimizedData[i + 1].departure, arrival)) {
+                                checkArr = false
+
+                                break
                             }
                         }
+
+                        if ((i + 2) < optimizedLength) {
+                            if (Number(tea) > Number(optimizedData[i + 2].timeDeparture)) {
+                                checkTea = false
+
+                                break
+                            } else if (Number(tea) > Number(optimizedData[i + 2].timeDeparture) - Settings.groundTime) {
+                                checkGroundtime = false
+
+                                break
+                            }
+
+                            if (!UnitConverter.compareString(optimizedData[i + 2].departure, arrival)) {
+                                checkArr = false
+
+                                break
+                            }
+                        }
+                        break
+                    }
+
+                    if (Number(ted) < optimizedData[0].timeDeparture) {
+                        if (Number(tea) > optimizedData[0].timeDeparture) {
+                            checkTea = false
+
+                            break
+                        } else if (Number(tea) > optimizedData[0].timeDeparture - Settings.groundTime) {
+                            checkGroundtime = false
+
+                            break
+                        }
+
+                        if (!UnitConverter.compareString(arrival, optimizedData[0].departure)) {
+                            checkArr = false
+
+                            break
+                        }
+                    } else if (Number(ted) === optimizedData[0].timeDeparture && optimizedLength > 1) {
+                        if (Number(tea) > optimizedData[1].timeDeparture) {
+                            checkTea = false
+
+                            break
+                        } else if (Number(tea) > optimizedData[1].timeDeparture - Settings.groundTime) {
+                            checkGroundtime = false
+
+                            break
+                        }
+
+                        if (!UnitConverter.compareString(arrival, optimizedData[1].departure)) {
+                            checkArr = false
+
+                            break
+                        }
                     }
                 }
 
-                for (var i = 0; i < dataTea.length; i++) {
-                    if (Number(dataTea[i].timeArrival) > maxTea) {
-                        maxTea = Number(dataTea[i].timeArrival);
-                    }
-                }
-
-                if ((maxTimeArrival !== maxTea) && isTea) {
-                    positionDep = optimizedData[i + 1].timeDeparture
-                    isEmplty = true
-                    isGroundTime = true
-                }
-
-                if (maxTimeArrival < ted) {
-                    isGroundTime = false
-                    isEmplty = false
-                }
-
-                if (((ted - positionArr) < Settings.groundTime) && isGroundTime) {
-                    messages.displayMessage(qsTr("The departure time is invalid ground time.") + translator.tr)
-                    return
-                }
-
-                if (((positionDep - Number(tea)) < Settings.groundTime) && isGroundTime) {
-                    messages.displayMessage(qsTr("The arrival time is invalid ground time.") + translator.tr)
-                    return
-                }
-
-
-                if ((Number(tea) >= (Number(positionDep))) && isEmplty) {
-                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
-                    return
-                }
-
-                if (Number(ted) < (Number(positionArr))) {
+                if (!checkTed) {
                     messages.displayMessage(qsTr("The departure time is invalid.") + translator.tr)
+
                     return
                 }
 
-                isEmplty = false
+                if (!checkDep) {
 
-                close();
+                    messages.displayMessage(qsTr("The departure is invalid.") + translator.tr)
+
+                    return
+                }
+
+                if (!checkGroundtime) {
+                    messages.displayMessage(qsTr("The ground time is not enough.") + translator.tr)
+
+                    return
+                }
+
+                if (!checkTea) {
+                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
+
+                    return
+                }
+
+                if (!checkArr) {
+                    messages.displayMessage(qsTr("The arrival is invalid.") + translator.tr)
+
+                    return
+                }
+
+                close()
 
                 var flightData = []
 
-                flightData = { "name": flightNumber, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
-                               "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
-                               "ACO": aircraftOld, "TED": ted, "TEA": tea, "status": 0 }
+                flightData = { "name": flightNumber.toUpperCase(), "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
+                               "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure.toUpperCase(), "ARR": arrival.toUpperCase(),
+                               "AC": aircraft.toUpperCase(), "ACO": aircraftOld.toUpperCase(), "TED": ted, "TEA": tea, "status": 0 }
 
                 flightDialog.updated(flightData, isInserted)
             }

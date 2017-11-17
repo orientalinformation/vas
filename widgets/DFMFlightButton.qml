@@ -54,7 +54,7 @@ Item {
     Label {
         id: depAirport
 
-        font.pointSize: AppTheme.textSizeTiny
+        font.pointSize: AppTheme.textSizeTinySmall
         font.capitalization: Font.AllUppercase
 
         anchors.right: flightNumber.left
@@ -67,7 +67,7 @@ Item {
 
     Label {
         id: flightNumber
-        font.pointSize: AppTheme.textSizeMenu
+        font.pointSize: AppTheme.textSizeMenuSmall
         anchors.centerIn: parent
         padding: AppTheme.tscale(3)
         horizontalAlignment: Text.AlignHCenter
@@ -114,7 +114,7 @@ Item {
     Label {
         id: arrAirport
 
-        font.pointSize: AppTheme.textSizeTiny
+        font.pointSize: AppTheme.textSizeTinySmall
         font.capitalization: Font.AllUppercase
 
         anchors.left: flightNumber.right

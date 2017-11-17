@@ -25,6 +25,8 @@ import QtQuick.Layouts 1.1
 import QtQuick.Extras 1.4
 import QtQuick.Window 2.2
 
+import Setting 1.0
+
 import "../theme"
 
 import "../sections"
@@ -36,7 +38,7 @@ Dialog {
     focus: true
     modal: true
 
-    width: _mainWindow.width / 4 * 0.8
+    width: _mainWindow.width / 4 * 0.9
     height: _mainWindow.height / 5 * 0.8
 
     x: (_mainWindow.width - width) / 2
@@ -45,6 +47,11 @@ Dialog {
     property int currentLanguage: 0
 
     padding: AppTheme.screenPadding
+
+    Setting {
+        id: setting
+
+    }
 
     ButtonGroup {
         id: radioGroup
@@ -80,6 +87,8 @@ Dialog {
                         currentLanguage = index
 
                         translator.selectLanguage(model.value)
+
+                        setting.writeSetting("language", model.value)
 
                         languageDialog.close()
                     }

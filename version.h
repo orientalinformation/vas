@@ -1,15 +1,15 @@
 #ifndef VERSION_H
 #define VERSION_H
 
-#define APP_VERSION_SHORT            "1.0.2"
-#define RELEASE_CODE                2
-#define BUILD_ID                    "53"
+#define APP_VERSION_SHORT            "1.1.1"
+#define RELEASE_CODE                4
+#define BUILD_ID                    "60"
 
-#define VER_FILEVERSION             1,0,2
-#define VER_FILEVERSION_STR         "1.0.2\0"
+#define VER_FILEVERSION             1,1,1
+#define VER_FILEVERSION_STR         "1.1.1\0"
 
-#define VER_PRODUCTVERSION          1,0,2
-#define VER_PRODUCTVERSION_STR      "1.0\0"
+#define VER_PRODUCTVERSION          1,1,1
+#define VER_PRODUCTVERSION_STR      "1.1\0"
 
 #define VER_COMPANYNAME_STR         "Vietnam Aviation Academy"
 #define VER_FILEDESCRIPTION_STR     "VAA Airline Schedules Application"

@@ -61,38 +61,38 @@ QList<QObject *> CSVReader::read(bool isSingle)
                     if (lineContent.size() >= 12 && lineContent.first() != "") {
                         FlightObject *flight = new FlightObject();
 
-                        flight->setName(lineContent[0]);
+                        flight->setName(lineContent[0].trimmed());
 
-                        flight->setCaptain(lineContent[1]);
-                        flight->setCoPilot(lineContent[2]);
+                        flight->setCaptain(lineContent[1].trimmed());
+                        flight->setCoPilot(lineContent[2].trimmed());
 
-                        flight->setCabinManager(lineContent[3]);
-                        flight->setCabinAgent1(lineContent[4]);
-                        flight->setCabinAgent2(lineContent[5]);
-                        flight->setCabinAgent3(lineContent[6]);
+                        flight->setCabinManager(lineContent[3].trimmed());
+                        flight->setCabinAgent1(lineContent[4].trimmed());
+                        flight->setCabinAgent2(lineContent[5].trimmed());
+                        flight->setCabinAgent3(lineContent[6].trimmed());
 
-                        flight->setDeparture(lineContent[7]);
-                        flight->setArrival(lineContent[8]);
+                        flight->setDeparture(lineContent[7].trimmed());
+                        flight->setArrival(lineContent[8].trimmed());
 
-                        int timeDeparture = lineContent[9].toInt();
+                        int timeDeparture = lineContent[9].trimmed().toInt();
                         timeDeparture = timeDeparture / 100 * 60 + timeDeparture % 100;
 
-                        int timeArrival = lineContent[10].toInt();
+                        int timeArrival = lineContent[10].trimmed().toInt();
                         timeArrival = timeArrival / 100 * 60 + timeArrival % 100;
 
                         flight->setTimeDeparture(timeDeparture);
                         flight->setTimeArrival(timeArrival);
 
-                        flight->setNewAircraft(lineContent[11]);
+                        flight->setNewAircraft(lineContent[11].trimmed());
 
                         if (lineContent.size() >= 13) {
-                            flight->setOldAircraft(lineContent[12]);
+                            flight->setOldAircraft(lineContent[12].trimmed());
                         } else {
                             flight->setOldAircraft("");
                         }
 
                         if (lineContent.size() >= 14) {
-                            int status = lineContent[13].toInt();
+                            int status = lineContent[13].trimmed().toInt();
 
                             if (status == 1) {
                                 flight->setStatus(FlightObject::OnlyChangedAirplane);
@@ -113,34 +113,34 @@ QList<QObject *> CSVReader::read(bool isSingle)
                     if (lineContent.size() >= 7 && lineContent.first() != "") {
                         FlightObject *flight = new FlightObject();
 
-                        flight->setName(lineContent[0]);
+                        flight->setName(lineContent[0].trimmed());
 
-                        flight->setCaptain("");
-                        flight->setCoPilot("");
+                        flight->setCaptain(lineContent[6].trimmed());
+                        flight->setCoPilot(lineContent[6].trimmed());
 
-                        flight->setCabinManager("");
-                        flight->setCabinAgent1("");
-                        flight->setCabinAgent2("");
-                        flight->setCabinAgent3("");
+                        flight->setCabinManager(lineContent[6].trimmed());
+                        flight->setCabinAgent1(lineContent[6].trimmed());
+                        flight->setCabinAgent2(lineContent[6].trimmed());
+                        flight->setCabinAgent3(lineContent[6].trimmed());
 
-                        flight->setDeparture(lineContent[2]);
-                        flight->setArrival(lineContent[3]);
+                        flight->setDeparture(lineContent[2].trimmed());
+                        flight->setArrival(lineContent[3].trimmed());
 
-                        int timeDeparture = lineContent[4].toInt();
+                        int timeDeparture = lineContent[4].trimmed().toInt();
                         timeDeparture = timeDeparture / 100 * 60 + timeDeparture % 100;
 
-                        int timeArrival = lineContent[5].toInt();
+                        int timeArrival = lineContent[5].trimmed().toInt();
                         timeArrival = timeArrival / 100 * 60 + timeArrival % 100;
 
                         flight->setTimeDeparture(timeDeparture);
                         flight->setTimeArrival(timeArrival);
 
-                        flight->setNewAircraft(lineContent[1]);
+                        flight->setNewAircraft(lineContent[1].trimmed());
 
                         flight->setOldAircraft("");
 
                         if (lineContent.size() >= 8) {
-                            int status = lineContent[7].toInt();
+                            int status = lineContent[7].trimmed().toInt();
 
                             if (status == 1) {
                                 flight->setStatus(FlightObject::OnlyChangedAirplane);
@@ -162,8 +162,8 @@ QList<QObject *> CSVReader::read(bool isSingle)
                 if (lineContent.size() >= 2 && lineContent.first() != "") {
                     AircraftObject *aircraft = new AircraftObject();
 
-                    aircraft->setName(lineContent[0]);
-                    aircraft->setDeparture(lineContent[1]);
+                    aircraft->setName(lineContent[0].trimmed());
+                    aircraft->setDeparture(lineContent[1].trimmed());
 
                     data.append(aircraft);
                 }
@@ -171,10 +171,10 @@ QList<QObject *> CSVReader::read(bool isSingle)
                 if (lineContent.size() >= 4 && lineContent.first() != "") {
                     AirportObject *airport = new AirportObject();
 
-                    airport->setDeparture(lineContent[0]);
-                    airport->setArrival(lineContent[1]);
-                    airport->setTimeFlight(lineContent[2].toInt());
-                    airport->setFrequent(lineContent[3].toInt());
+                    airport->setDeparture(lineContent[0].trimmed());
+                    airport->setArrival(lineContent[1].trimmed());
+                    airport->setTimeFlight(lineContent[2].trimmed().toInt());
+                    airport->setFrequent(lineContent[3].trimmed().toInt());
 
                     data.append(airport);
                 }
@@ -269,10 +269,16 @@ QString CSVReader::write(QList<QObject *> data, QString path)
         out << "Fligt number, Full name captain, Full name FO, Full name CM, Full name CA, Full name CA, Full name CA,DEP,ARR,TD,TA,AC,ACo,STATUS" << endl;
 
         for (int i = 0; i < data.size(); i++) {
+            int ted = data[i]->property("timeDeparture").toInt();
+            int tea = data[i]->property("timeArrival").toInt();
+
+            ted = ((ted % (24 * 60)) - (ted % (24 * 60)) % 60) / 60 * 100 + (ted % (24 * 60)) % 60;
+            tea = ((tea % (24 * 60)) - (tea % (24 * 60)) % 60) / 60 * 100 + (tea % (24 * 60)) % 60;
+
             out << data[i]->property("name").toString() << "," << data[i]->property("captain").toString() << "," << data[i]->property("coPilot").toString() << ","
                 << data[i]->property("cabinManager").toString() << "," << data[i]->property("cabinAgent1").toString() << "," << data[i]->property("cabinAgent2").toString() << ","
                 << data[i]->property("cabinAgent3").toString() << "," << data[i]->property("departure").toString() << "," << data[i]->property("arrival").toString() << ","
-                << data[i]->property("timeDeparture").toString() << "," << data[i]->property("timeArrival").toString() << "," << data[i]->property("newAircraft").toString() << ","
+                << QString::number(ted) << "," << QString::number(tea) << "," << data[i]->property("newAircraft").toString() << ","
                 << data[i]->property("oldAircraft").toString() << "," << data[i]->property("status").toString() << endl;
         }
     } else {

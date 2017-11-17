@@ -28,6 +28,7 @@ import QtGraphicalEffects 1.0
 import QtQuick.Controls.Styles 1.4
 
 import IOStreams 1.0
+import Setting 1.0
 
 import "../theme"
 
@@ -44,6 +45,8 @@ Item {
     height: AppTheme.screenHeightSize
 
     property int parentIndex: Global.parentSettingIndex
+
+    signal newCase()
 
     signal open(var path)
 
@@ -65,6 +68,18 @@ Item {
 
     DFMBanner {
         id: messages
+    }
+
+    Setting {
+        id: setting
+    }
+
+    Component.onCompleted: {
+        var language = setting.readSetting("language")
+
+        Settings.language = language
+
+        translator.selectLanguage(language)
     }
 
     ColumnLayout {
@@ -201,7 +216,7 @@ Item {
                                 Layout.column: 1
 
                                 onTextChanged: {
-                                    Settings.groundTime = Number.fromLocaleString(Qt.locale("en_US"), text)
+                                    Settings.groundTime = Number(text)
                                 }
                             }
 
@@ -362,12 +377,12 @@ Item {
 
                                 horizontalAlignment: Text.AlignHCenter
 
-                                validator: IntValidator{ bottom: 1 }
+                                validator: IntValidator{ bottom: 0 }
 
                                 visible: btnDutyTime.checked
 
                                 onTextChanged: {
-                                    Settings.dutyTime = Number.fromLocaleString(Qt.locale("en_US"), text)
+                                    Settings.dutyTime = Number(text)
                                 }
 
                                 Layout.row: 3
@@ -387,6 +402,49 @@ Item {
                                 Layout.column: 2
                             }
 
+                            Label {
+                                id: lblSeparationTime
+
+                                text: qsTr("Separation time") + translator.tr
+                                font.pointSize: AppTheme.textSizeText
+                                verticalAlignment: Text.AlignVCenter
+
+                                Layout.row: 4
+                                Layout.column: 0
+                            }
+
+                            TextField  {
+                                id: txtSeparationTime
+
+                                Layout.fillWidth: true
+
+                                text: "5"
+                                font.pointSize: AppTheme.textSizeText
+                                placeholderText: qsTr("Enter separation time") + translator.tr
+
+                                horizontalAlignment: Text.AlignHCenter
+
+                                validator: IntValidator{ bottom: 0 }
+
+                                onTextChanged: {
+                                    Settings.separationTime = Number(text)
+                                }
+
+                                Layout.row: 4
+                                Layout.column: 1
+                            }
+
+                            Label {
+                                id: lblSeparationTimeUnit
+
+                                text: qsTr("minutes") + translator.tr
+                                font.pointSize: AppTheme.textSizeText
+                                verticalAlignment: Text.AlignVCenter
+
+                                Layout.row: 4
+                                Layout.column: 2
+                            }
+
                             Item {
                                 // spacer item
                                 Layout.fillWidth: true
@@ -397,7 +455,7 @@ Item {
                                     color: "transparent"
                                 } // to visualize the spacer
 
-                                Layout.row: 4
+                                Layout.row: 5
                                 Layout.column: 1
                             }
                         }
@@ -715,12 +773,24 @@ Item {
         }
     }
 
+    onNewCase: {
+        txtGroundTime.text = "35"
+        txtDutyTime.text = "660"
+        txtSeparationTime.text = "5"
+
+        btnDutyTime.checked = true
+
+        sectorSlider.value = 4
+    }
+
     onOpen: {
         var groundTime = settingsIostream.read("groundTime", "Settings", path)
         var dutyTime = settingsIostream.read("dutyTime", "Settings", path)
+        var separationTime = settingsIostream.read("separationTime", "Settings", path)
 
         txtGroundTime.text = groundTime === "" ? "35" : groundTime
         txtDutyTime.text = dutyTime === "" ? "660" : dutyTime
+        txtSeparationTime.text = separationTime === "" ? "5" : separationTime
 
         var isDuty = settingsIostream.read("dutyOption", "Settings", path)
 
@@ -731,16 +801,18 @@ Item {
     }
 
     onSave: {
-        settingsIostream.write("groundTime", Settings.groundTime, "Settings", path)
-        settingsIostream.write("dutyTime", Settings.dutyTime, "Settings", path)
-        settingsIostream.write("sector", Settings.sector ,"Settings", path)
+        settingsIostream.write("groundTime", Settings.groundTime.toString(), "Settings", path)
+        settingsIostream.write("dutyTime", Settings.dutyTime.toString(), "Settings", path)
+        settingsIostream.write("separationTime", Settings.separationTime.toString(), "Settings", path)
+        settingsIostream.write("sector", Settings.sector.toString() ,"Settings", path)
         settingsIostream.write("dutyOption", Settings.isDutyTime ? "true" : "false" ,"Settings", path)
     }
 
     onSaveAs: {
-        settingsIostream.write("groundTime", Settings.groundTime, "Settings", path)
-        settingsIostream.write("dutyTime", Settings.dutyTime, "Settings", path)
-        settingsIostream.write("sector", Settings.sector ,"Settings", path)
+        settingsIostream.write("groundTime", Settings.groundTime.toString(), "Settings", path)
+        settingsIostream.write("dutyTime", Settings.dutyTime.toString(), "Settings", path)
+        settingsIostream.write("separationTime", Settings.separationTime.toString(), "Settings", path)
+        settingsIostream.write("sector", Settings.sector.toString(), "Settings", path)
         settingsIostream.write("dutyOption", Settings.isDutyTime ? "true" : "false" ,"Settings", path)
     }
 }

@@ -26,6 +26,7 @@ var groundTime = 35
 var sector = 4
 var isDutyTime = true
 var dutyTime = 660
+var separationTime = 5
 
 var colorUnchanged = "#444444"
 var colorChangedTime = "#eab71a"

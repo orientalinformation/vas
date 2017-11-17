@@ -48,9 +48,13 @@ public:
 
     Q_INVOKABLE void write(QString key, QStringList datas, QString group = "", QString url = "");
 
-    Q_INVOKABLE void writeData( QString key, QList<QObject *> listData, QString group, QString url);
+    Q_INVOKABLE void writeData( QString key, QList<QObject *> listData, QString group = "", QString url = "");
 
     Q_INVOKABLE void writeObject(QString key, QList<QObject *> listData, QString group = "", QString url = "");
+
+    Q_INVOKABLE void writeObject2(QString key, QList<QObject *> listData, QString group = "", QString url = "");
+
+    Q_INVOKABLE void clear(QString url = "");
 
     QString source() const;
     void setSource(const QString &source);

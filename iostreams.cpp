@@ -188,6 +188,8 @@ void IOStreams::write(QString key, QString value, QString group, QString url)
     }
 }
 
+
+
 void IOStreams::write(QString key, QStringList datas, QString group, QString url)
 {
     _path = url;
@@ -299,6 +301,74 @@ void IOStreams::writeObject(QString key, QList<QObject *> listData, QString grou
         settings.endArray();
         settings.sync();
     }
+}
+
+void IOStreams::writeObject2(QString key, QList<QObject *> listData, QString group, QString url)
+{
+    _path = url;
+
+    if (_path.isEmpty()) {
+        _path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QString("/data/settings.vas");
+    } else {
+        if (_path.startsWith("file:///", Qt::CaseInsensitive)) {
+#ifdef Q_OS_WIN
+            _path = _path.replace("file:///", "");
+#else
+            _path = _path.replace("file://", "");
+#endif
+        }
+    }
+
+    if (!_path.endsWith(".vas", Qt::CaseInsensitive)) {
+        _path += ".vas";
+    }
+
+    QString split = ":";
+    QSettings settings(_path, QSettings::IniFormat);
+
+    if (listData.size() > 0) {
+        settings.beginWriteArray(group);
+
+        for (int i = 0; i < listData.size(); i++) {
+            settings.setArrayIndex(i);
+            settings.setValue(key, listData.at(i)->property("name").toString() + split +
+                              listData.at(i)->property("CAP").toString() + split + listData.at(i)->property("FO").toString() + split +
+                              listData.at(i)->property("CM").toString() + split + listData.at(i)->property("CA1").toString() + split +
+                              listData.at(i)->property("CA2").toString() + split + listData.at(i)->property("CA3").toString() + split +
+                              listData.at(i)->property("DEP").toString() + split + listData.at(i)->property("ARR").toString() + split +
+                              listData.at(i)->property("TED").toString() + split + listData.at(i)->property("TEA").toString() + split +
+                              listData.at(i)->property("AC").toString() + split + listData.at(i)->property("ACO").toString() + split +
+                              listData.at(i)->property("status").toString());
+        }
+
+        settings.endArray();
+        settings.sync();
+    }
+}
+
+void IOStreams::clear(QString url)
+{
+    _path = url;
+
+    if (_path.isEmpty()) {
+        _path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QString("/data/settings.vas");
+    } else {
+        if (_path.startsWith("file:///", Qt::CaseInsensitive)) {
+#ifdef Q_OS_WIN
+            _path = _path.replace("file:///", "");
+#else
+            _path = _path.replace("file://", "");
+#endif
+        }
+    }
+
+    if (!_path.endsWith(".vas", Qt::CaseInsensitive)) {
+        _path += ".vas";
+    }
+
+    QSettings settings(_path, QSettings::IniFormat);
+
+    settings.clear();
 }
 
 QString IOStreams::source() const

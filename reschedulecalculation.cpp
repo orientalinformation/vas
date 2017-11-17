@@ -64,7 +64,7 @@ bool RescheduleCalculation::isArrayContains(const QString value, QStringList arr
     return array.contains(value, Qt::CaseInsensitive);
 }
 
-bool RescheduleCalculation::sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs)
+bool RescheduleCalculation::sortByAircraftAndTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs)
 {
     if (lhs->aircraft < rhs->aircraft) {
         return true;
@@ -81,10 +81,11 @@ bool RescheduleCalculation::sortByTimeDeparture(FlightSchedule *lhs, FlightSched
 
 QList<FlightSchedule *> RescheduleCalculation::sortFlightSchedule(QList <FlightSchedule *> flightSchedule)
 {
-    int sizeflightSchedule = flightSchedule.size();
-     for (int i = 0; i < sizeflightSchedule - 1; i++) {
-         for (int j = 0; j < sizeflightSchedule; j++) {
-            if (sortByTimeDeparture(flightSchedule.at(i), flightSchedule.at(j))) {
+    int size = flightSchedule.size();
+
+     for (int i = 0; i < size; i++) {
+         for (int j = 0; j < size; j++) {
+            if (sortByAircraftAndTimeDeparture(flightSchedule.at(i), flightSchedule.at(j))) {
                 qSwap(flightSchedule[i], flightSchedule[j]);
             }
          }
@@ -469,7 +470,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
             }
 
             if (cf == 0) {
-                k = 1;
+                k = 0;
             }
 
             if (flight2.size() > 0) {
@@ -489,7 +490,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                 }
 
                 if (cf == 0) {
-                    k1 = 1;
+                    k1 = 0;
                 }
 
                 for (int i = 0; i < flight1.size(); i++) {
@@ -513,8 +514,8 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                 flightSchedule1->arrive = flight1[k].arrive;
                 flightSchedule1->departure = flight1[k].departure;
                 flightSchedule1->flightNumber = flight1[k].flightNumber;
-                flightSchedule1->timeArrive = aircraft[indexMinimum].timeDeparture + flight1[k].timeFly - groundTime;
                 flightSchedule1->timeDeparture = aircraft[indexMinimum].timeDeparture;
+                flightSchedule1->timeArrive = aircraft[indexMinimum].timeDeparture + flight1[k].timeFly - groundTime;
                 flightSchedule1->timeDelay = aircraft[indexMinimum].timeDeparture - flight1[k].timeDeparture;
                 flightSchedule.push_back(flightSchedule1);
 
@@ -527,6 +528,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                         break;
                     }
                 }
+                flight1.clear();
             } else {
                 n = n + 1;
 
@@ -550,6 +552,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                         break;
                     }
                 }
+                flight1.clear();
             }
         } else {
             aircraft[indexMinimum].flagInProcess = true;
@@ -557,7 +560,8 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
 
         // Handle problem 4
         if (isArrayContains(aircraft[indexMinimum].aircraftNumber, acProblem4) == true) {
-            int loc;
+            int loc = -1;
+
             for (int i = 0; i < AC4.size(); i++) {
                 if (aircraft[indexMinimum].aircraftNumber == AC4[i].aircraftNumber) {
                     loc = i;
@@ -578,7 +582,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                         }
                     }
                     flightSchedule.removeAt(i);
-                    n = i - 1;
+                    n = i;
                 }
 
                 aircraft = aircraft1;
@@ -624,21 +628,24 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
     }
 
     flightSchedule = sortFlightSchedule(flightSchedule);
+
     // Crew
     QStringList ACC2;
     indexUniqueFlight.clear();
 
     for (int i = 0; i < flightSchedule.size(); i++) {
-        if (isArrayContains(flightSchedule[i]->aircraft, ACC2) == false) {
+        if (!isArrayContains(flightSchedule[i]->aircraft, ACC2)) {
             ACC2.push_back(flightSchedule[i]->aircraft);
             indexUniqueFlight.push_back(i);
         }
     }
 
+    ACC2.clear();
+
     indexUniqueFlight.push_back(flightSchedule.size());
 
     // add some crew
-    for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 100; i++) {
         P1SGN.push_back("0");
         P1HAN.push_back("0");
         P1CXR.push_back("0");
@@ -663,6 +670,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
         P6HAN.push_back("0");
         P6CXR.push_back("0");
     }
+
     //Sort crew
     int crSGNused = 0, crHANused = 0, crCXRused = 0;
 
@@ -671,32 +679,29 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
         int mark1 = mark;
 
         for (int j = indexUniqueFlight[i]; j < indexUniqueFlight[i + 1]; j++) {
-            if (flightSchedule[j]->arrive == "HAN" || flightSchedule[j]->arrive == "SGN" || flightSchedule[j]->arrive == "CXR") {
+            if (flightSchedule[j]->arrive.toUpper() == "HAN" || flightSchedule[j]->arrive.toUpper() == "SGN" || flightSchedule[j]->arrive.toUpper() == "CXR") {
                 if (((flightSchedule[j]->timeArrive - flightSchedule[mark1]->timeDeparture) <= dutyTime) && ((j - mark1 + 1) <= sector)) {
                     mark = j + 1;
                 } else {
-                    for (int k = mark1; k < mark; k++) {
-                        if (flightSchedule[mark1]->departure == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
-                                && !P4SGN.isEmpty() && !P5SGN.isEmpty() && !P6SGN.isEmpty()) {
-                            if (P1SGN.size() != 0) {
-                                flightSchedule[k]->crew1 = P1SGN[0];
-                            }
-
+                    for (int k = mark1; k <= mark; k++) {
+                        if (flightSchedule[mark1]->departure.toUpper() == "SGN" &&
+                                !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty() && !P4SGN.isEmpty() && !P5SGN.isEmpty() && !P6SGN.isEmpty()) {
+                            flightSchedule[k]->crew1 = P1SGN[0];
                             flightSchedule[k]->crew2 = P2SGN[0];
                             flightSchedule[k]->crew3 = P3SGN[0];
                             flightSchedule[k]->crew4 = P4SGN[0];
                             flightSchedule[k]->crew5 = P5SGN[0];
                             flightSchedule[k]->crew6 = P6SGN[0];
-                        } else if (flightSchedule[mark1]->departure == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
-                                   && !P4HAN.isEmpty() && !P5HAN.isEmpty() && !P6HAN.isEmpty()) {
+                        } else if (flightSchedule[mark1]->departure.toUpper() == "HAN" &&
+                                   !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty() && !P4HAN.isEmpty() && !P5HAN.isEmpty() && !P6HAN.isEmpty()) {
                             flightSchedule[k]->crew1 = P1HAN[0];
                             flightSchedule[k]->crew2 = P2HAN[0];
                             flightSchedule[k]->crew3 = P3HAN[0];
                             flightSchedule[k]->crew4 = P4HAN[0];
                             flightSchedule[k]->crew5 = P5HAN[0];
                             flightSchedule[k]->crew6 = P6HAN[0];
-                        } else if (flightSchedule[mark1]->departure == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
-                                   && !P4CXR.isEmpty() && !P5CXR.isEmpty() && !P6CXR.isEmpty()) {
+                        } else if (flightSchedule[mark1]->departure.toUpper() == "CXR" &&
+                                   !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty() && !P4CXR.isEmpty() && !P5CXR.isEmpty() && !P6CXR.isEmpty()) {
                             flightSchedule[k]->crew1 = P1CXR[0];
                             flightSchedule[k]->crew2 = P2CXR[0];
                             flightSchedule[k]->crew3 = P3CXR[0];
@@ -706,33 +711,33 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                         }
                     }
 
-                    if (flightSchedule[mark1]->departure == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
+                    if (flightSchedule[mark1]->departure.toUpper() == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
                                  && !P4SGN.isEmpty() && !P5SGN.isEmpty() && !P6SGN.isEmpty()) {
                         crSGNused++;
-                        P1SGN.pop_front();
-                        P2SGN.pop_front();
-                        P3SGN.pop_front();
-                        P4SGN.pop_front();
-                        P5SGN.pop_front();
-                        P6SGN.pop_front();
-                    } else if (flightSchedule[mark1]->departure == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
+                        P1SGN.removeFirst();
+                        P2SGN.removeFirst();
+                        P3SGN.removeFirst();
+                        P4SGN.removeFirst();
+                        P5SGN.removeFirst();
+                        P6SGN.removeFirst();
+                    } else if (flightSchedule[mark1]->departure.toUpper() == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
                                && !P4HAN.isEmpty() && !P5HAN.isEmpty() && !P6HAN.isEmpty()) {
                         crHANused++;
-                        P1HAN.pop_front();
-                        P2HAN.pop_front();
-                        P3HAN.pop_front();
-                        P4HAN.pop_front();
-                        P5HAN.pop_front();
-                        P6HAN.pop_front();
-                    } else if (flightSchedule[mark1]->departure == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
+                        P1HAN.removeFirst();
+                        P2HAN.removeFirst();
+                        P3HAN.removeFirst();
+                        P4HAN.removeFirst();
+                        P5HAN.removeFirst();
+                        P6HAN.removeFirst();
+                    } else if (flightSchedule[mark1]->departure.toUpper() == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
                                && !P4CXR.isEmpty() && !P5CXR.isEmpty() && !P6CXR.isEmpty()) {
                         crCXRused++;
-                        P1CXR.pop_front();
-                        P2CXR.pop_front();
-                        P3CXR.pop_front();
-                        P4CXR.pop_front();
-                        P5CXR.pop_front();
-                        P6CXR.pop_front();
+                        P1CXR.removeFirst();
+                        P2CXR.removeFirst();
+                        P3CXR.removeFirst();
+                        P4CXR.removeFirst();
+                        P5CXR.removeFirst();
+                        P6CXR.removeFirst();
                     }
 
                     mark1 = mark;
@@ -741,7 +746,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
 
             if (j == indexUniqueFlight[i + 1] - 1) {
                 for (int k = mark1; k < indexUniqueFlight[i + 1]; k++) {
-                    if (flightSchedule[mark1]->departure == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
+                    if (flightSchedule[mark1]->departure.toUpper() == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
                             && !P4SGN.isEmpty() && !P5SGN.isEmpty() && !P6SGN.isEmpty()) {
                         flightSchedule[k]->crew1 = P1SGN[0];
                         flightSchedule[k]->crew2 = P2SGN[0];
@@ -749,7 +754,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                         flightSchedule[k]->crew4 = P4SGN[0];
                         flightSchedule[k]->crew5 = P5SGN[0];
                         flightSchedule[k]->crew6 = P6SGN[0];
-                    } else if (flightSchedule[mark1]->departure == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
+                    } else if (flightSchedule[mark1]->departure.toUpper() == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
                                && !P4HAN.isEmpty() && !P5HAN.isEmpty() && !P6HAN.isEmpty()) {
                         flightSchedule[k]->crew1 = P1HAN[0];
                         flightSchedule[k]->crew2 = P2HAN[0];
@@ -757,7 +762,7 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                         flightSchedule[k]->crew4 = P4HAN[0];
                         flightSchedule[k]->crew5 = P5HAN[0];
                         flightSchedule[k]->crew6 = P6HAN[0];
-                    } else if (flightSchedule[mark1]->departure == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
+                    } else if (flightSchedule[mark1]->departure.toUpper() == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
                                && !P4CXR.isEmpty() && !P5CXR.isEmpty() && !P6CXR.isEmpty()) {
                         flightSchedule[k]->crew1 = P1CXR[0];
                         flightSchedule[k]->crew2 = P2CXR[0];
@@ -768,39 +773,37 @@ void RescheduleCalculation::execute(QStringList problem1, QList<QObject *> probl
                     }
                 }
 
-                if (flightSchedule[mark1]->departure == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
+                if (flightSchedule[mark1]->departure.toUpper() == "SGN" && !P1SGN.isEmpty() && !P2SGN.isEmpty() && !P3SGN.isEmpty()
                              && !P4SGN.isEmpty() && !P5SGN.isEmpty() && !P6SGN.isEmpty()) {
                     crSGNused++;
-                    P1SGN.pop_front();
-                    P2SGN.pop_front();
-                    P3SGN.pop_front();
-                    P4SGN.pop_front();
-                    P5SGN.pop_front();
-                    P6SGN.pop_front();
-                } else if (flightSchedule[mark1]->departure == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
+                    P1SGN.removeFirst();
+                    P2SGN.removeFirst();
+                    P3SGN.removeFirst();
+                    P4SGN.removeFirst();
+                    P5SGN.removeFirst();
+                    P6SGN.removeFirst();
+                } else if (flightSchedule[mark1]->departure.toUpper() == "HAN" && !P1HAN.isEmpty() && !P2HAN.isEmpty() && !P3HAN.isEmpty()
                            && !P4HAN.isEmpty() && !P5HAN.isEmpty() && !P6HAN.isEmpty()) {
                     crHANused++;
-                    P1HAN.pop_front();
-                    P2HAN.pop_front();
-                    P3HAN.pop_front();
-                    P4HAN.pop_front();
-                    P5HAN.pop_front();
-                    P6HAN.pop_front();
-                } else if (flightSchedule[mark1]->departure == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
+                    P1HAN.removeFirst();
+                    P2HAN.removeFirst();
+                    P3HAN.removeFirst();
+                    P4HAN.removeFirst();
+                    P5HAN.removeFirst();
+                    P6HAN.removeFirst();
+                } else if (flightSchedule[mark1]->departure.toUpper() == "CXR" && !P1CXR.isEmpty() && !P2CXR.isEmpty() && !P3CXR.isEmpty()
                            && !P4CXR.isEmpty() && !P5CXR.isEmpty() && !P6CXR.isEmpty()) {
                     crCXRused++;
-                    P1CXR.pop_front();
-                    P2CXR.pop_front();
-                    P3CXR.pop_front();
-                    P4CXR.pop_front();
-                    P5CXR.pop_front();
-                    P6CXR.pop_front();
+                    P1CXR.removeFirst();
+                    P2CXR.removeFirst();
+                    P3CXR.removeFirst();
+                    P4CXR.removeFirst();
+                    P5CXR.removeFirst();
+                    P6CXR.removeFirst();
                 }
-
             }
         }
     }
-
 
     for (int i = 0; i < flightSchedule.size(); i++) {
         flightSchedule[i]->timeDeparture = ((flightSchedule[i]->timeDeparture % (24 * 60)) - (flightSchedule[i]->timeDeparture % (24 * 60)) % 60) / 60 * 100 + (flightSchedule[i]->timeDeparture % (24 * 60)) % 60;

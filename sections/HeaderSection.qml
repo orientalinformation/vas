@@ -25,8 +25,9 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.0
 import QtQuick.Controls 2.2
 import QtGraphicalEffects 1.0
-import QtQuick.Controls.Material 2.1
+
 import FlightObject 1.0
+import DFMFileDialog 1.0
 
 import "../theme"
 import "../navigation"
@@ -78,16 +79,16 @@ Frame {
                 if (currentCaseName !== "") {
                     header.caseSaved(currentCaseName)
                 } else {
-                    fileSaveDialog.open()
+                    fileSaveDialog.save()
                 }
                 break;
 
             case 3: // Save as
-                fileSaveAsDialog.open()
+                fileSaveAsDialog.save()
                 break;
 
             case 5: // Export
-                fileExportDialog.open()
+                fileExportDialog.save()
                 break;
 
             case 7: // Quit
@@ -227,15 +228,14 @@ Frame {
         id: navigationBar
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: fileOpenDialog
         title: qsTr("Open %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: true
-        selectMultiple: false
+        suffix: ".vas"
+        qml: false
 
-        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr]
+        nameFilters: qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr
 
         onAccepted: {
             currentCaseName = fileUrl
@@ -244,45 +244,46 @@ Frame {
         }
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: fileSaveDialog
         title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: false
-        selectMultiple: false
+        suffix: ".vas"
+        qml: false
 
-        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr]
+        nameFilters: Branding.VER_APPNAME_STR + " " + qsTr("File (*.vas)") + translator.tr
 
         onAccepted: {
             header.caseSaved(fileUrl)
+
+            currentCaseName = fileUrl
         }
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: fileSaveAsDialog
         title: qsTr("Save %1 Case File").arg(Branding.VER_APPNAME_STR) + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: false
-        selectMultiple: false
+        suffix: ".vas"
+        qml: false
 
-        nameFilters: [qsTr("%1 File (*.vas)").arg(Branding.VER_APPNAME_STR) + translator.tr]
+        nameFilters: Branding.VER_APPNAME_STR + " " + qsTr("File (*.vas)") + translator.tr
 
         onAccepted: {
             header.caseSavedAs(fileUrl)
+
+            currentCaseName = fileUrl
         }
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: fileExportDialog
         title: qsTr("Export CSV data") + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: false
-        selectMultiple: false
+        suffix: ".csv"
+        qml: false
 
-        nameFilters: [qsTr("CSV File (*.csv)") + translator.tr]
+        nameFilters: qsTr("CSV File (*.csv)") + translator.tr
 
         onAccepted: {
             header.caseExport(fileUrl)

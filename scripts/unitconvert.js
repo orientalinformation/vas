@@ -205,29 +205,31 @@ function updateFlight(data, flight, row, column)
                                            "newAircraft": flight.AC,
                                            "oldAircraft": flight.ACO })
 
-        if (currentFlights.get(column).timeArrival > data.get(row).flights.get(topIndex).timeDeparture) {
-            data.get(row).flights.get(topIndex).timeDeparture = currentFlights.get(column).timeArrival
-        } else {
-            var time = data.get(row).flights.get(topIndex).timeDeparture - currentFlights.get(column).timeArrival
+        if (topIndex < flightLength) {
+            if (currentFlights.get(column).timeArrival > data.get(row).flights.get(topIndex).timeDeparture) {
+                data.get(row).flights.get(topIndex).timeDeparture = currentFlights.get(column).timeArrival
+            } else {
+                var time = data.get(row).flights.get(topIndex).timeDeparture - currentFlights.get(column).timeArrival
 
-            if (time > 0) {
-                data.get(row).flights.insert(column + 1, {  "name": "",
-                                                            "captain": "",
-                                                            "coPilot": "",
+                if (time > 0) {
+                    data.get(row).flights.insert(column + 1, {  "name": "",
+                                                                "captain": "",
+                                                                "coPilot": "",
 
-                                                            "cabinManager": "",
-                                                            "cabinAgent1": "",
-                                                            "cabinAgent2": "",
-                                                            "cabinAgent3": "",
+                                                                "cabinManager": "",
+                                                                "cabinAgent1": "",
+                                                                "cabinAgent2": "",
+                                                                "cabinAgent3": "",
 
-                                                            "departure": "",
-                                                            "arrival": "",
+                                                                "departure": "",
+                                                                "arrival": "",
 
-                                                            "timeDeparture": currentFlights.get(column).timeArrival,
-                                                            "timeArrival": data.get(row).flights.get(topIndex).timeDeparture,
+                                                                "timeDeparture": currentFlights.get(column).timeArrival,
+                                                                "timeArrival": data.get(row).flights.get(topIndex).timeDeparture,
 
-                                                            "newAircraft": "",
-                                                            "oldAircraft": "" })
+                                                                "newAircraft": "",
+                                                                "oldAircraft": "" })
+                }
             }
         }
 

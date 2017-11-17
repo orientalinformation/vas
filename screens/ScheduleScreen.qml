@@ -26,8 +26,10 @@ import QtQuick.Extras 1.4
 import QtQuick.Window 2.2
 
 import CSVReader 1.0
-import ScheduleCalculation 1.0
 import IOStreams 1.0
+import DFMFileDialog 1.0
+
+import ScheduleCalculation 1.0
 
 import "../theme"
 
@@ -47,10 +49,6 @@ Item {
     property int parentIndex: Global.parentScheduleIndex
 
     property alias titleScheduleSection: titleSection
-
-    property var csvAircraftModel: []
-
-    property var csvAirportModel: []
 
     signal built
 
@@ -101,7 +99,29 @@ Item {
                     if (txtStartTime.text === "") {
                         messages.displayMessage(qsTr("Please input start time") + translator.tr)
                     } else {
-                        scheduleCalculation.execute(csvAirportModel, csvAircraftModel, Number(txtStartTime.text), Settings.groundTime);
+                        var csvAircraftModel = aircraftReader.read()
+                        var csvAirportModel = airportReader.read()
+
+                        if (csvAircraftModel.length === 0) {
+                            txtInputAircraftData.text = ""
+                            messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
+
+                            return;
+                        }
+
+                        if (csvAirportModel.length > 0) {
+                            if (csvAirportModel[0].frequent === 0) {
+                                txtInputAirportData.text = ""
+                                messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
+                                return;
+                            }
+                        } else {
+                            txtInputAirportData.text = ""
+                            messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
+                            return;
+                        }
+
+                        scheduleCalculation.execute(csvAirportModel, csvAircraftModel, Number(txtStartTime.text), Settings.groundTime, Settings.sector, Settings.isDutyTime ? Settings.dutyTime : 999999, Settings.separationTime);
 
                         scheduleDialog.built()
 
@@ -190,7 +210,7 @@ Item {
                         text: qsTr("Browse") + translator.tr
 
                         onClicked: {
-                            aircraftSelectDialog.open()
+                            aircraftSelectDialog.open("dataPath")
                         }
 
                         Layout.row: 0
@@ -229,7 +249,7 @@ Item {
                         text: qsTr("Browse") + translator.tr
 
                         onClicked: {
-                            airportSelectDialog.open()
+                            airportSelectDialog.open("dataPath")
                         }
 
                         Layout.row: 1
@@ -258,6 +278,8 @@ Item {
                         font.pointSize: AppTheme.textSizeText
 
                         horizontalAlignment: Text.AlignHCenter
+
+                        validator: IntValidator { bottom:0}
 
                         Layout.row: 2
                         Layout.column: 1
@@ -308,47 +330,33 @@ Item {
         onError: messages.displayMessage(msg)
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: aircraftSelectDialog
         title: qsTr("Select Aircraft Data") + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: true
-        selectMultiple: false
+        suffix: ".csv"
+        qml: true
 
-        nameFilters: [qsTr("CSV File (*.csv)")] + translator.tr
+        nameFilters: qsTr("CSV File (*.csv)") + translator.tr
 
         onAccepted: {
             txtInputAircraftData.text = fileUrl
             aircraftReader.source = fileUrl
-            csvAircraftModel = aircraftReader.read()
-
-            if (csvAircraftModel.length === 0) {
-                txtInputAircraftData.text = ""
-                messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
-            }
         }
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: airportSelectDialog
         title: qsTr("Select Airport Data") + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: true
-        selectMultiple: false
+        suffix: ".csv"
+        qml: true
 
-        nameFilters: [qsTr("CSV File (*.csv)")] + translator.tr
+        nameFilters: qsTr("CSV File (*.csv)") + translator.tr
 
         onAccepted: {
             txtInputAirportData.text = fileUrl
             airportReader.source = fileUrl
-            csvAirportModel = airportReader.read()
-
-            if (csvAirportModel.length === 0) {
-                txtInputAirportData.text = ""
-                messages.displayMessage(qsTr("Please select correct data.") + translator.tr)
-            }
         }
     }
 
@@ -359,9 +367,6 @@ Item {
     onNewCase: {
         txtInputAirportData.text = ""
         txtInputAircraftData.text = ""
-
-        csvAirportModel = []
-        csvAirportModel = []
 
         txtStartTime.text = ""
     }
@@ -375,8 +380,8 @@ Item {
         txtInputAirportData.text = airportPath
         txtInputAircraftData.text = aircraftPath
 
-        csvAirportModel = airportReader.read()
-        csvAirportModel = airportReader.read()
+        airportReader.source = airportPath
+        aircraftReader.source = aircraftPath
     }
 
     onSave: {

@@ -21,13 +21,13 @@ modification, are permitted provided that the following conditions are met:
 .pragma library
 
 var VERSIONMAJOR = 1
-var VERSIONMINOR = 0
-var VERSIONEMER = 2
+var VERSIONMINOR = 1
+var VERSIONEMER = 1
 
 var VERSIONSHORT = VERSIONMAJOR + "." + VERSIONMINOR
 var VERSIONFULL = VERSIONMAJOR + "." + VERSIONMINOR + "." + VERSIONEMER
 
-var RELEASENUMBER = 1
+var RELEASENUMBER = 4
 
 var VER_APPNAME_STR = qsTr("VAA Airline Schedules")
 
@@ -59,4 +59,4 @@ var VER_COMPANYDOMAIN_STR = "http://www.vaa.edu.vn/"
 
 var VER_PRODUCTDOMAIN_STR = "http://www.vas.com"
 
-var BUILD_ID = "100"
+var BUILD_ID = "55"

@@ -22,7 +22,9 @@ HEADERS += \
                 printer/quickitempainter.h \
                 printer/styledtext.h \
                 problem.h \
-                iostreams.h
+                iostreams.h \
+    setting.h \
+    dfmfiledialog.h
 
 SOURCES +=      main.cpp \
                 translation.cpp \
@@ -40,7 +42,9 @@ SOURCES +=      main.cpp \
                 printer/quickitempainter.cpp \
                 printer/styledtext.cpp \
                 problem.cpp \
-                iostreams.cpp
+                iostreams.cpp \
+    setting.cpp \
+    dfmfiledialog.cpp
 
 RESOURCES +=    qml.qrc \
                 das_res.qrc
@@ -109,4 +113,4 @@ export(copydata.commands)
 
 QMAKE_EXTRA_TARGETS += first copydata
 
-#QMAKE_POST_LINK = cd $$PWD && lupdate das_qml.pro && lrelease das_qml.pro
+QMAKE_POST_LINK = cd $$PWD && lupdate das_qml.pro && lrelease das_qml.pro

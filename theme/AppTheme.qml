@@ -73,11 +73,13 @@ QtObject
     readonly property int textSizeTitleSmall: tscale(20)
     readonly property int textSizeText: tscale(16)
     readonly property int textSizeMenu: tscale(12)
+    readonly property int textSizeMenuSmall: tscale(11)
     readonly property int textSizeTabButton: tscale(15)
     readonly property int textSizeSmall: tscale(14)
     readonly property int textSizeContact: tscale(16)
     readonly property int textSizeMessage: tscale(10)
     readonly property int textSizeTiny: tscale(10)
+    readonly property int textSizeTinySmall: tscale(9)
 
     readonly property int buttonBorderMargin: tscale(-8)
     readonly property int buttonBorderPadding: tscale(10)

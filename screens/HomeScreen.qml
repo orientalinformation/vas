@@ -57,11 +57,6 @@ Item {
     property double optimizedTimeLinePosition
     property double listViewOptimizedX
 
-    property var currentInputDatas: []
-    property var optimizedInputDatas: []
-
-    property var optimizedModels: []
-
     property alias currentDataModels: currentDataModels
     property alias optimizedDataModels: optimizedDataModels
 
@@ -74,6 +69,7 @@ Item {
 
     signal reload(var path, var inputPath, var isSingleView)
 
+    signal newCase()
     signal open(var path)
     signal save(var path)
     signal saveAs(var path)
@@ -107,8 +103,10 @@ Item {
             var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
             var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
 
-            for (var i = 0; i < optimizedDataModels.count; i++) {
-                for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
+            for (var i = 0; i < modelLenght; i++) {
+                var flightLength = optimizedDataModels.get(i).flights.count
+
+                for (var j = 0; j < flightLength; j++) {
                     if (optimizedDataModels.get(i).flights.get(j).name !== "" &&
                          UnitConverter.compareString(optimizedDataModels.get(i).flights.get(j).newAircraft, aircraft)) {
                         optimizedData.push(optimizedDataModels.get(i).flights.get(j))
@@ -130,8 +128,7 @@ Item {
 
                     if (UnitConverter.compareString(flightData.name, currentFlights.get(j).name)) {
                         if (UnitConverter.compareString(optimizedDataModels.get(i).aircraft, aircraft)) {
-                            if (currentFlights.get(j).timeDeparture === Number(timeDeparture) &&
-                                    currentFlights.get(j).timeArrival === Number(timeArrival)) {
+                            if (currentFlights.get(j).timeDeparture === Number(ted) && currentFlights.get(j).timeArrival === Number(tea)) {
                                 optimizedDataModels.get(i).flights.set(j, { "name": flightData.name,
                                                                             "captain": flightData.CAP,
                                                                             "coPilot": flightData.FO,
@@ -150,23 +147,31 @@ Item {
                                                                             "newAircraft": flightData.AC,
                                                                             "oldAircraft": flightData.ACO } )
                             } else {
-                                //Handle time changed
-                                if (Number(currentFlights.get(j).timeDeparture) === Number(tea)) {
-                                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
-                                    return
-                                }
-
                                 UnitConverter.updateFlight(optimizedDataModels, flightData, i, j)
                             }
                         } else {
                             var aircraftExisted = false
 
-                            for (var k = 0; k < modelLenght; k++) {
+                            var left = j - 1
+                            var right = j + 1
 
-                                if (Number(tea) > Number(minTimeDeparture)) {
-                                    messages.displayMessage(qsTr("The arrival time is invalid.") + translator.tr)
+                            while (left >= 0 && currentFlights.get(left).name === "") {
+                                left--;
+                            }
+
+                            while (right < flightLength && currentFlights.get(right).name === "") {
+                                right++;
+                            }
+
+                            if (right < flightLength && left >= 0) {
+                                if(!UnitConverter.compareString(optimizedDataModels.get(i).flights.get(left).arrival, optimizedDataModels.get(i).flights.get(right).departure)) {
+                                    messages.displayMessage(qsTr("Can not moving the flight.") + translator.tr)
+
                                     return
                                 }
+                            }
+
+                            for (var k = 0; k < modelLenght; k++) {
 
                                 if (UnitConverter.compareString(optimizedDataModels.get(k).aircraft, aircraft)) {
 
@@ -204,7 +209,7 @@ Item {
                 }
             }
 
-            messages.displayMessage(flightNumber + qsTr(" was updated.") + translator.tr)
+            messages.displayMessage(flightNumber.toUpperCase() + qsTr(" was updated.") + translator.tr)
         }
     }
 
@@ -215,9 +220,9 @@ Item {
             var ted = Math.floor(timeDeparture / 100) * 60 + timeDeparture % 100;
             var tea = Math.floor(timeArrival / 100) * 60 + timeArrival % 100;
 
-            var insertData  = { "name": flightNumber, "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
-                           "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure, "ARR": arrival, "AC": aircraft ,
-                           "ACO": "", "TED": ted, "TEA": tea, "status": 0 }
+            var insertData  = { "name": flightNumber.toUpperCase(), "CAP": captain, "FO": coPilot, "CM": cabinManager, "CA1": cabinAgent1,
+                           "CA2": cabinAgent2, "CA3": cabinAgent3, "DEP": departure.toUpperCase(), "ARR": arrival.toUpperCase(),
+                           "AC": aircraft.toUpperCase(), "ACO": "", "TED": ted, "TEA": tea, "status": 0 }
 
             appendModel(optimizedDataModels, insertData, insertData.AC)
             messages.displayMessage(flightNumber + qsTr(" is inserted.") + translator.tr)
@@ -301,13 +306,39 @@ Item {
         optimizedTimeLinePosition = timeLineOptimizedPosition
     }
 
+    onNewCase: {
+        inputReader.source = ""
+        resultReader.source = ""
+
+        currentDataModels.clear()
+        optimizedDataModels.clear()
+
+        isSplitScheduleView = false
+
+        root.isInfoShowed = false
+
+        numberFlightUnchanged = 0
+        numberAircarftUnchanged = 0
+        numberFlightCancel = 0
+        totalTimeDelay = 0
+        numberFlightDelay = 0
+        maximumTimeDelay = 0
+
+        indexRow = 0
+        indexColumn = 0
+
+        timeCounter = 0
+    }
+
     onOpen: {
-        currentInputDatas = homeIostreams.readObject("inputFlights", "homepage", path)
-        optimizedInputDatas = homeIostreams.readObject("resultFlights", "homepage", path)
+        var currentInputDatas = homeIostreams.readObject("inputFlights", "homepage", path)
+        var optimizedInputDatas = homeIostreams.readObject("resultFlights", "homepage", path)
 
         var status = homeIostreams.read("isSplitScreen", "homepage", path)
 
         isSplitScheduleView = status === "true" ? true : false
+
+        root.isInfoShowed = status === "true" ? true : false
 
         updateScreen(currentInputDatas, currentDataModels, optimizedInputDatas, optimizedDataModels)
     }
@@ -365,6 +396,7 @@ Item {
     }
 
     onExportCSV: {
+        var optimizedModels = []
         for (var i = 0; i < optimizedDataModels.count; i++) {
 
             for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
@@ -375,9 +407,13 @@ Item {
         }
 
         resultReader.write(optimizedModels, path);
+
+        messages.displayMessage(qsTr("Print CSV successfull") + translator.tr)
     }
 
     onReload: {
+        var currentInputDatas = []
+
         if (isSingleView === false) {
             inputReader.source = inputPath
             currentInputDatas = inputReader.read()
@@ -387,7 +423,7 @@ Item {
 
         resultReader.source = path
 
-        optimizedInputDatas = resultReader.read(isSingleView)
+        var optimizedInputDatas = resultReader.read(isSingleView)
 
         updateScreen(currentInputDatas, currentDataModels, optimizedInputDatas, optimizedDataModels)
     }
@@ -632,6 +668,8 @@ Item {
             settingVisible: false
 
             onPrinted: {
+                var optimizedModels = []
+
                 for (var i = 0; i < optimizedDataModels.count; i++) {
                     for (var j = 0; j < optimizedDataModels.get(i).flights.count; j++) {
                         if (optimizedDataModels.get(i).flights.get(j).name !== "") {
@@ -672,7 +710,10 @@ Item {
                     Layout.fillWidth: true
 
                     padding: 0
+                    topPadding: AppTheme.vscale(5)
                     leftPadding: AppTheme.screenPadding
+
+                    Layout.preferredHeight: parent.height / 2
 
                     background: Rectangle {
                         color: "#dddddd"
@@ -695,6 +736,8 @@ Item {
 
                             text: qsTr("Current Airline Schedules") + translator.tr
 
+                            font.bold: true
+                            font.weight: Font.Bold
                             font.pointSize: AppTheme.textSizeText
                             verticalAlignment: Text.AlignVCenter
 
@@ -749,7 +792,8 @@ Item {
                                     model: [qsTr("Aircraft N°") + translator.tr,
                                         "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",
                                         "12h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00", "20h00", "21h00", "22h00", "23h00",
-                                        "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00", "12h00"]
+                                        "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00", "12h00",
+                                        "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00", "20h00", "21h00", "22h00", "23h00"]
 
                                     Label {
                                         text: modelData
@@ -843,8 +887,8 @@ Item {
                                                 flightDialog.departure = departure
                                                 flightDialog.arrival = arrival
 
-                                                var ted = ((timeDeparture % (24 * 60)) - (timeDeparture % (24 * 60)) % 60) / 60 * 100 + (timeDeparture % (24 * 60)) % 60;
-                                                var tea = ((timeArrival % (24 * 60)) - (timeArrival % (24 * 60)) % 60) / 60 * 100 + (timeArrival % (24 * 60)) % 60;
+                                                var ted = ((timeDeparture) - (timeDeparture) % 60) / 60 * 100 + (timeDeparture) % 60;
+                                                var tea = ((timeArrival) - (timeArrival) % 60) / 60 * 100 + (timeArrival) % 60;
 
                                                 flightDialog.timeDeparture = ted
                                                 flightDialog.timeArrival = tea
@@ -860,12 +904,6 @@ Item {
                                                 flightDialog.open()
                                             }
                                         }
-                                    }
-
-                                    Rectangle {
-                                        color: "silver"
-                                        height: parent.height
-                                        width: 1
                                     }
                                 }
 
@@ -900,7 +938,10 @@ Item {
                     Layout.fillWidth: true
 
                     padding: 0
+                    topPadding: AppTheme.vscale(5)
                     leftPadding: AppTheme.screenPadding
+
+                    Layout.preferredHeight: parent.height / 2
 
                     background: Rectangle {
                         color: "#dddddd"
@@ -921,6 +962,8 @@ Item {
 
                             text: qsTr("Optimized Airline Schedules") + translator.tr
 
+                            font.bold: true
+                            font.weight: Font.Bold
                             font.pointSize: AppTheme.textSizeText
                             verticalAlignment: Text.AlignVCenter
 
@@ -976,7 +1019,8 @@ Item {
                                     model: [qsTr("Aircraft N°") + translator.tr,
                                         "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",
                                         "12h00", "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00", "20h00", "21h00", "22h00", "23h00",
-                                        "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",  "12h00"]
+                                        "0h00", "1h00", "2h00", "3h00", "4h00", "5h00", "6h00", "7h00", "8h00", "9h00", "10h00", "11h00",  "12h00",
+                                        "13h00", "14h00", "15h00", "16h00", "17h00", "18h00", "19h00", "20h00", "21h00", "22h00", "23h00" ]
 
                                     Label {
                                         text: modelData
@@ -1059,6 +1103,8 @@ Item {
                                             onClicked: {
                                                 flightDialog.isInserted = false
 
+                                                flightDialog.isReadOnly = false
+
                                                 flightDialog.flightNumber = flightNumber
 
                                                 flightDialog.aircraft = newAircraft
@@ -1067,8 +1113,8 @@ Item {
                                                 flightDialog.departure = departure
                                                 flightDialog.arrival = arrival
 
-                                                var ted = ((timeDeparture % (24 * 60)) - (timeDeparture % (24 * 60)) % 60) / 60 * 100 + (timeDeparture % (24 * 60)) % 60;
-                                                var tea = ((timeArrival % (24 * 60)) - (timeArrival % (24 * 60)) % 60) / 60 * 100 + (timeArrival % (24 * 60)) % 60;
+                                                var ted = ((timeDeparture) - (timeDeparture) % 60) / 60 * 100 + (timeDeparture) % 60;
+                                                var tea = ((timeArrival) - (timeArrival) % 60) / 60 * 100 + (timeArrival) % 60;
 
                                                 flightDialog.timeDeparture = ted
                                                 flightDialog.timeArrival = tea
@@ -1091,12 +1137,6 @@ Item {
                                                 contextMenu.open()
                                             }
                                         }
-                                    }
-
-                                    Rectangle {
-                                        color: "silver"
-                                        height: parent.height
-                                        width: 1
                                     }
                                 }
 

@@ -85,7 +85,7 @@ public:
         }
     };
 
-    Q_INVOKABLE int execute(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart, int groundTime = 35);
+    Q_INVOKABLE int execute(QList<QObject *> qmlAirportData, QList<QObject *> qmlAircraftData, int timeStart, int groundTime = 35, int sector = 4, int dutyTime = 660, int separationTime = 5);
 
     void write(QList<FlightCalendar> flightCalendar, QString path = "");
 
@@ -94,7 +94,7 @@ private:
 
     void sortTimeDeparture(QList<FlightCalendar> &flightCalendar, int totalFlightSort);
 
-    bool sortByTimeDeparture(FlightCalendar lhs, FlightCalendar rhs);
+    bool sortFlightByAircraftAndTimeDeparture(FlightCalendar lhs, FlightCalendar rhs);
 
     QList<FlightCalendar> sortFlightCalendar(QList<FlightCalendar> &flightCalendar, int size);
 

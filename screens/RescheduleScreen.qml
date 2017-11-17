@@ -26,8 +26,10 @@ import QtQuick.Extras 1.4
 import QtQuick.Window 2.2
 
 import CSVReader 1.0
-import RescheduleCalculation 1.0
 import IOStreams 1.0
+import DFMFileDialog 1.0
+
+import RescheduleCalculation 1.0
 
 import "../theme"
 
@@ -64,11 +66,8 @@ Item {
 
     property alias timeLimitedModel: timeLimitedProblem.timeLimitedModel
 
-    property var dayDelayList: []
-    property var timeDelayList: []
-    property var timeLimitedList: []
-    property var airportList: []
-    property var aircraftArrivalLimitedList: []
+    property var currentProblem
+    property int optionSelectedIndex: -1
 
     signal built(var inputPath)
 
@@ -79,6 +78,17 @@ Item {
 
     IOStreams {
        id: rescheduleIostream
+    }
+
+    Component.onCompleted: {
+        currentProblem = dayDelayProblem
+        optionSelectedIndex = 0
+    }
+
+    onCurrentProblemChanged: {
+        stackView.clear()
+
+        stackView.push(currentProblem)
     }
 
     ColumnLayout {
@@ -112,6 +122,11 @@ Item {
 
                 onBuilt: {
                     //Write code calculate here
+                    var dayDelayList = []
+                    var timeDelayList = []
+                    var timeLimitedList = []
+                    var airportList = []
+                    var aircraftArrivalLimitedList = []
 
                     function checkInputTimeValid(timeDelay, timeLimit) {
                         for (var i = 0; i < timeDelay.count; i++) {
@@ -150,7 +165,7 @@ Item {
                     }
                     if (checkInputTimeValid(timeDelayModel, timeLimitedModel)) {
                         rescheduleCalculation.execute(dayDelayList, timeDelayList, aircraftArrivalLimitedList, airportList,
-                                                            timeLimitedList, Settings.groundTime, Settings.sector, Settings.dutyTime, csvFlightList)
+                                                            timeLimitedList, Settings.groundTime, Settings.sector, Settings.isDutyTime ? Settings.dutyTime : 999999, csvFlightList)
 
                         rescheduleDialog.built(flightReader.source)
 
@@ -245,7 +260,7 @@ Item {
                             text: qsTr("Browse") + translator.tr
 
                             onClicked: {
-                                fileSelectDialog.open()
+                                fileSelectDialog.open("dataPath")
                             }
                         }
                     }
@@ -427,8 +442,6 @@ Item {
 
                         clip: true
 
-                        initialItem: dayDelayProblem
-
                         pushEnter: Transition {
                             PropertyAnimation {
                                 property: "opacity"
@@ -499,10 +512,16 @@ Item {
 
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        onClicked: {
-                            lblSettingTitle.text = qsTr("Airline Day Delay") + translator.tr
+                        isActive: optionSelectedIndex === 0
 
-                            stackView.pop()
+                        onClicked: {
+                            if (currentProblem !== dayDelayProblem) {
+                                lblSettingTitle.text = qsTr("Airline Day Delay") + translator.tr
+
+                                currentProblem = dayDelayProblem
+
+                                optionSelectedIndex = 0
+                            }
                         }
                     }
 
@@ -512,11 +531,16 @@ Item {
 
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        onClicked: {
-                            lblSettingTitle.text = qsTr("Airline Time Delay") + translator.tr
+                        isActive: optionSelectedIndex === 1
 
-                            stackView.pop()
-                            stackView.push(timeDelayProblem)
+                        onClicked: {
+                            if (currentProblem !== timeDelayProblem) {
+                                lblSettingTitle.text = qsTr("Airline Time Delay") + translator.tr
+
+                                currentProblem = timeDelayProblem
+
+                                optionSelectedIndex = 1
+                            }
                         }
                     }
 
@@ -526,11 +550,16 @@ Item {
 
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        onClicked: {
-                            lblSettingTitle.text = qsTr("Airline Arrival Limited") + translator.tr
+                        isActive: optionSelectedIndex === 2
 
-                            stackView.pop()
-                            stackView.push(arrivalLimitedProblem)
+                        onClicked: {
+                            if (currentProblem !== arrivalLimitedProblem) {
+                                lblSettingTitle.text = qsTr("Airline Arrival Limited") + translator.tr
+
+                                currentProblem = arrivalLimitedProblem
+
+                                optionSelectedIndex = 2
+                            }
                         }
                     }
 
@@ -540,11 +569,16 @@ Item {
 
                         anchors.horizontalCenter: parent.horizontalCenter
 
-                        onClicked: {
-                            lblSettingTitle.text = qsTr("Airline Time Limited") + translator.tr
+                        isActive: optionSelectedIndex === 3
 
-                            stackView.pop()
-                            stackView.push(timeLimitedProblem)
+                        onClicked: {
+                            if (currentProblem !== timeLimitedProblem) {
+                                lblSettingTitle.text = qsTr("Airline Time Limited") + translator.tr
+
+                                currentProblem = timeLimitedProblem
+
+                                optionSelectedIndex = 3
+                            }
                         }
                     }
                 }
@@ -605,15 +639,14 @@ Item {
         }
     }
 
-    FileDialog {
+    DFMFileDialog {
         id: fileSelectDialog
         title: qsTr("Select input data") + translator.tr
 
-        folder: shortcuts.documents
-        selectExisting: true
-        selectMultiple: false
+        suffix: ".csv"
+        qml: true
 
-        nameFilters: [qsTr("CSV File (*.csv)")] + translator.tr
+        nameFilters: qsTr("CSV File (*.csv)") + translator.tr
 
         onAccepted: {
             txtInputData.text = fileUrl
@@ -646,14 +679,6 @@ Item {
 
         csvFlightList = []
 
-        dayDelayList = []
-        timeDelayList = []
-
-        aircraftArrivalLimitedList = []
-        airportList = []
-
-        timeLimitedList = []
-
         rescheduleModel.clear()
 
         dayDelayModel.clear()
@@ -671,13 +696,21 @@ Item {
         var rescheduleList = []
         var arrivalLimitSelected  = []
 
-        dayDelayList = []
-        timeDelayList = []
+        var dayDelayList = []
+        var timeDelayList = []
 
-        aircraftArrivalLimitedList = []
-        airportList = []
+        var aircraftArrivalLimitedList = []
+        var airportList = []
 
-        timeLimitedList = []
+        var timeLimitedList = []
+
+        // Log info
+        numberFlightUnchanged = Number(rescheduleIostream.read("numberFlightUnchanged", "reschedules", path))
+        numberAircarftUnchanged = Number(rescheduleIostream.read("numberAircarftUnchanged",  "reschedules", path))
+        numberFlightCancel = Number(rescheduleIostream.read("numberFlightCancel",  "reschedules", path))
+        totalTimeDelay = Number(rescheduleIostream.read("totalTimeDelay", "reschedules", path))
+        numberFlightDelay = Number(rescheduleIostream.read("numberFlightDelay", "reschedules", path))
+        maximumTimeDelay = Number(rescheduleIostream.read("maximumTimeDelay", "reschedules", path))
 
         var urlInput = rescheduleIostream.read("path", "reschedules", path)
 
@@ -692,6 +725,8 @@ Item {
 
         rescheduleList = rescheduleIostream.readData("availableAC", "reschedules", path)
         airportList = rescheduleIostream.readData("availableAP", "reschedules", path)
+
+        csvFlightList = rescheduleIostream.readObject("inputFlights", "reschedules", path)
 
         txtInputData.text = urlInput
 
@@ -716,20 +751,23 @@ Item {
         }
 
         for (var i = 0; i < timeDelayList.length; i++) {
-            timeDelayModel.append({ name: timeDelayList[i].name, time: timeDelayList[i].time })
+            timeDelayModel.append({ name: timeDelayList[i].name, time: Number(timeDelayList[i].time) })
         }
 
         for (var i = 0; i < timeLimitedList.length; i++) {
-            timeLimitedModel.append( { name: timeLimitedList[i].name, time: timeLimitedList[i].time })
+            timeLimitedModel.append( { name: timeLimitedList[i].name, time: Number(timeLimitedList[i].time) })
         }
-
-        dayDelayList = []
-        aircraftArrivalLimitedList = []
-        airportList = []
     }
 
     onSave: {
         var codes = getData()
+        // Log info
+        rescheduleIostream.write("numberFlightUnchanged", numberFlightUnchanged.toString(), "reschedules", path)
+        rescheduleIostream.write("numberAircarftUnchanged", numberAircarftUnchanged.toString(), "reschedules", path)
+        rescheduleIostream.write("numberFlightCancel", numberFlightCancel.toString(), "reschedules", path)
+        rescheduleIostream.write("totalTimeDelay", totalTimeDelay.toString(), "reschedules", path)
+        rescheduleIostream.write("numberFlightDelay", numberFlightDelay.toString(), "reschedules", path)
+        rescheduleIostream.write("maximumTimeDelay", maximumTimeDelay.toString(), "reschedules", path)
 
         rescheduleIostream.write("path", txtInputData.text, "reschedules", path)
 
@@ -745,10 +783,18 @@ Item {
         rescheduleIostream.write("availableAC", codes[5], "reschedules", path)
         rescheduleIostream.write("availableAP", codes[6], "reschedules", path)
 
+        rescheduleIostream.writeObject2("inputFlights", csvFlightList, "reschedules", path)
     }
 
     onSaveAs: {
         var codes = getData()
+        // Log info
+        rescheduleIostream.write("numberFlightUnchanged", numberFlightUnchanged.toString(), "reschedules", path)
+        rescheduleIostream.write("numberAircarftUnchanged", numberAircarftUnchanged.toString(), "reschedules", path)
+        rescheduleIostream.write("numberFlightCancel", numberFlightCancel.toString(), "reschedules", path)
+        rescheduleIostream.write("totalTimeDelay", totalTimeDelay.toString(), "reschedules", path)
+        rescheduleIostream.write("numberFlightDelay", numberFlightDelay.toString(), "reschedules", path)
+        rescheduleIostream.write("maximumTimeDelay", maximumTimeDelay.toString(), "reschedules", path)
 
         rescheduleIostream.write("path", txtInputData.text, "reschedules", path)
 
@@ -763,6 +809,8 @@ Item {
 
         rescheduleIostream.write("availableAC", codes[5], "reschedules", path)
         rescheduleIostream.write("availableAP", codes[6], "reschedules", path)
+
+        rescheduleIostream.writeObject2("inputFlights", csvFlightList, "reschedules", path)
     }
 
     function getData() {

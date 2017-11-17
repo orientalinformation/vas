@@ -25,10 +25,10 @@ import QtQuick.Controls 2.2
 import "../theme"
 
 Frame {
+    id: timeLimitedFrame
 
     property var timeLimitedModel: timeLimitedModel
 
-    id: timeLimitedFrame
     Layout.fillHeight: true
     Layout.fillWidth: true
     spacing: AppTheme.tscale(3)
@@ -148,7 +148,7 @@ Frame {
                         }
 
                         onTextChanged: {
-                            timeLimitedModel.set(row, { time: txtTimeLimited.text} )
+                            timeLimitedModel.set(row, { time: Number(txtTimeLimited.text)} )
                         }
                     }
                 }
@@ -214,7 +214,7 @@ Frame {
                             }
                         }
 
-                        timeLimitedModel.append( { name: aircraft, time: "" } )
+                        timeLimitedModel.append( { name: aircraft, time: 0 } )
                         timeLimited.currentIndex += 1
                     }
 

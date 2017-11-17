@@ -8,6 +8,8 @@
 #include "pagesize.h"
 #include "quickitempainter.h"
 
+#include "../setting.h"
+
 static const QString footer("This is the\nfooter\ntext");
 static const QString fontfamily("Times New Roman");
 
@@ -263,7 +265,11 @@ void Printer::endPrinting()
 
 void Printer::printerPDF(QList<QObject *> data)
 {
-    QString fileName = QFileDialog::getSaveFileName((QWidget* )0, tr("Export PDF"), QString(), tr("PDF File (*.pdf)"));
+    Setting settings;
+
+    QString path = settings.readSetting("printPath");
+
+    QString fileName = QFileDialog::getSaveFileName(NULL, tr("Export PDF"), path, tr("PDF File (*.pdf)"));
 
     if (fileName.isEmpty()) {
         qWarning() << "Printing not started";
@@ -274,6 +280,10 @@ void Printer::printerPDF(QList<QObject *> data)
     if (!fileName.endsWith(".pdf", Qt::CaseInsensitive)) {
         fileName.append(".pdf");
     }
+
+    path = fileName.mid(0, fileName.lastIndexOf("/"));
+
+    settings.writeSetting("printPath", path);
 
     QPrinter printer(QPrinter::PrinterResolution);
     printer.setOutputFormat(QPrinter::PdfFormat);
@@ -302,6 +312,9 @@ void Printer::printerPDF(QList<QObject *> data)
             }
         }
 
+        int ted = data[i]->property("timeDeparture").toInt() / 60 * 100 + data[i]->property("timeDeparture").toInt() % 60;
+        int tea = data[i]->property("timeArrival").toInt() / 60 * 100 + data[i]->property("timeArrival").toInt() % 60;
+
         QString rowData = "<tr style=\"background-color: " + color + ";color: #000000;\">"
                            "<td>"+ data[i]->property("name").toString() +"</td>"
                            "<td>"+ data[i]->property("captain").toString() +"</td>"
@@ -312,8 +325,8 @@ void Printer::printerPDF(QList<QObject *> data)
                            "<td>"+ data[i]->property("cabinAgent3").toString() +"</td>"
                            "<td>"+ data[i]->property("departure").toString() +"</td>"
                            "<td>"+ data[i]->property("arrival").toString() +"</td>"
-                           "<td>"+ data[i]->property("timeDeparture").toString() +"</td>"
-                           "<td>"+ data[i]->property("timeArrival").toString() +"</td>"
+                           "<td>"+ QString::number(ted) +"</td>"
+                           "<td>"+ QString::number(tea) +"</td>"
                            "<td>"+ data[i]->property("newAircraft").toString() +"</td>"
                            "<td>"+ data[i]->property("oldAircraft").toString() +"</td>"
                          "</tr>";
@@ -333,8 +346,8 @@ void Printer::printerPDF(QList<QObject *> data)
                      tr("Tel") + ": 028.38.422.199 – " + tr("Email") + ":<a href=\"mailto:info@vaa.edu.vn\"> info@vaa.edu.vn</a><br>";
 
     doc.setHtml(
-              "<table style=\"width: 100%;border: 1px solid black;border-collapse: collapse\">"
-                  "<caption style=\"color: #00aaff; font-size: 50px; font-weight: 600; text-align:center;\">" + tr("VAA Airline Schedules") + "</caption>"
+              "<table style=\"margin: 0px auto; width: 100%\">"
+                  "<caption style=\"color: #00aaff; font-size: 40px; font-weight: 600;\">" + tr("VAA Airline Schedules") + "</caption>"
                   "<tr style=\"background-color: #00aaff;color: white;\">"
                     "<th>FN</th>"
                     "<th>Crew1</th>"
@@ -351,7 +364,7 @@ void Printer::printerPDF(QList<QObject *> data)
                     "<th>ACo</th>"
                   "</tr>"
                + datas.join(" ") +
-               "</table><hr>"
+               "</table><br><hr>"
                 + footer
                 );
 

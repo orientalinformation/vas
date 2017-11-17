@@ -87,7 +87,7 @@ public:
     int getIndexInArrayByName(QList <Aircraft> array, QString name);
     int getIndexInArrayByName(QStringList array, QString name);
 
-    bool sortByTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
+    bool sortByAircraftAndTimeDeparture(FlightSchedule *lhs, FlightSchedule *rhs);
     bool isArrayContains(const QString value, QStringList array);
 
     Q_INVOKABLE void execute(QStringList problem1, QList<QObject *> problem2, QStringList problem3, QStringList airports,

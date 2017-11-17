@@ -15,7 +15,10 @@
 
 #include "schedulecalculation.h"
 #include "reschedulecalculation.h"
+
 #include "iostreams.h"
+#include "setting.h"
+#include "dfmfiledialog.h"
 
 #include "printer/printer.h"
 #include "printer/minipage.h"
@@ -41,6 +44,9 @@ int main(int argc, char *argv[])
     qmlRegisterType<PageSize>("DFMPrinter", 1, 0, "PageSize");
 
     qmlRegisterType<IOStreams, 1>("IOStreams", 1, 0, "IOStreams");
+
+    qmlRegisterType<Setting, 1>("Setting", 1, 0, "Setting");
+    qmlRegisterType<DFMFileDialog, 1>("DFMFileDialog", 1, 0, "DFMFileDialog");
 
     qreal dpi;
 

@@ -5,6 +5,8 @@ import QtQuick.Window 2.3
 import QtGraphicalEffects 1.0
 import QtQuick.Controls.Material 2.2
 
+import IOStreams 1.0
+
 import "scripts/global.js" as Global
 import "scripts/branding.js" as Branding
 
@@ -62,6 +64,10 @@ ApplicationWindow {
         }
     }
 
+    IOStreams {
+        id: iostreams
+    }
+
     header: HeaderSection {
         id: headerSection
 
@@ -73,6 +79,8 @@ ApplicationWindow {
         }
 
         onCaseSaved: {
+            iostreams.clear(path)
+
             homePage.save(path)
             schedulePage.save(path)
             reschedulePage.save(path)
@@ -80,6 +88,8 @@ ApplicationWindow {
         }
 
         onCaseSavedAs: {
+            iostreams.clear(path)
+
             homePage.saveAs(path)
             schedulePage.saveAs(path)
             reschedulePage.saveAs(path)
@@ -91,6 +101,7 @@ ApplicationWindow {
         }
 
         onCaseNew: {
+            settingPage.newCase()
             homePage.newCase()
             schedulePage.newCase()
             reschedulePage.newCase()
