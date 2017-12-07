@@ -6,12 +6,12 @@ If not otherwise mentioned inside source files (*.cpp, *.h, *.qml):
 
 VAS is a product of **Vietmam Aviation Academy**, was developed by **DFM-Engineering Co.,Ltd**
 
-Address: Quang Trung Software City Park, To Ky Street, Tan Chanh Hiep Ward, District 12, Ho Chi Minh City, Vietnam
+Address: Floor 2, Helios Building, Quang Trung Software City Park, To Ky Street, Tan Chanh Hiep Ward, District 12, Ho Chi Minh City, Vietnam
 
 ###Websites
 [http://dfm-engineering.com](http://dfm-engineering.com)
 
-Copyright (c) 2017-2018 DFM-Engineering Co.,Ltd. All right reserved.
+Copyright (c) 2017 DFM-Engineering Co.,Ltd. All right reserved.
 
 ##Current Contributors to VAS
 
